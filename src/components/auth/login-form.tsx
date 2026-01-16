@@ -1,0 +1,105 @@
+'use client';
+
+import { login } from '@/actions/auth';
+import type { ActionResult } from '@/actions/types';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useActionState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+
+export function LoginForm() {
+  const router = useRouter();
+  const [state, formAction, isPending] = useActionState<ActionResult | null, FormData>(login, null);
+
+  const {
+    register,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    mode: 'onBlur',
+  });
+
+  useEffect(() => {
+    if (state?.success) {
+      router.push('/');
+    }
+  }, [state?.success, router]);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Sign in</CardTitle>
+        <CardDescription>Enter your email and password to sign in</CardDescription>
+      </CardHeader>
+      <form action={formAction}>
+        <CardContent className="space-y-4">
+          {state?.error && (
+            <div className="bg-destructive/10 text-destructive rounded-md p-3 text-sm">
+              {state.error}
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="name@example.com"
+              autoComplete="email"
+              disabled={isPending}
+              {...register('email')}
+            />
+            {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">Password</Label>
+              <Link
+                href="/forgot-password"
+                className="text-muted-foreground text-sm hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+            <Input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              disabled={isPending}
+              {...register('password')}
+            />
+            {errors.password && (
+              <p className="text-destructive text-sm">{errors.password.message}</p>
+            )}
+          </div>
+        </CardContent>
+
+        <CardFooter className="flex flex-col space-y-4">
+          <Button type="submit" className="w-full" disabled={isPending}>
+            {isPending ? 'Signing in...' : 'Sign in'}
+          </Button>
+          <p className="text-muted-foreground text-center text-sm">
+            Don&apos;t have an account?{' '}
+            <Link href="/sign-up" className="font-medium hover:underline">
+              Sign up
+            </Link>
+          </p>
+        </CardFooter>
+      </form>
+    </Card>
+  );
+}
