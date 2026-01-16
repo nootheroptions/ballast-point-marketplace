@@ -52,7 +52,7 @@ export async function signUp(
 
     // Save user profile to database
     try {
-      await prisma.profile.create({
+      await prisma.userProfile.create({
         data: {
           id: user.id,
           email: user.email,

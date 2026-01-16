@@ -8,7 +8,7 @@ datasource db {
 }
 
 // User profile extends Supabase auth.users
-model Profile {
+model UserProfile {
   id        String   @id @db.Uuid /// The id here matches the Supabase auth user id
   email     String   @unique
   firstName String?  @map("first_name")
@@ -17,5 +17,5 @@ model Profile {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("profiles")
+  @@map("user_profiles")
 }
