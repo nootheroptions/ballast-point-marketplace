@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { withBasicAuth } from '@/lib/auth/basic-auth';
+import { env } from '@/lib/config/env';
 
 export async function middleware(request: NextRequest) {
   // Basic auth check (for staging environments)
-  if (process.env.BASIC_AUTH_ENABLED === 'true') {
+  if (env.BASIC_AUTH_ENABLED) {
     const authResponse = withBasicAuth(request);
     if (authResponse) return authResponse;
   }
@@ -19,8 +20,8 @@ export async function middleware(request: NextRequest) {
 
   // Create Supabase client for middleware
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {

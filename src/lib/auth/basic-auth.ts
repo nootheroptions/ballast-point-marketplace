@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { env } from '@/lib/config/env';
 
 const REALM = 'Secure Area';
 
@@ -30,8 +31,8 @@ export function withBasicAuth(request: NextRequest): NextResponse | null {
   const credentials = parseAuthHeader(authHeader);
   if (!credentials) return unauthorized('Invalid credentials');
 
-  const validUser = process.env.BASIC_AUTH_USER;
-  const validPassword = process.env.BASIC_AUTH_PASSWORD;
+  const validUser = env.BASIC_AUTH_USER;
+  const validPassword = env.BASIC_AUTH_PASSWORD;
 
   if (!validUser || !validPassword) {
     console.error('Basic auth enabled but credentials not configured');

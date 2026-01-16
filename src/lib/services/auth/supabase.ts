@@ -9,6 +9,7 @@ import type {
   AuthError,
 } from './types';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+import { env } from '@/lib/config/env';
 
 function mapSupabaseError(error: unknown): AuthError {
   if (error && typeof error === 'object' && 'message' in error) {
@@ -156,7 +157,7 @@ export async function createSupabaseAuthService(): Promise<AuthService> {
 
     async resetPassword(email: string): Promise<AuthResult> {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/reset-password`,
+        redirectTo: `${env.NEXT_PUBLIC_SITE_URL}/auth/reset-password`,
       });
 
       if (error) {

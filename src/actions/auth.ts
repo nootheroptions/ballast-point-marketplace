@@ -4,6 +4,7 @@ import { ActionResult } from '@/actions/types';
 import { prisma } from '@/lib/db/prisma';
 import { createAuthService } from '@/lib/services/auth';
 import { loginSchema, signUpSchema } from '@/lib/validations/auth';
+import { env } from '@/lib/config/env';
 
 export async function signUp(
   _prevState: ActionResult | null,
@@ -32,7 +33,7 @@ export async function signUp(
     const { data: user, error } = await authService.signUp({
       email,
       password,
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/callback`,
+      emailRedirectTo: `${env.NEXT_PUBLIC_SITE_URL}/api/auth/callback`,
     });
 
     if (error) {
