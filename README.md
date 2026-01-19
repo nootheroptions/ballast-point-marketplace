@@ -6,10 +6,12 @@ Two-sided marketplace connecting customers with architects.
 
 ```bash
 npm install    # Install dependencies
-npm run dev    # Start dev server at http://localhost:3000
+npm run dev    # Start dev server at http://localhost.com:3000
 ```
 
 **Requirements:** Node.js >= 20.9.0
+
+**Note:** To test subdomain features (like the provider portal) and authentication locally, you'll need to set up local DNS. See [Local Development Setup](#local-development-setup) for details.
 
 ## Environment Setup
 
@@ -20,6 +22,19 @@ cp .env.example .env
 ```
 
 **Note:** All environment variables are validated on startup using Zod. The app will fail with a clear error message if any required variables are missing or invalid.
+
+## Supabase Configuration
+
+### Subdomain Authentication Setup
+
+To enable authentication across subdomains (e.g., logging in on `domain.com` and accessing `providers.domain.com` with the same session), you need to configure Supabase Auth to use a shared cookie domain.
+
+**Solution:**
+For detailed instructions, see this solution: https://github.com/supabase/supabase/issues/473#issuecomment-2543434925
+
+### Redirect URLs Configuration
+
+For authentication redirects to work properly with subdomains (e.g., after login, signup, or password reset), you must add each subdomain URL to the allowed redirect URLs in your Supabase dashboard.
 
 ## Scripts
 
@@ -51,9 +66,10 @@ src/
 ├── actions/           # Server actions (form handling, mutations)
 ├── app/               # Next.js App Router
 │   ├── (auth)/        # Auth route group (login, signup)
+│   ├── providers/      # Provider portal subdomain routes (providers.domain.com)
 │   ├── api/           # API routes
 │   ├── layout.tsx     # Root layout
-│   └── page.tsx       # Home page
+│   └── page.tsx       # Home page (main domain)
 ├── components/
 │   ├── auth/          # Auth-specific components
 │   └── ui/            # Base UI components (shadcn)
@@ -64,11 +80,121 @@ src/
 │   │   └── auth/      # Auth service abstraction
 │   ├── utils/         # Helper functions
 │   └── validations/   # Zod schemas
-└── middleware.ts      # Next.js middleware
+└── middleware.ts      # Next.js middleware (includes subdomain routing)
 
 prisma/
 └── schema.prisma      # Database schema
 ```
+
+## Responsive Design
+
+The app is built mobile-first using Tailwind CSS and shadcn/ui. All components must work across mobile, tablet, and desktop.
+
+### Tailwind Breakpoints
+
+| Prefix | Min Width | Typical Use   |
+| ------ | --------- | ------------- |
+| (none) | 0px       | Mobile        |
+| `sm:`  | 640px     | Large phone   |
+| `md:`  | 768px     | Tablet        |
+| `lg:`  | 1024px    | Desktop       |
+| `xl:`  | 1280px    | Large desktop |
+
+### Mobile-First Approach
+
+Write base styles for mobile, then add breakpoint prefixes for larger screens:
+
+```tsx
+// Base = mobile, md: = tablet, lg: = desktop
+<div className="p-4 md:p-6 lg:p-8">
+  <h1 className="text-xl md:text-2xl lg:text-3xl">Title</h1>
+</div>
+```
+
+### Layout Components Structure
+
+```
+src/components/
+├── layout/
+│   ├── AppShell.tsx       # Main responsive wrapper
+│   ├── Sidebar.tsx        # Shared sidebar content (used by desktop + mobile)
+│   ├── MobileHeader.tsx   # Mobile-only header with hamburger
+│   └── MobileNav.tsx      # Mobile sheet navigation
+```
+
+### Responsive Design Rules
+
+- **Prefer CSS over JS** for responsive behavior - use Tailwind classes instead of `useMediaQuery` when possible (better performance, no hydration flash)
+- **Share component logic** - reuse the same `Sidebar` component in both desktop sidebar and mobile Sheet
+- **Avoid hardcoded heights** - use `min-h-screen`, `flex-1`, `h-full` instead of fixed pixel values
+- **Use shadcn Sheet** for mobile navigation - handles accessibility and animations
+- **Hide/show with Tailwind** - use `hidden lg:flex` pattern instead of conditional rendering when possible
+
+## Subdomain Routing
+
+The app supports multiple subdomains, each mapped to a route folder:
+
+| Subdomain              | Route Folder  | Description     |
+| ---------------------- | ------------- | --------------- |
+| `domain.com`           | Root (`app/`) | Main website    |
+| `providers.domain.com` | `providers/`  | Provider portal |
+
+**Note:** Subdomain routes use regular folders (not route groups with parentheses) because middleware rewrites require actual URL path segments.
+
+### How It Works
+
+1. Middleware extracts the subdomain from the hostname
+2. Requests are rewritten to the corresponding route folder (e.g., `/` becomes `/providers/`)
+3. Each subdomain folder has its own pages, layouts, and logic
+
+### Local Development Setup
+
+**Why local DNS is needed:** Browsers don't support cookie sharing across `localhost` subdomains (e.g., `localhost:3000` and `providers.localhost:3000`). To test authentication and subdomain features locally, you need to use a custom domain like `.localhost.com`.
+
+#### 1. Configure Local DNS
+
+Edit your `/etc/hosts` file to map a custom domain to localhost:
+
+```bash
+sudo nano /etc/hosts
+```
+
+Add these lines at the bottom:
+
+```
+127.0.0.1    localhost.com
+127.0.0.1    providers.localhost.com
+```
+
+#### 2. Update Environment Variables
+
+In your `.env` file, set:
+
+```bash
+NEXT_PUBLIC_ROOT_APP_DOMAIN=localhost.com
+NEXT_PUBLIC_SITE_URL=http://localhost.com:3000
+```
+
+#### 3. Access Your App
+
+- **Main domain**: `http://localhost.com:3000`
+- **Provider portal**: `http://providers.localhost.com:3000`
+
+Now cookies (including auth sessions) will be shared across all subdomains.
+
+**Note:** You can use any domain name instead of `localhost.com` (e.g., `ballast.local`, `app.test`, etc.). Just make sure to update both `/etc/hosts` and `.env` accordingly. HOWEVER, I believe it needs to have AT LEAST 2 levels, i.e. just "ballast" will not work (not sure why, but the cookie domain won't cover the .ballast subdomains)
+
+### Adding New Subdomains
+
+1. Create a new route folder: `src/app/subdomain-name/`
+2. Add the subdomain mapping in `src/lib/utils/subdomain.ts`:
+   ```typescript
+   export const SUBDOMAIN_ROUTE_MAP = {
+     providers: '/providers',
+     newsubdomain: '/newsubdomain', // Add new entry
+   };
+   ```
+3. Add the domain in Vercel project settings for production
 
 ## Naming Conventions
 

@@ -16,12 +16,13 @@ import { Label } from '@/components/ui/label';
 import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useActionState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [state, formAction, isPending] = useActionState<ActionResult | null, FormData>(login, null);
 
   const {
@@ -34,9 +35,15 @@ export function LoginForm() {
 
   useEffect(() => {
     if (state?.success) {
-      router.push('/');
+      const redirectTo = searchParams.get('redirectTo');
+      if (redirectTo) {
+        // Use window.location for full URL redirects (e.g., cross-subdomain)
+        window.location.href = redirectTo;
+      } else {
+        router.push('/');
+      }
     }
-  }, [state?.success, router]);
+  }, [state?.success, router, searchParams]);
 
   return (
     <Card>

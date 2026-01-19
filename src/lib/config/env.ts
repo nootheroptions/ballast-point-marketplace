@@ -22,6 +22,9 @@ const envSchema = z.object({
 
   // Site URL
   NEXT_PUBLIC_SITE_URL: z.string().url(),
+
+  // Root app domain for subdomain routing and auth cookies
+  NEXT_PUBLIC_ROOT_APP_DOMAIN: z.string().default('localhost.com'),
 });
 
 // Validate and export

@@ -1,8 +1,10 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
 import { withBasicAuth } from '@/lib/auth/basic-auth';
 import { env } from '@/lib/config/env';
+import { createCookieOptions } from '@/lib/services/auth/cookie-options';
+import { withSubdomainRouting } from '@/lib/middleware/subdomain-routing';
+import { createServerClient } from '@supabase/ssr';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   // Basic auth check (for staging environments)
@@ -11,14 +13,19 @@ export async function middleware(request: NextRequest) {
     if (authResponse) return authResponse;
   }
 
+  const url = request.nextUrl.clone();
+
+  // Auth paths that should not trigger protected subdomain redirect
+  const authPaths = ['/login', '/signup'];
+  const isAuthPath = authPaths.some((path) => url.pathname.startsWith(path));
+
   // Create response to modify cookies
-  const response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+  let response = NextResponse.next({
+    request,
   });
 
   // Create Supabase client for middleware
+  const cookieOptions = createCookieOptions();
   const supabase = createServerClient(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
@@ -27,10 +34,17 @@ export async function middleware(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          );
+        setAll: (newCookies) => {
+          for (const { name, value } of newCookies) {
+            request.cookies.set(name, value);
+          }
+          response = NextResponse.next({ request });
+          for (const { name, value, options } of newCookies) {
+            response.cookies.set(name, value, {
+              ...options,
+              ...cookieOptions,
+            });
+          }
         },
       },
     }
@@ -41,22 +55,29 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Protected routes check
-  const protectedPaths = ['/TO DO'];
-  const isProtectedPath = protectedPaths.some((path) => request.nextUrl.pathname.startsWith(path));
+  // Handle subdomain routing and authentication
+  const subdomainResponse = withSubdomainRouting(request, user, response);
+  if (subdomainResponse) return subdomainResponse;
+
+  // Protected routes check (for main domain protected paths)
+  const protectedPaths: string[] = [];
+  const isProtectedPath = protectedPaths.some((path) => url.pathname.startsWith(path));
 
   if (isProtectedPath && !user) {
-    const redirectUrl = new URL('/login', request.url);
-    redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname);
-    return NextResponse.redirect(redirectUrl);
+    // Construct login URL on main domain
+    const loginUrl = new URL('/login', env.NEXT_PUBLIC_SITE_URL);
+
+    // Store the original URL to redirect back after login
+    const originalUrl = url.toString();
+    loginUrl.searchParams.set('redirectTo', originalUrl);
+    return NextResponse.redirect(loginUrl);
   }
 
   // Redirect authenticated users away from auth pages
-  const authPaths = ['/login', '/signup'];
-  const isAuthPath = authPaths.some((path) => request.nextUrl.pathname.startsWith(path));
-
   if (isAuthPath && user) {
-    return NextResponse.redirect(new URL('/', request.url));
+    const redirectTo = url.searchParams.get('redirectTo');
+    const redirectUrl = redirectTo || '/';
+    return NextResponse.redirect(new URL(redirectUrl, request.url));
   }
 
   return response;
