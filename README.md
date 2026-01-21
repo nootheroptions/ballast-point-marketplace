@@ -232,6 +232,32 @@ Client Component → Server Action → Service → Database
 - **Services**: Abstract external dependencies (Supabase, etc.)
 - **Database**: Prisma client for data persistence
 
+## Server Actions vs API Routes
+
+Next.js provides two patterns for server-side logic: Server Actions and API Routes. Choose the right pattern based on your use case.
+
+### Quick Decision Tree
+
+```
+Is this for external consumption (webhooks, mobile app, third-party)?
+├─ YES → API Route
+└─ NO → Continue...
+
+Is this a GET request that needs HTTP caching?
+├─ YES → API Route
+└─ NO → Continue...
+
+Do you need custom HTTP headers, status codes, or binary data?
+├─ YES → API Route
+└─ NO → Continue...
+
+Is this called from your own React components?
+├─ YES → Server Action ✅
+└─ NO → Probably API Route
+```
+
+**Important:** Server Actions are always POST requests. For read operations that need HTTP caching or are called from external clients, use API Routes with GET methods instead.
+
 ## Project Rules
 
 ### Code Quality

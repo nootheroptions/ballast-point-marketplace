@@ -1,13 +1,13 @@
 generator client {
-  provider   = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-// User profile extends Supabase auth.users
+/// User profile extends Supabase auth.users
 model UserProfile {
   id        String   @id @db.Uuid /// The id here matches the Supabase auth user id
   email     String   @unique
@@ -17,5 +17,88 @@ model UserProfile {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  /// Teams the user belongs to (as provider)
+  teamMemberships TeamMember[]
+
+  /// Provider onboarding progress (if not completed)
+  providerOnboardingProgress ProviderOnboardingProgress?
+
   @@map("user_profiles")
+}
+
+/// Team role for access control
+enum TeamRole {
+  ADMIN /// Can modify provider profile and manage team members
+  MEMBER /// Read-only access to provider profile
+}
+
+/// Team groups users who work together on a provider profile
+model Team {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  /// The provider profile this team manages
+  providerProfile ProviderProfile?
+  /// Users who are part of this team
+  members         TeamMember[]
+
+  @@map("teams")
+}
+
+/// Join table connecting users to teams with roles
+model TeamMember {
+  id        String   @id @default(uuid()) @db.Uuid
+  role      TeamRole @default(MEMBER)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user   UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String      @map("user_id") @db.Uuid
+
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId String @map("team_id") @db.Uuid
+
+  @@unique([userId, teamId]) /// A user can only be a member of a team once
+  @@map("team_members")
+}
+
+/// Provider profile for service providers (architecture firms, etc.)
+model ProviderProfile {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String /// Also used as team name
+  slug        String  @unique /// URL-friendly identifier
+  description String?
+  logoUrl     String? @map("logo_url")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  /// The team that manages this provider profile (1:1 relationship)
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId String @unique @map("team_id") @db.Uuid
+
+  @@map("provider_profiles")
+}
+
+/// Stores partial onboarding progress for users who haven't completed setup
+model ProviderOnboardingProgress {
+  id          String @id @default(uuid()) @db.Uuid
+  currentStep Int    @default(0) @map("current_step") /// 0=intro, 1=step1, 2=step2
+
+  /// Step 1 fields
+  name String?
+  slug String?
+
+  /// Step 2 fields
+  description String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  /// The user this onboarding progress belongs to
+  user   UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String      @unique @map("user_id") @db.Uuid
+
+  @@map("provider_onboarding_progress")
 }

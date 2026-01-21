@@ -1,10 +1,14 @@
 'use server';
 
 import { ActionResult } from '@/actions/types';
-import { prisma } from '@/lib/db/prisma';
-import { createAuthService } from '@/lib/services/auth';
-import { loginSchema, signUpSchema } from '@/lib/validations/auth';
 import { env } from '@/lib/config/env';
+import { CURRENT_TEAM_COOKIE } from '@/lib/constants';
+import { createTeamMemberRepository } from '@/lib/repositories/team-member.repo';
+import { createUserProfileRepository } from '@/lib/repositories/user-profile.repo';
+import { createAuthService } from '@/lib/services/auth';
+import { createCookieOptions } from '@/lib/services/auth/cookie-options';
+import { loginSchema, signUpSchema } from '@/lib/validations/auth';
+import { cookies } from 'next/headers';
 
 export async function signUp(
   _prevState: ActionResult | null,
@@ -52,11 +56,10 @@ export async function signUp(
 
     // Save user profile to database
     try {
-      await prisma.userProfile.create({
-        data: {
-          id: user.id,
-          email: user.email,
-        },
+      const userProfileRepository = createUserProfileRepository();
+      await userProfileRepository.create({
+        id: user.id,
+        email: user.email,
       });
     } catch (dbError) {
       console.error('Failed to create user profile:', dbError);
@@ -117,6 +120,21 @@ export async function login(
         success: false,
         error: 'Failed to sign in',
       };
+    }
+
+    // Set team membership cookie
+    // MVP: Default to the first team membership (assumes user is only on one team)
+    // TODO: Support multiple team memberships with team switcher UI
+    const teamMemberRepository = createTeamMemberRepository();
+    const teamMembership = await teamMemberRepository.getFirstTeamMembershipByUserId(data.user.id);
+
+    if (teamMembership) {
+      const cookieStore = await cookies();
+      cookieStore.set({
+        name: CURRENT_TEAM_COOKIE,
+        value: teamMembership.teamId,
+        ...createCookieOptions(),
+      });
     }
 
     return {
