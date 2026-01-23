@@ -21,7 +21,9 @@ Copy the example environment file and configure the respective environment varia
 cp .env.example .env
 ```
 
-**Note:** All environment variables are validated on startup using Zod. The app will fail with a clear error message if any required variables are missing or invalid.
+**Important:** Fill in all required values in your `.env` file before starting the development server.
+
+**Validation:** This project uses [T3 Env](https://env.t3.gg) for type-safe environment variables. All variables are validated at build time and runtime using Zod schemas. The app will fail with clear error messages if any required variables are missing or invalid. See the [Environment Variables](#environment-variables) section for details.
 
 ## Supabase Configuration
 
@@ -314,8 +316,26 @@ Action wrappers are located in `lib/auth/action-wrapper.ts` and provide:
 
 ### Environment Variables
 
-- All new env variables must be added to `.env.example` and `env.ts` with a comment explaining their purpose
-- Env variables should use the exported `env` variable from env.ts and not process.env
+**Type-Safe Environment with T3 Env**
+
+This project uses [`@t3-oss/env-nextjs`](https://env.t3.gg/docs/nextjs) for type-safe, validated environment variables.
+
+#### Adding New Variables
+
+When adding a new environment variable:
+
+1. **Add to `.env.example`** with descriptive comment
+2. **Add to `src/lib/config/env.ts`** in the appropriate schema:
+   - `server` schema: Server-only vars (database, API keys)
+   - `client` schema: Client vars (must have `NEXT_PUBLIC_` prefix)
+3. **Add to `runtimeEnv`** object (required for Next.js bundling)
+4. **Never use `process.env` directly** - always import and use `env` from `env.ts`
+
+#### Validation
+
+- Environment variables are validated **at build time** (configured in `next.config.ts`)
+- Missing or invalid variables will fail the build with clear error messages
+- Set `SKIP_ENV_VALIDATION=true` to skip validation (not recommended)
 
 ### API Patterns
 
