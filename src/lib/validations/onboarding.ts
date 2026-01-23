@@ -51,6 +51,13 @@ export const completeOnboardingSchema = step1Schema.merge(step2Schema);
 
 export type CompleteOnboardingRequest = z.infer<typeof completeOnboardingSchema>;
 
+/** Check slug availability */
+export const checkSlugSchema = z.object({
+  slug: z.string().min(1, 'Slug is required'),
+});
+
+export type CheckSlugRequest = z.infer<typeof checkSlugSchema>;
+
 // ============================================
 // RESPONSE DTOs (Plain types)
 // ============================================

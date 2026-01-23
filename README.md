@@ -258,6 +258,34 @@ Is this called from your own React components?
 
 **Important:** Server Actions are always POST requests. For read operations that need HTTP caching or are called from external clients, use API Routes with GET methods instead.
 
+### Server Action Pattern (Recommended)
+
+Use action wrapper utilities to eliminate boilerplate for authentication, validation, and error handling.
+
+#### Available Wrappers
+
+**`createAuthenticatedAction`** - For actions that require authentication
+
+- Automatically checks user authentication
+- Returns 401 if user not logged in
+- Injects authenticated user into handler function
+- Optionally validates input with Zod schema
+
+**`createAction`** - For public actions (no authentication required)
+
+- No authentication check
+- Optionally validates input with Zod schema
+- Use for public data fetching, slug checks, etc.
+
+#### Implementation Details
+
+Action wrappers are located in `lib/auth/action-wrapper.ts` and provide:
+
+- Automatic try-catch error handling
+- UnauthorizedError detection and conversion
+- Zod validation with formatted error messages
+- Result normalization to ActionResult format
+
 ## Project Rules
 
 ### Code Quality
