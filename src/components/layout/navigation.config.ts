@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { usePathname } from 'next/navigation';
-import { Home, User, type LucideIcon } from 'lucide-react';
+import { Home, User, Briefcase, type LucideIcon } from 'lucide-react';
 
 export interface NavSubItem {
   label: string;
@@ -22,13 +22,19 @@ export const navItems: NavItem[] = [
     id: 'home',
     label: 'Home',
     icon: Home,
-    href: '/providers',
+    href: '/',
   },
   {
     id: 'profile',
     label: 'Profile',
     icon: User,
-    subItems: [{ label: 'Basic Information', href: '/providers/profile' }],
+    subItems: [{ label: 'Basic Information', href: '/profile' }],
+  },
+  {
+    id: 'services',
+    label: 'Services',
+    icon: Briefcase,
+    href: '/services',
   },
 ];
 

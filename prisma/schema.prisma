@@ -78,6 +78,9 @@ model ProviderProfile {
   team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
   teamId String @unique @map("team_id") @db.Uuid
 
+  /// Services offered by this provider
+  services Service[]
+
   @@map("provider_profiles")
 }
 
@@ -101,4 +104,20 @@ model ProviderOnboardingProgress {
   userId String      @unique @map("user_id") @db.Uuid
 
   @@map("provider_onboarding_progress")
+}
+
+/// Services offered by providers
+model Service {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String
+  description String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  /// The provider that offers this service
+  providerProfile   ProviderProfile @relation(fields: [providerProfileId], references: [id], onDelete: Cascade)
+  providerProfileId String          @map("provider_profile_id") @db.Uuid
+
+  @@map("services")
 }

@@ -45,7 +45,15 @@ export function withSubdomainRouting(
   }
 
   // Rewrite to subdomain route group if applicable (after auth check)
-  if (routeGroup && !url.pathname.startsWith('/_next') && !url.pathname.startsWith('/api')) {
+  // Don't rewrite Next.js server action requests (they have Next-Action header)
+  const isServerAction = request.headers.get('Next-Action') !== null;
+
+  if (
+    routeGroup &&
+    !url.pathname.startsWith('/_next') &&
+    !url.pathname.startsWith('/api') &&
+    !isServerAction
+  ) {
     url.pathname = `${routeGroup}${url.pathname}`;
 
     // Preserve cookies from the original response (includes Supabase session cookies)
