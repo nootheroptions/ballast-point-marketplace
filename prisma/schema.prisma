@@ -59,6 +59,10 @@ model TeamMember {
   team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
   teamId String @map("team_id") @db.Uuid
 
+  /// Booking system relations
+  availabilities Availability[]
+  participants   BookingParticipant[]
+
   @@unique([userId, teamId]) /// A user can only be a member of a team once
   @@map("team_members")
 }
@@ -112,6 +116,16 @@ model Service {
   name        String
   description String
 
+  /// Slot configuration (minutes)
+  slotDuration      Int @default(60) @map("slot_duration") 
+  slotBuffer        Int @default(0)  @map("slot_buffer")
+
+  /// Booking window constraints (minutes)
+  /// e.g. min = 60 → must book at least 1 hour ahead
+  /// max = 43200 → up to 30 days in advance
+  advanceBookingMin Int @default(60)     @map("advance_booking_min")
+  advanceBookingMax Int @default(43200)  @map("advance_booking_max")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -119,5 +133,174 @@ model Service {
   providerProfile   ProviderProfile @relation(fields: [providerProfileId], references: [id], onDelete: Cascade)
   providerProfileId String          @map("provider_profile_id") @db.Uuid
 
+  availabilities Availability[]
+  bookings       Booking[]
+
   @@map("services")
+}
+
+/// =======================================================
+/// TEAM MEMBER AVAILABILITY (RECURRING WORKING INTENT)
+/// =======================================================
+///
+/// This model represents *when a team member is willing to work*
+/// on a recurring basis.
+///
+/// IMPORTANT CONCEPTS:
+/// - Availability expresses *potential* working time (human intent)
+/// - It is NOT a guarantee of availability
+/// - It does NOT account for bookings or external calendars
+///
+/// SERVICE OVERRIDES:
+/// - serviceId = NULL → default working hours for the member
+/// - serviceId != NULL → member-specific override for that service only
+///
+/// We intentionally keep availability tied to TeamMember even for
+/// service overrides, because availability answers:
+///   "Can THIS person work at THIS time for THIS service?"
+///
+/// Service-wide pauses or shutdowns must NOT be modeled here.
+model Availability {
+  id           String   @id @default(uuid()) @db.Uuid
+
+  /// 0 = Sunday, 6 = Saturday
+  dayOfWeek    Int
+
+  /// Local time in the member's timezone
+  startTime    String   /// HH:mm
+  endTime      String   /// HH:mm
+  timezone     String   /// IANA timezone (e.g. Australia/Sydney)
+
+  teamMemberId String   @db.Uuid @map("team_member_id")
+  teamMember   TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+
+  /// NULL = default member availability
+  /// NOT NULL = override for this member when delivering this service
+  serviceId    String?  @db.Uuid @map("service_id")
+  service      Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([teamMemberId, dayOfWeek])
+  @@index([serviceId])
+  @@map("availabilities")
+}
+
+/// =======================================================
+/// BOOKING (EVENT)
+/// =======================================================
+///
+/// IMPORTANT:
+/// - A booking does NOT assume a single host
+/// - People are attached via BookingParticipant
+/// - This supports future expansion without refactors
+model Booking {
+  id        String   @id @default(uuid()) @db.Uuid
+
+  /// Stored in UTC
+  startTime DateTime @map("start_time")
+  endTime   DateTime @map("end_time")
+  timezone  String   /// Client timezone for display
+
+  status    BookingStatus @default(CONFIRMED)
+
+  notes       String?
+  cancelledAt DateTime? @map("cancelled_at")
+
+  serviceId String  @db.Uuid @map("service_id")
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  /// Hosts, co-hosts, invitees
+  participants BookingParticipant[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([serviceId, startTime])
+  @@index([status, startTime])
+  @@map("bookings")
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+/// =======================================================
+/// BOOKING PARTICIPANT
+/// =======================================================
+///
+/// Represents *any person involved in a booking*.
+///
+/// CORE DESIGN PRINCIPLES:
+/// - A booking is an event
+/// - People participate in events with ROLES
+/// - Roles define behavior, not table choice
+///
+/// ROLE SEMANTICS:
+/// - HOST / CO_HOST:
+///     - Must be linked to a TeamMember
+///     - Represents service providers
+///
+/// - INVITEE:
+///     - Represents the client or external attendee
+///     - Does NOT require a user account
+///     - Identified primarily by email
+///
+/// IDENTITY RULES:
+/// - Exactly ONE of the following must be set:
+///     - teamMemberId (for hosts)
+///     - userId OR email (for invitees)
+///
+/// NOTE:
+/// - Prisma cannot fully enforce these constraints at schema level
+/// - They must be enforced in application logic or database CHECK constraints
+model BookingParticipant {
+  id String @id @default(uuid()) @db.Uuid
+
+  /// Owning booking
+  bookingId String  @db.Uuid @map("booking_id")
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  /// Internal participant (hosts / co-hosts)
+  teamMemberId String?     @db.Uuid @map("team_member_id")
+  teamMember   TeamMember? @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+
+  /// Platform user (optional; future-proof)
+  /// Example: returning client with an account
+  userId String? @db.Uuid @map("user_id")
+
+  /// External invitee identifier
+  /// REQUIRED for INVITEE when userId is NULL
+  email  String?
+
+  /// Role of the participant in this booking
+  role   BookingRole
+
+  /// Per-participant booking state
+  status ParticipantStatus @default(ACCEPTED)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([bookingId])
+  @@index([teamMemberId])
+  @@index([userId])
+  @@index([email])
+  @@map("booking_participants")
+}
+
+enum BookingRole {
+  HOST
+  CO_HOST
+  INVITEE
+}
+
+enum ParticipantStatus {
+  ACCEPTED
+  DECLINED
+  NO_SHOW
 }
