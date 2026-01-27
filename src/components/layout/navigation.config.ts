@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { usePathname } from 'next/navigation';
-import { Home, User, Briefcase, type LucideIcon } from 'lucide-react';
+import { Home, User, Briefcase, Calendar, type LucideIcon } from 'lucide-react';
 
 export interface NavSubItem {
   label: string;
@@ -35,6 +35,12 @@ export const navItems: NavItem[] = [
     label: 'Services',
     icon: Briefcase,
     href: '/services',
+  },
+  {
+    id: 'availability',
+    label: 'Availability',
+    icon: Calendar,
+    href: '/availability',
   },
 ];
 

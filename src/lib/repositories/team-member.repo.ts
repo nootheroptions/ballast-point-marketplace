@@ -34,6 +34,19 @@ export interface TeamMemberRepository {
   ): Promise<TeamMembershipInfo | null>;
 
   /**
+   * Find a team member by user ID and team ID
+   * @param userId - The user's ID
+   * @param teamId - The team's ID
+   * @param tx - Optional transaction client
+   * @returns The team member if exists, null otherwise
+   */
+  findByUserAndTeam(
+    userId: string,
+    teamId: string,
+    tx?: Prisma.TransactionClient
+  ): Promise<TeamMember | null>;
+
+  /**
    * Create a new team member
    * @param data - The team member data
    * @param tx - Optional transaction client
@@ -60,6 +73,22 @@ export function createTeamMemberRepository(): TeamMemberRepository {
       });
 
       return teamMembership;
+    },
+
+    async findByUserAndTeam(
+      userId: string,
+      teamId: string,
+      tx?: Prisma.TransactionClient
+    ): Promise<TeamMember | null> {
+      const client = tx ?? prisma;
+      return await client.teamMember.findUnique({
+        where: {
+          userId_teamId: {
+            userId,
+            teamId,
+          },
+        },
+      });
     },
 
     async create(data: CreateTeamMemberData, tx?: Prisma.TransactionClient): Promise<TeamMember> {

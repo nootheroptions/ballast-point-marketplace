@@ -5,8 +5,8 @@ import { prisma } from '@/lib/db/prisma';
 import { createProviderOnboardingProgressRepository } from '@/lib/repositories/provider-onboarding-progress.repo';
 import { createProviderProfileRepository } from '@/lib/repositories/provider-profile.repo';
 import { createTeamRepository } from '@/lib/repositories/team.repo';
-import { createTeamMemberRepository } from '@/lib/repositories/team-member.repo';
 import { createAuthenticatedAction, createAction } from '@/lib/auth/action-wrapper';
+import { createTeamMemberService } from '@/lib/services/team-member';
 import {
   saveProgressSchema,
   completeOnboardingSchema,
@@ -74,22 +74,26 @@ export const completeOnboarding = createAuthenticatedAction(
       };
     }
 
-    // Create repositories
+    // Create repositories and services
     const teamRepository = createTeamRepository();
-    const teamMemberRepository = createTeamMemberRepository();
     const onboardingProgressRepository = createProviderOnboardingProgressRepository();
+    const teamMemberService = createTeamMemberService();
 
     // Create Team, TeamMember, and ProviderProfile in a transaction
     const result = await prisma.$transaction(async (tx) => {
       // Create team
       const team = await teamRepository.create(tx);
 
-      // Add user as admin
-      await teamMemberRepository.create(
+      // Add user as admin with default availability (Mon-Fri 9-5)
+      await teamMemberService.createWithDefaults(
         {
           userId: user.id,
           teamId: team.id,
           role: 'ADMIN',
+        },
+        {
+          timezone: 'UTC', // TODO: Could be customized based on user location/preference
+          createDefaultAvailability: true,
         },
         tx
       );
