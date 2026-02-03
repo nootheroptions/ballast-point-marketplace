@@ -68,7 +68,7 @@ export function Step1Form({ name, slug, onChange, onValidChange }: Step1FormProp
 
     const timer = setTimeout(async () => {
       setSlugCheckResult({ slug, available: false, checking: true });
-      const result = await checkSlugAvailability(slug);
+      const result = await checkSlugAvailability({ slug });
       if (result.success && result.data) {
         setSlugCheckResult({
           slug,

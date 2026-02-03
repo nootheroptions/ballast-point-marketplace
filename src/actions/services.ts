@@ -7,7 +7,9 @@ import {
   getServiceByIdSchema,
   updateServiceWithIdSchema,
   deleteServiceSchema,
+  publishServiceSchema,
   type CreateServiceData,
+  type PublishServiceData,
 } from '@/lib/validations/service';
 import { createProviderProfileRepository } from '@/lib/repositories/provider-profile.repo';
 import { createServiceRepository } from '@/lib/repositories/service.repo';
@@ -148,11 +150,9 @@ export const createService = createAuthenticatedAction(
         };
       }
 
-      // Create service
+      // Create service (handles both booking and marketplace services)
       const service = await serviceRepo.create({
-        name: data.name,
-        slug: data.slug,
-        description: data.description ?? '',
+        ...data,
         providerProfileId: providerProfile.id,
       });
 
@@ -179,7 +179,7 @@ export const createService = createAuthenticatedAction(
 export const updateService = createAuthenticatedAction(
   updateServiceWithIdSchema,
   async (data, user) => {
-    const { id, name, slug, description } = data;
+    const { id, slug, ...updateData } = data;
 
     try {
       // Get service to find its provider ID
@@ -209,11 +209,10 @@ export const updateService = createAuthenticatedAction(
         }
       }
 
-      // Update service
+      // Update service with all provided fields
       const service = await serviceRepo.update(id, {
-        ...(name !== undefined && { name }),
         ...(slug !== undefined && { slug }),
-        ...(description !== undefined && { description }),
+        ...updateData,
       });
 
       return {
@@ -271,3 +270,48 @@ export const deleteService = createAuthenticatedAction(deleteServiceSchema, asyn
     throw error;
   }
 });
+
+/**
+ * Publish or unpublish a service
+ */
+export const publishService = createAuthenticatedAction(
+  publishServiceSchema,
+  async (data: PublishServiceData, user) => {
+    const { id, isPublished } = data;
+
+    try {
+      // Get service to find its provider ID
+      const providerId = await getProviderIdFromService(id);
+
+      if (!providerId) {
+        return {
+          success: false,
+          error: 'Service not found',
+        };
+      }
+
+      // Verify user is admin of the provider
+      await requireProviderAdmin(user, providerId);
+
+      // Update publish status
+      const serviceRepo = createServiceRepository();
+      const service = await serviceRepo.update(id, { isPublished });
+
+      return {
+        success: true,
+        data: service,
+        message: isPublished
+          ? 'Service published successfully'
+          : 'Service unpublished successfully',
+      };
+    } catch (error) {
+      if (error instanceof ForbiddenError || error instanceof NotFoundError) {
+        return {
+          success: false,
+          error: error.message,
+        };
+      }
+      throw error;
+    }
+  }
+);

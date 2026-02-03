@@ -84,6 +84,8 @@ model ProviderProfile {
 
   /// Services offered by this provider
   services Service[]
+  /// Bundles offered by this provider
+  bundles  Bundle[]
 
   @@map("provider_profiles")
 }
@@ -110,22 +112,80 @@ model ProviderOnboardingProgress {
   @@map("provider_onboarding_progress")
 }
 
+/// Template keys for marketplace services
+enum TemplateKey {
+  CONSULTATION
+  FEASIBILITY
+  CONCEPT_DESIGN
+  PLANNING_APPROVALS
+  REVIEW
+}
+
+/// Delivery mode for services
+enum DeliveryMode {
+  REMOTE
+  ON_SITE
+  BOTH
+}
+
 /// Services offered by providers
+/// Supports both marketplace listings AND booking/scheduling
 model Service {
   id          String  @id @default(uuid()) @db.Uuid
   name        String
   slug        String  /// URL-friendly identifier, unique per provider
   description String
 
+  /// =======================================================
+  /// MARKETPLACE FIELDS
+  /// =======================================================
+
+  /// Template this service is based on
+  templateKey TemplateKey @map("template_key")
+
+  /// Template-specific configuration stored as JSON
+  /// Structure varies by template (e.g., CONSULTATION has duration, delivery, focus)
+  templateData Json @map("template_data")
+
+  /// Coverage package identifier (references hardcoded coverage packages in code)
+  /// Format: "{templateKey}_{packageKey}" (e.g., "CONSULTATION_STANDARD", "FEASIBILITY_BASIC")
+  coveragePackageKey String? @map("coverage_package_key")
+
+  /// Price in cents (AUD)
+  priceCents Int @map("price_cents")
+
+  /// Lead time in days (how far in advance must be booked)
+  leadTimeDays Int @map("lead_time_days")
+
+  /// Turnaround time in days (delivery time once started)
+  turnaroundDays Int @map("turnaround_days")
+
+  /// Delivery mode (remote, on-site, or both)
+  deliveryMode DeliveryMode @map("delivery_mode")
+
+  /// Published status (only published services appear in marketplace)
+  isPublished Boolean @default(false) @map("is_published")
+
+  /// Short positioning text (e.g., "Best for...")
+  positioning String?
+
+  /// Provider assumptions (character-limited note from structured presets + optional free-text)
+  assumptions String?
+
+  /// Client responsibilities (stored as JSON array)
+  clientResponsibilities Json? @map("client_responsibilities")
+
+  /// =======================================================
+  /// BOOKING/SCHEDULING FIELDS (legacy, optional)
+  /// =======================================================
+
   /// Slot configuration (minutes)
-  slotDuration      Int @default(60) @map("slot_duration")
-  slotBuffer        Int @default(0)  @map("slot_buffer")
+  slotDuration      Int @map("slot_duration")
+  slotBuffer        Int @map("slot_buffer")
 
   /// Booking window constraints (minutes)
-  /// e.g. min = 60 → must book at least 1 hour ahead
-  /// max = 43200 → up to 30 days in advance
-  advanceBookingMin Int @default(60)     @map("advance_booking_min")
-  advanceBookingMax Int @default(43200)  @map("advance_booking_max")
+  advanceBookingMin Int @map("advance_booking_min")
+  advanceBookingMax Int @map("advance_booking_max")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -134,8 +194,13 @@ model Service {
   providerProfile   ProviderProfile @relation(fields: [providerProfileId], references: [id], onDelete: Cascade)
   providerProfileId String          @map("provider_profile_id") @db.Uuid
 
+  /// Booking/scheduling relations
   availabilities Availability[]
   bookings       Booking[]
+
+  /// Marketplace relations
+  addOns         ServiceAddOn[]
+  bundleServices BundleService[]
 
   @@unique([providerProfileId, slug]) /// Slug must be unique within a provider
   @@map("services")
@@ -305,4 +370,118 @@ enum ParticipantStatus {
   ACCEPTED
   DECLINED
   NO_SHOW
+}
+
+/// =======================================================
+/// MARKETPLACE MODELS
+/// =======================================================
+
+/// Bundle pricing type
+enum BundlePricingType {
+  SUM_OF_PARTS /// Total price = sum of individual service prices
+  FIXED /// Fixed bundle price (potentially discounted)
+}
+
+/// Join table for services and add-ons with pricing
+/// Add-on types are defined in code, this table stores provider selections + pricing
+model ServiceAddOn {
+  id String @id @default(uuid()) @db.Uuid
+
+  /// Add-on key (references add-on definition in code)
+  addOnKey String @map("add_on_key")
+
+  /// Price for this add-on when attached to this service (cents)
+  priceCents Int @map("price_cents")
+
+  /// Impact on turnaround time (days, can be negative for expedited)
+  turnaroundImpactDays Int @default(0) @map("turnaround_impact_days")
+
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId String  @map("service_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([serviceId, addOnKey])
+  @@map("service_add_ons")
+}
+
+/// Bundles are curated, ordered sets of services
+model Bundle {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String
+  slug        String  /// URL-friendly identifier, unique per provider
+  description String
+
+  /// Pricing configuration
+  pricingType   BundlePricingType @map("pricing_type")
+
+  /// If pricingType = FIXED, this is the bundle price
+  /// If pricingType = SUM_OF_PARTS, this should be 0
+  priceCents Int @default(0) @map("price_cents")
+
+  /// Published status
+  isPublished Boolean @default(false) @map("is_published")
+
+  /// Short positioning text
+  positioning String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  /// The provider that offers this bundle
+  providerProfile   ProviderProfile @relation(fields: [providerProfileId], references: [id], onDelete: Cascade)
+  providerProfileId String          @map("provider_profile_id") @db.Uuid
+
+  /// Relations
+  services BundleService[]
+  addOns   BundleAddOn[]
+
+  @@unique([providerProfileId, slug])
+  @@map("bundles")
+}
+
+/// Join table for bundles and services (maintains order)
+model BundleService {
+  id String @id @default(uuid()) @db.Uuid
+
+  /// Order of this service in the bundle (0-indexed)
+  /// Must follow template stage order
+  sortOrder Int @map("sort_order")
+
+  bundle   Bundle @relation(fields: [bundleId], references: [id], onDelete: Cascade)
+  bundleId String @map("bundle_id") @db.Uuid
+
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId String  @map("service_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([bundleId, serviceId]) /// Each service can only appear once in a bundle
+  @@map("bundle_services")
+}
+
+/// Join table for bundles and add-ons with pricing
+/// Add-on types are defined in code, this table stores provider selections + pricing
+model BundleAddOn {
+  id String @id @default(uuid()) @db.Uuid
+
+  /// Add-on key (references add-on definition in code)
+  addOnKey String @map("add_on_key")
+
+  /// Price for this add-on when attached to this bundle (cents)
+  priceCents Int @map("price_cents")
+
+  /// Impact on turnaround time (days)
+  turnaroundImpactDays Int @default(0) @map("turnaround_impact_days")
+
+  bundle   Bundle @relation(fields: [bundleId], references: [id], onDelete: Cascade)
+  bundleId String @map("bundle_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([bundleId, addOnKey])
+  @@map("bundle_add_ons")
 }

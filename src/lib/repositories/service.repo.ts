@@ -1,15 +1,38 @@
 import { prisma } from '@/lib/db/prisma';
-import { Prisma, Service } from '@prisma/client';
+import { Prisma, Service, TemplateKey, DeliveryMode } from '@prisma/client';
 
-/**
- * Data required to create a service
- */
-export interface CreateServiceData {
+export type CreateServiceData = {
+  // Basic fields
   name: string;
   slug: string;
   description: string;
   providerProfileId: string;
-}
+
+  // Marketplace fields (required for marketplace services)
+  templateKey: TemplateKey;
+  templateData: Record<string, unknown>;
+  coveragePackageKey: string;
+  priceCents: number;
+  leadTimeDays: number;
+  turnaroundDays: number;
+  deliveryMode: DeliveryMode;
+
+  // Optional marketplace fields
+  positioning?: string;
+  assumptions?: string;
+  clientResponsibilities?: string[];
+  addOns?: Array<{
+    addOnKey: string;
+    priceCents: number;
+    turnaroundImpactDays: number;
+  }>;
+
+  // Booking fields (required for marketplace services to be bookable)
+  slotDuration: number;
+  slotBuffer: number;
+  advanceBookingMin: number;
+  advanceBookingMax: number;
+};
 
 /**
  * Data for updating a service
@@ -18,6 +41,32 @@ export interface UpdateServiceData {
   name?: string;
   slug?: string;
   description?: string;
+
+  // Marketplace fields
+  templateKey?: TemplateKey;
+  templateData?: Record<string, unknown>;
+  coveragePackageKey?: string;
+  priceCents?: number;
+  leadTimeDays?: number;
+  turnaroundDays?: number;
+  deliveryMode?: DeliveryMode;
+  positioning?: string;
+  assumptions?: string;
+  clientResponsibilities?: string[];
+  isPublished?: boolean;
+
+  // Add-ons (if provided, will replace all existing add-ons)
+  addOns?: Array<{
+    addOnKey: string;
+    priceCents: number;
+    turnaroundImpactDays: number;
+  }>;
+
+  // Booking fields
+  slotDuration?: number;
+  slotBuffer?: number;
+  advanceBookingMin?: number;
+  advanceBookingMax?: number;
 }
 
 /**
@@ -81,6 +130,13 @@ export interface ServiceRepository {
    * @returns The deleted service
    */
   delete(id: string, tx?: Prisma.TransactionClient): Promise<Service>;
+
+  /**
+   * Find all published marketplace services
+   * @param tx - Optional transaction client
+   * @returns Array of published services
+   */
+  findPublishedServices(tx?: Prisma.TransactionClient): Promise<Service[]>;
 }
 
 /**
@@ -125,6 +181,7 @@ export function createServiceRepository(): ServiceRepository {
 
     async create(data: CreateServiceData, tx?: Prisma.TransactionClient): Promise<Service> {
       const client = tx ?? prisma;
+
       return await client.service.create({
         data: {
           name: data.name,
@@ -135,6 +192,38 @@ export function createServiceRepository(): ServiceRepository {
               id: data.providerProfileId,
             },
           },
+          // Marketplace fields (required)
+          templateKey: data.templateKey,
+          templateData: data.templateData as Prisma.InputJsonValue,
+          coveragePackageKey: data.coveragePackageKey,
+          priceCents: data.priceCents,
+          leadTimeDays: data.leadTimeDays,
+          turnaroundDays: data.turnaroundDays,
+          deliveryMode: data.deliveryMode,
+          // Optional marketplace fields
+          positioning: data.positioning,
+          assumptions: data.assumptions,
+          clientResponsibilities: data.clientResponsibilities as Prisma.InputJsonValue,
+          // Booking fields (required for marketplace services)
+          slotDuration: data.slotDuration,
+          slotBuffer: data.slotBuffer,
+          advanceBookingMin: data.advanceBookingMin,
+          advanceBookingMax: data.advanceBookingMax,
+          // Create add-ons if provided
+          ...(data.addOns && data.addOns.length > 0
+            ? {
+                addOns: {
+                  create: data.addOns.map((addOn) => ({
+                    addOnKey: addOn.addOnKey,
+                    priceCents: addOn.priceCents,
+                    turnaroundImpactDays: addOn.turnaroundImpactDays,
+                  })),
+                },
+              }
+            : {}),
+        },
+        include: {
+          addOns: true,
         },
       });
     },
@@ -145,9 +234,63 @@ export function createServiceRepository(): ServiceRepository {
       tx?: Prisma.TransactionClient
     ): Promise<Service> {
       const client = tx ?? prisma;
+
+      // If add-ons are being updated, we need to delete old ones and create new ones
+      if (data.addOns) {
+        await client.serviceAddOn.deleteMany({
+          where: { serviceId: id },
+        });
+      }
+
       return await client.service.update({
         where: { id },
-        data,
+        data: {
+          ...(data.name !== undefined && { name: data.name }),
+          ...(data.slug !== undefined && { slug: data.slug }),
+          ...(data.description !== undefined && { description: data.description }),
+          // Marketplace fields
+          ...(data.templateKey !== undefined && { templateKey: data.templateKey }),
+          ...(data.templateData !== undefined && {
+            templateData: data.templateData as Prisma.InputJsonValue,
+          }),
+          ...(data.coveragePackageKey !== undefined && {
+            coveragePackageKey: data.coveragePackageKey,
+          }),
+          ...(data.priceCents !== undefined && { priceCents: data.priceCents }),
+          ...(data.leadTimeDays !== undefined && { leadTimeDays: data.leadTimeDays }),
+          ...(data.turnaroundDays !== undefined && { turnaroundDays: data.turnaroundDays }),
+          ...(data.deliveryMode !== undefined && { deliveryMode: data.deliveryMode }),
+          ...(data.positioning !== undefined && { positioning: data.positioning }),
+          ...(data.assumptions !== undefined && { assumptions: data.assumptions }),
+          ...(data.clientResponsibilities !== undefined && {
+            clientResponsibilities: data.clientResponsibilities as Prisma.InputJsonValue,
+          }),
+          ...(data.isPublished !== undefined && { isPublished: data.isPublished }),
+          // Booking fields
+          ...(data.slotDuration !== undefined && { slotDuration: data.slotDuration }),
+          ...(data.slotBuffer !== undefined && { slotBuffer: data.slotBuffer }),
+          ...(data.advanceBookingMin !== undefined && {
+            advanceBookingMin: data.advanceBookingMin,
+          }),
+          ...(data.advanceBookingMax !== undefined && {
+            advanceBookingMax: data.advanceBookingMax,
+          }),
+          // Create new add-ons if provided
+          ...(data.addOns && data.addOns.length > 0
+            ? {
+                addOns: {
+                  create: data.addOns.map((addOn) => ({
+                    addOnKey: addOn.addOnKey,
+                    priceCents: addOn.priceCents,
+                    turnaroundImpactDays: addOn.turnaroundImpactDays,
+                  })),
+                },
+              }
+            : {}),
+        },
+        include: {
+          addOns: true,
+        },
       });
     },
 
@@ -155,6 +298,19 @@ export function createServiceRepository(): ServiceRepository {
       const client = tx ?? prisma;
       return await client.service.delete({
         where: { id },
+      });
+    },
+
+    async findPublishedServices(tx?: Prisma.TransactionClient): Promise<Service[]> {
+      const client = tx ?? prisma;
+      return await client.service.findMany({
+        where: {
+          isPublished: true,
+        },
+        include: {
+          providerProfile: true,
+        },
+        orderBy: { createdAt: 'desc' },
       });
     },
   };

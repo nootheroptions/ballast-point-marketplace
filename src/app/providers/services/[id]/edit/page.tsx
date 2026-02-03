@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Service } from '@prisma/client';
 import { getServiceById } from '@/actions/services';
-import { ServiceForm } from '@/components/services/ServiceForm';
+import { MarketplaceServiceForm } from '@/components/services/marketplace/MarketplaceServiceForm';
 
 interface EditServicePageProps {
   params: Promise<{ id: string }>;
@@ -20,5 +20,5 @@ export default async function EditServicePage({ params }: EditServicePageProps) 
     notFound();
   }
 
-  return <ServiceForm service={service} />;
+  return <MarketplaceServiceForm service={service} />;
 }

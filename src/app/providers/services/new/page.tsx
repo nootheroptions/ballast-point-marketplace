@@ -1,5 +1,5 @@
-import { ServiceForm } from '@/components/services/ServiceForm';
+import { MarketplaceServiceForm } from '@/components/services/marketplace/MarketplaceServiceForm';
 
 export default function NewServicePage() {
-  return <ServiceForm />;
+  return <MarketplaceServiceForm />;
 }
