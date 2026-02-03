@@ -134,10 +134,24 @@ export const createService = createAuthenticatedAction(
       // Verify user is admin
       await requireProviderAdmin(user, providerProfile.id);
 
-      // Create service
+      // Check if slug already exists for this provider
       const serviceRepo = createServiceRepository();
+      const existingService = await serviceRepo.findByProviderAndSlug(
+        providerProfile.id,
+        data.slug
+      );
+
+      if (existingService) {
+        return {
+          success: false,
+          error: `A service with slug "${data.slug}" already exists for this provider`,
+        };
+      }
+
+      // Create service
       const service = await serviceRepo.create({
         name: data.name,
+        slug: data.slug,
         description: data.description ?? '',
         providerProfileId: providerProfile.id,
       });
@@ -165,7 +179,7 @@ export const createService = createAuthenticatedAction(
 export const updateService = createAuthenticatedAction(
   updateServiceWithIdSchema,
   async (data, user) => {
-    const { id, name, description } = data;
+    const { id, name, slug, description } = data;
 
     try {
       // Get service to find its provider ID
@@ -181,10 +195,24 @@ export const updateService = createAuthenticatedAction(
       // Verify user is admin of the provider
       await requireProviderAdmin(user, providerId);
 
-      // Update service
+      // If slug is being updated, check for conflicts
       const serviceRepo = createServiceRepository();
+      if (slug !== undefined) {
+        const existingService = await serviceRepo.findByProviderAndSlug(providerId, slug);
+
+        // Check if a different service with this slug exists
+        if (existingService && existingService.id !== id) {
+          return {
+            success: false,
+            error: `A service with slug "${slug}" already exists for this provider`,
+          };
+        }
+      }
+
+      // Update service
       const service = await serviceRepo.update(id, {
         ...(name !== undefined && { name }),
+        ...(slug !== undefined && { slug }),
         ...(description !== undefined && { description }),
       });
 

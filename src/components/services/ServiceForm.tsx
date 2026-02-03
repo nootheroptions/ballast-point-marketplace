@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,10 +16,24 @@ interface ServiceFormProps {
   service?: Service;
 }
 
+/**
+ * Convert a service name to a URL-friendly slug
+ */
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+}
+
 export function ServiceForm({ service }: ServiceFormProps) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
 
   const isEditMode = !!service;
 
@@ -27,9 +41,26 @@ export function ServiceForm({ service }: ServiceFormProps) {
     resolver: zodResolver(createServiceSchema),
     defaultValues: {
       name: service?.name ?? '',
+      slug: service?.slug ?? '',
       description: service?.description ?? '',
     },
   });
+
+  // Auto-generate slug from name for new services
+  useEffect(() => {
+    if (isEditMode || isSlugManuallyEdited) {
+      return; // Don't auto-generate for existing services or if manually edited
+    }
+
+    const subscription = form.watch((value, { name: fieldName }) => {
+      if (fieldName === 'name' && value.name !== undefined) {
+        const generatedSlug = generateSlug(value.name || '');
+        form.setValue('slug', generatedSlug, { shouldValidate: true });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, isEditMode, isSlugManuallyEdited]);
 
   const handleClose = () => {
     router.push('/services');
@@ -52,6 +83,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
         const result = await updateService({
           id: service.id,
           name: data.name,
+          slug: data.slug,
           description: data.description,
         });
 
@@ -94,7 +126,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
               <p className="text-destructive text-sm">{error}</p>
             </div>
           )}
-          <BasicDetailsForm form={form} />
+          <BasicDetailsForm form={form} onSlugManualEdit={() => setIsSlugManuallyEdited(true)} />
         </div>
       </main>
     </div>

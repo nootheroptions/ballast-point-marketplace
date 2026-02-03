@@ -8,11 +8,13 @@ import { Textarea } from '@/components/ui/textarea';
 interface BasicDetailsFormProps {
   form: UseFormReturn<{
     name: string;
+    slug: string;
     description: string;
   }>;
+  onSlugManualEdit?: () => void;
 }
 
-export function BasicDetailsForm({ form }: BasicDetailsFormProps) {
+export function BasicDetailsForm({ form, onSlugManualEdit }: BasicDetailsFormProps) {
   const {
     register,
     watch,
@@ -20,6 +22,7 @@ export function BasicDetailsForm({ form }: BasicDetailsFormProps) {
   } = form;
 
   const nameValue = watch('name') || '';
+  const slugValue = watch('slug') || '';
   const descriptionValue = watch('description') || '';
 
   return (
@@ -44,6 +47,29 @@ export function BasicDetailsForm({ form }: BasicDetailsFormProps) {
               className={errors.name ? 'border-destructive' : ''}
             />
             {errors.name && <p className="text-destructive text-sm">{errors.name.message}</p>}
+          </div>
+
+          {/* Service slug */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="slug">
+                URL slug <span className="text-destructive">*</span>
+              </Label>
+              <span className="text-muted-foreground text-sm">{slugValue.length}/100</span>
+            </div>
+            <Input
+              id="slug"
+              {...register('slug', {
+                onChange: onSlugManualEdit,
+              })}
+              placeholder="e.g., floor-plan, heritage-consultation"
+              maxLength={100}
+              className={errors.slug ? 'border-destructive' : ''}
+            />
+            {errors.slug && <p className="text-destructive text-sm">{errors.slug.message}</p>}
+            <p className="text-muted-foreground text-xs">
+              Lowercase letters, numbers, and hyphens only. Used in booking URLs.
+            </p>
           </div>
 
           {/* Description */}

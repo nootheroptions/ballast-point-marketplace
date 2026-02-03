@@ -1,10 +1,22 @@
 import { z } from 'zod';
 
 /**
+ * Regex pattern for valid slugs: lowercase letters, numbers, and hyphens
+ * Must start and end with alphanumeric character
+ */
+const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/**
  * Schema for creating a new service
  */
 export const createServiceSchema = z.object({
   name: z.string().min(1, 'Service name is required').max(255, 'Name is too long'),
+  slug: z
+    .string()
+    .min(1, 'Service slug is required')
+    .max(100, 'Slug is too long')
+    .regex(slugPattern, 'Slug must contain only lowercase letters, numbers, and hyphens')
+    .refine((slug) => slug.length >= 3, 'Slug must be at least 3 characters'),
   description: z
     .string()
     .min(1, 'Service description is required')
@@ -18,6 +30,12 @@ export type CreateServiceData = z.infer<typeof createServiceSchema>;
  */
 export const updateServiceSchema = z.object({
   name: z.string().min(1, 'Service name is required').max(255, 'Name is too long').optional(),
+  slug: z
+    .string()
+    .min(3, 'Slug must be at least 3 characters')
+    .max(100, 'Slug is too long')
+    .regex(slugPattern, 'Slug must contain only lowercase letters, numbers, and hyphens')
+    .optional(),
   description: z
     .string()
     .min(1, 'Service description is required')

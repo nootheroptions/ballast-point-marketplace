@@ -114,10 +114,11 @@ model ProviderOnboardingProgress {
 model Service {
   id          String  @id @default(uuid()) @db.Uuid
   name        String
+  slug        String  /// URL-friendly identifier, unique per provider
   description String
 
   /// Slot configuration (minutes)
-  slotDuration      Int @default(60) @map("slot_duration") 
+  slotDuration      Int @default(60) @map("slot_duration")
   slotBuffer        Int @default(0)  @map("slot_buffer")
 
   /// Booking window constraints (minutes)
@@ -136,6 +137,7 @@ model Service {
   availabilities Availability[]
   bookings       Booking[]
 
+  @@unique([providerProfileId, slug]) /// Slug must be unique within a provider
   @@map("services")
 }
 

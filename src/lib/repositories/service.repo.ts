@@ -6,6 +6,7 @@ import { Prisma, Service } from '@prisma/client';
  */
 export interface CreateServiceData {
   name: string;
+  slug: string;
   description: string;
   providerProfileId: string;
 }
@@ -15,6 +16,7 @@ export interface CreateServiceData {
  */
 export interface UpdateServiceData {
   name?: string;
+  slug?: string;
   description?: string;
 }
 
@@ -41,6 +43,19 @@ export interface ServiceRepository {
     providerProfileId: string,
     tx?: Prisma.TransactionClient
   ): Promise<Service[]>;
+
+  /**
+   * Find a service by slug within a provider
+   * @param providerProfileId - The provider profile ID
+   * @param slug - The service slug
+   * @param tx - Optional transaction client
+   * @returns The service if exists, null otherwise
+   */
+  findByProviderAndSlug(
+    providerProfileId: string,
+    slug: string,
+    tx?: Prisma.TransactionClient
+  ): Promise<Service | null>;
 
   /**
    * Create a new service
@@ -92,11 +107,28 @@ export function createServiceRepository(): ServiceRepository {
       });
     },
 
+    async findByProviderAndSlug(
+      providerProfileId: string,
+      slug: string,
+      tx?: Prisma.TransactionClient
+    ): Promise<Service | null> {
+      const client = tx ?? prisma;
+      return await client.service.findUnique({
+        where: {
+          providerProfileId_slug: {
+            providerProfileId,
+            slug,
+          },
+        },
+      });
+    },
+
     async create(data: CreateServiceData, tx?: Prisma.TransactionClient): Promise<Service> {
       const client = tx ?? prisma;
       return await client.service.create({
         data: {
           name: data.name,
+          slug: data.slug,
           description: data.description,
           providerProfile: {
             connect: {
