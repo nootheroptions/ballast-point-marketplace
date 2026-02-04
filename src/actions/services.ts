@@ -33,6 +33,16 @@ export async function searchServices() {
 }
 
 /**
+ * Get a published service by provider slug and service slug
+ * This is a public action (no authentication required)
+ */
+export async function getServiceBySlug(providerSlug: string, serviceSlug: string) {
+  const serviceRepo = createServiceRepository();
+  const service = await serviceRepo.findPublishedBySlug(providerSlug, serviceSlug);
+  return service;
+}
+
+/**
  * Get services for the current team's provider profile
  */
 export const getServices = createAuthenticatedAction(async (user) => {
