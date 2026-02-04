@@ -12,6 +12,16 @@ export interface CreateProviderProfileData {
 }
 
 /**
+ * Data for updating a provider profile
+ */
+export interface UpdateProviderProfileData {
+  name?: string;
+  slug?: string;
+  description?: string | null;
+  logoUrl?: string | null;
+}
+
+/**
  * ProviderProfile with team members
  */
 export type ProviderProfileWithTeamMembers = ProviderProfile & {
@@ -72,6 +82,19 @@ export interface ProviderProfileRepository {
    * @returns The created provider profile
    */
   create(data: CreateProviderProfileData, tx?: Prisma.TransactionClient): Promise<ProviderProfile>;
+
+  /**
+   * Update a provider profile
+   * @param id - The provider profile ID
+   * @param data - The updated provider profile data
+   * @param tx - Optional transaction client
+   * @returns The updated provider profile
+   */
+  update(
+    id: string,
+    data: UpdateProviderProfileData,
+    tx?: Prisma.TransactionClient
+  ): Promise<ProviderProfile>;
 }
 
 /**
@@ -151,6 +174,18 @@ export function createProviderProfileRepository(): ProviderProfileRepository {
           slug: data.slug,
           description: data.description,
         },
+      });
+    },
+
+    async update(
+      id: string,
+      data: UpdateProviderProfileData,
+      tx?: Prisma.TransactionClient
+    ): Promise<ProviderProfile> {
+      const client = tx ?? prisma;
+      return await client.providerProfile.update({
+        where: { id },
+        data,
       });
     },
   };

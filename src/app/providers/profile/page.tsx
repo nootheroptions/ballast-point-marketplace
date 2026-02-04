@@ -1,8 +1,17 @@
-export default function ProfilePage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-semibold tracking-tight">Basic Information</h1>
-      <p className="text-muted-foreground mt-2">Manage your profile information.</p>
-    </div>
-  );
+import { getProviderProfile } from '@/actions/providers';
+import { ProviderProfilePageClient } from '@/components/provider-profile/ProviderfilePageContent';
+import { ProviderProfile } from '@prisma/client';
+import { redirect } from 'next/navigation';
+
+export default async function ProfilePage() {
+  const result = await getProviderProfile();
+
+  // Handle error cases
+  if (!result.success) {
+    redirect('/');
+  }
+
+  const profile = result.data as ProviderProfile;
+
+  return <ProviderProfilePageClient profile={profile} />;
 }
