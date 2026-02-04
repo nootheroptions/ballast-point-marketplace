@@ -1,7 +1,7 @@
 import { Service } from '@prisma/client';
 import { getServices } from '@/actions/services';
 import { ServicesHeader } from '@/components/services/ServicesHeader';
-import { ServiceList } from '@/components/services/ServiceList';
+import { ServicesPageContent } from '@/components/services/ServicesPageContent';
 
 export default async function ServicesPage() {
   const result = await getServices();
@@ -19,10 +19,5 @@ export default async function ServicesPage() {
 
   const services = (result.data ?? []) as Service[];
 
-  return (
-    <div className="max-w-7xl">
-      <ServicesHeader />
-      <ServiceList services={services} />
-    </div>
-  );
+  return <ServicesPageContent services={services} />;
 }

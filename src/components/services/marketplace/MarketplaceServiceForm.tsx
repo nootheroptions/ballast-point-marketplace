@@ -140,165 +140,159 @@ export function MarketplaceServiceForm({ service }: MarketplaceServiceFormProps)
   };
 
   return (
-    <div className="min-h-screen">
-      {/* Main Form */}
-      <main>
-        <FormHeader
-          title={isEditMode ? 'Edit Marketplace Service' : 'New Marketplace Service'}
-          onClose={handleClose}
-          onSave={handleSave}
-          isSaving={isSaving}
-          isDisabled={!form.formState.isDirty}
-        />
-        <div className="max-w-4xl">
-          {error && (
-            <div className="border-destructive/50 bg-destructive/10 mb-6 rounded-lg border p-4">
-              <p className="text-destructive text-sm">{error}</p>
-            </div>
-          )}
+    <div className="max-w-4xl">
+      <FormHeader
+        title={isEditMode ? 'Edit Marketplace Service' : 'New Marketplace Service'}
+        onClose={handleClose}
+        onSave={handleSave}
+        isSaving={isSaving}
+        isDisabled={!form.formState.isDirty}
+      />
 
-          <div className="space-y-8">
-            {/* Basic Details */}
-            <section>
-              <h2 className="mb-6 text-xl font-semibold">Basic Details</h2>
+      {error && (
+        <div className="border-destructive/50 bg-destructive/10 mb-6 rounded-lg border p-4">
+          <p className="text-destructive text-sm">{error}</p>
+        </div>
+      )}
 
-              <div className="space-y-4">
-                {/* Name */}
-                <div className="space-y-2">
-                  <Label htmlFor="name">
-                    Service Name <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="name"
-                    placeholder="e.g., Quick Feasibility Assessment"
-                    {...form.register('name')}
-                  />
-                  {form.formState.errors.name && (
-                    <p className="text-destructive text-sm">{form.formState.errors.name.message}</p>
-                  )}
-                </div>
+      <div className="mt-8 space-y-8">
+        {/* Basic Details */}
+        <section>
+          <h2 className="mb-6 text-xl font-semibold">Basic Details</h2>
 
-                {/* Slug */}
-                <div className="space-y-2">
-                  <Label htmlFor="slug">
-                    URL Slug <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="slug"
-                    placeholder="quick-feasibility-assessment"
-                    {...form.register('slug')}
-                    onChange={(e) => {
-                      form.register('slug').onChange(e);
-                      setIsSlugManuallyEdited(true);
-                    }}
-                  />
-                  <p className="text-muted-foreground text-sm">
-                    URL-friendly identifier (auto-generated from name)
-                  </p>
-                  {form.formState.errors.slug && (
-                    <p className="text-destructive text-sm">{form.formState.errors.slug.message}</p>
-                  )}
-                </div>
-
-                {/* Description */}
-                <div className="space-y-2">
-                  <Label htmlFor="description">
-                    Description <span className="text-destructive">*</span>
-                  </Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Describe what this service includes and who it's for..."
-                    rows={4}
-                    {...form.register('description')}
-                  />
-                  {form.formState.errors.description && (
-                    <p className="text-destructive text-sm">
-                      {form.formState.errors.description.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </section>
-
-            <Separator />
-
-            {/* Template Selection */}
-            <section>
-              <h2 className="mb-6 text-xl font-semibold">Service Template</h2>
-              <TemplateSelector
-                value={templateKey}
-                onChange={(value) => form.setValue('templateKey', value, { shouldValidate: false })}
+          <div className="space-y-4">
+            {/* Name */}
+            <div className="space-y-2">
+              <Label htmlFor="name">
+                Service Name <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="name"
+                placeholder="e.g., Quick Feasibility Assessment"
+                {...form.register('name')}
               />
-              {form.formState.errors.templateKey && (
-                <p className="text-destructive mt-2 text-sm">
-                  {form.formState.errors.templateKey.message}
+              {form.formState.errors.name && (
+                <p className="text-destructive text-sm">{form.formState.errors.name.message}</p>
+              )}
+            </div>
+
+            {/* Slug */}
+            <div className="space-y-2">
+              <Label htmlFor="slug">
+                URL Slug <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="slug"
+                placeholder="quick-feasibility-assessment"
+                {...form.register('slug')}
+                onChange={(e) => {
+                  form.register('slug').onChange(e);
+                  setIsSlugManuallyEdited(true);
+                }}
+              />
+              <p className="text-muted-foreground text-sm">
+                URL-friendly identifier (auto-generated from name)
+              </p>
+              {form.formState.errors.slug && (
+                <p className="text-destructive text-sm">{form.formState.errors.slug.message}</p>
+              )}
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <Label htmlFor="description">
+                Description <span className="text-destructive">*</span>
+              </Label>
+              <Textarea
+                id="description"
+                placeholder="Describe what this service includes and who it's for..."
+                rows={4}
+                {...form.register('description')}
+              />
+              {form.formState.errors.description && (
+                <p className="text-destructive text-sm">
+                  {form.formState.errors.description.message}
                 </p>
               )}
-            </section>
+            </div>
+          </div>
+        </section>
 
-            {/* Template-Specific Fields */}
-            {templateKey && (
-              <>
-                <Separator />
-                <section>
-                  <GenericTemplateFields templateKey={templateKey} form={form} />
-                </section>
-              </>
-            )}
+        <Separator />
 
-            {/* Coverage Package */}
-            {templateKey && (
-              <>
-                <Separator />
-                <section>
-                  <h2 className="mb-6 text-xl font-semibold">Coverage</h2>
-                  <CoveragePackageSelector
-                    templateKey={templateKey}
-                    value={form.watch('coveragePackageKey')}
-                    onChange={(value) =>
-                      form.setValue('coveragePackageKey', value, { shouldValidate: false })
-                    }
-                  />
-                  {form.formState.errors.coveragePackageKey && (
-                    <p className="text-destructive mt-2 text-sm">
-                      {form.formState.errors.coveragePackageKey.message}
-                    </p>
-                  )}
-                </section>
-              </>
-            )}
+        {/* Template Selection */}
+        <section>
+          <h2 className="mb-6 text-xl font-semibold">Service Template</h2>
+          <TemplateSelector
+            value={templateKey}
+            onChange={(value) => form.setValue('templateKey', value, { shouldValidate: false })}
+          />
+          {form.formState.errors.templateKey && (
+            <p className="text-destructive mt-2 text-sm">
+              {form.formState.errors.templateKey.message}
+            </p>
+          )}
+        </section>
 
-            {/* Pricing & Timing */}
+        {/* Template-Specific Fields */}
+        {templateKey && (
+          <>
             <Separator />
             <section>
-              <PricingAndTimingFields form={form} />
+              <GenericTemplateFields templateKey={templateKey} form={form} />
             </section>
+          </>
+        )}
 
-            {/* Delivery Mode */}
+        {/* Coverage Package */}
+        {templateKey && (
+          <>
             <Separator />
             <section>
-              <h2 className="mb-6 text-xl font-semibold">Delivery</h2>
-              <DeliveryModeSelector
-                value={form.watch('deliveryMode')}
+              <h2 className="mb-6 text-xl font-semibold">Coverage</h2>
+              <CoveragePackageSelector
+                templateKey={templateKey}
+                value={form.watch('coveragePackageKey')}
                 onChange={(value) =>
-                  form.setValue('deliveryMode', value, { shouldValidate: false })
+                  form.setValue('coveragePackageKey', value, { shouldValidate: false })
                 }
               />
-              {form.formState.errors.deliveryMode && (
+              {form.formState.errors.coveragePackageKey && (
                 <p className="text-destructive mt-2 text-sm">
-                  {form.formState.errors.deliveryMode.message}
+                  {form.formState.errors.coveragePackageKey.message}
                 </p>
               )}
             </section>
+          </>
+        )}
 
-            {/* Booking Configuration */}
-            <Separator />
-            <section>
-              <BookingFields form={form} />
-            </section>
-          </div>
-        </div>
-      </main>
+        {/* Pricing & Timing */}
+        <Separator />
+        <section>
+          <PricingAndTimingFields form={form} />
+        </section>
+
+        {/* Delivery Mode */}
+        <Separator />
+        <section>
+          <h2 className="mb-6 text-xl font-semibold">Delivery</h2>
+          <DeliveryModeSelector
+            value={form.watch('deliveryMode')}
+            onChange={(value) => form.setValue('deliveryMode', value, { shouldValidate: false })}
+          />
+          {form.formState.errors.deliveryMode && (
+            <p className="text-destructive mt-2 text-sm">
+              {form.formState.errors.deliveryMode.message}
+            </p>
+          )}
+        </section>
+
+        {/* Booking Configuration */}
+        <Separator />
+        <section>
+          <BookingFields form={form} />
+        </section>
+      </div>
     </div>
   );
 }

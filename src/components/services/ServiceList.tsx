@@ -5,22 +5,27 @@ import { ServiceActions } from './ServiceActions';
 
 interface ServiceListProps {
   services: Service[];
+  isFiltered?: boolean;
 }
 
-export function ServiceList({ services }: ServiceListProps) {
+export function ServiceList({ services, isFiltered = false }: ServiceListProps) {
   if (services.length === 0) {
     return (
-      <div className="border-muted-foreground/25 bg-muted/20 mt-8 rounded-lg border border-dashed p-12 text-center">
-        <h3 className="mb-2 text-lg font-semibold">No services yet</h3>
+      <div className="border-muted-foreground/25 bg-muted/20 rounded-lg border border-dashed p-12 text-center">
+        <h3 className="mb-2 text-lg font-semibold">
+          {isFiltered ? 'No services in this category' : 'No services yet'}
+        </h3>
         <p className="text-muted-foreground text-sm">
-          Create your first service to start managing your business offerings.
+          {isFiltered
+            ? 'Try selecting a different category or create a new service.'
+            : 'Create your first service to start managing your business offerings.'}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="mt-8 space-y-4">
+    <div className="space-y-4">
       {services.map((service) => (
         <div
           key={service.id}
