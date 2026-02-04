@@ -1,7 +1,6 @@
 'use client';
 
 import { Menu } from 'lucide-react';
-
 import { MobileNav, MobileNavTrigger } from './MobileNav';
 
 export function MobileHeader() {

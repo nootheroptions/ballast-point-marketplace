@@ -17,14 +17,9 @@ export function Sidebar({ className }: SidebarProps) {
     <TooltipProvider delayDuration={0}>
       <div className={cn('flex h-full', className)}>
         {/* Icon Rail */}
-        <div className="bg-sidebar flex w-16 flex-col items-center py-4">
-          {/* Logo placeholder */}
-          <div className="mb-6 flex h-10 w-10 items-center justify-center">
-            <span className="text-sidebar-foreground text-lg font-bold">BP</span>
-          </div>
-
+        <div className="bg-sidebar flex w-16 flex-col items-center pt-16 pb-4">
           {/* Nav Items */}
-          <nav className="flex flex-1 flex-col items-center gap-2">
+          <nav className="flex flex-1 flex-col items-center gap-2 pt-4">
             {navItems.map((item) => {
               const isActive = checkIsActive(item);
               const isExpanded = expandedId === item.id;

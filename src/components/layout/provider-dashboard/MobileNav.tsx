@@ -1,13 +1,13 @@
 'use client';
 
-import * as React from 'react';
-import Link from 'next/link';
 import { ChevronDown, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import * as React from 'react';
 
-import { cn } from '@/lib/utils/shadcn';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { navItems, useNavigation, type NavItem } from './navigation.config';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { cn } from '@/lib/utils/shadcn';
+import { useNavigation, NavItem, navItems } from './navigation.config';
 
 interface MobileNavProps {
   children: React.ReactNode;
