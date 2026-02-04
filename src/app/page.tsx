@@ -1,10 +1,13 @@
+import { getUserWithProvider } from '@/actions/users';
 import { HomeHeader } from '@/components/home/home-header';
 import { HeroSearch } from '@/components/home/hero-search';
 
-export default function Home() {
+export default async function Home() {
+  const { user, hasProvider, providerSlug } = await getUserWithProvider();
+
   return (
     <div className="from-primary/20 via-primary/10 to-primary/5 min-h-screen bg-gradient-to-b">
-      <HomeHeader />
+      <HomeHeader user={user} hasProvider={hasProvider} providerSlug={providerSlug} />
 
       <main className="px-4 pt-32 pb-20 lg:px-8">
         <div className="container mx-auto max-w-7xl">

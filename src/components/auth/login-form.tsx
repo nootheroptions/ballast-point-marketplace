@@ -15,15 +15,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useActionState, useEffect } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [state, formAction, isPending] = useActionState<ActionResult | null, FormData>(login, null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -82,26 +84,43 @@ export function LoginForm() {
                 Forgot password?
               </Link>
             </div>
-            <Input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              disabled={isPending}
-              {...register('password')}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                disabled={isPending}
+                className="pr-10"
+                {...register('password')}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="absolute top-0 right-0 h-full px-3 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+              >
+                {showPassword ? (
+                  <EyeOff className="text-muted-foreground size-4" />
+                ) : (
+                  <Eye className="text-muted-foreground size-4" />
+                )}
+              </Button>
+            </div>
             {errors.password && (
               <p className="text-destructive text-sm">{errors.password.message}</p>
             )}
           </div>
         </CardContent>
 
-        <CardFooter className="flex flex-col space-y-4">
+        <CardFooter className="mt-6 flex flex-col space-y-4">
           <Button type="submit" className="w-full" disabled={isPending}>
             {isPending ? 'Signing in...' : 'Sign in'}
           </Button>
           <p className="text-muted-foreground text-center text-sm">
             Don&apos;t have an account?{' '}
-            <Link href="/sign-up" className="font-medium hover:underline">
+            <Link href="/signup" className="font-medium hover:underline">
               Sign up
             </Link>
           </p>

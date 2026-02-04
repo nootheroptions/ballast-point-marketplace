@@ -149,3 +149,32 @@ export async function login(
     };
   }
 }
+
+export async function logout(): Promise<ActionResult> {
+  try {
+    const authService = await createAuthService();
+    const { error } = await authService.signOut();
+
+    if (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+
+    // Clear team membership cookie
+    const cookieStore = await cookies();
+    cookieStore.delete(CURRENT_TEAM_COOKIE);
+
+    return {
+      success: true,
+      message: 'Successfully logged out',
+    };
+  } catch (error) {
+    console.error('Logout error:', error);
+    return {
+      success: false,
+      error: 'An unexpected error occurred. Please try again.',
+    };
+  }
+}

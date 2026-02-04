@@ -15,8 +15,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { signUpSchema, type SignUpFormData } from '@/lib/validations/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 export function SignUpForm() {
@@ -24,6 +25,8 @@ export function SignUpForm() {
     signUp,
     null
   );
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -81,13 +84,30 @@ export function SignUpForm() {
 
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              autoComplete="new-password"
-              disabled={isPending}
-              {...register('password')}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="new-password"
+                disabled={isPending}
+                className="pr-10"
+                {...register('password')}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="absolute top-0 right-0 h-full px-3 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+              >
+                {showPassword ? (
+                  <EyeOff className="text-muted-foreground size-4" />
+                ) : (
+                  <Eye className="text-muted-foreground size-4" />
+                )}
+              </Button>
+            </div>
             {errors.password && (
               <p className="text-destructive text-sm">{errors.password.message}</p>
             )}
@@ -95,20 +115,37 @@ export function SignUpForm() {
 
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              autoComplete="new-password"
-              disabled={isPending}
-              {...register('confirmPassword')}
-            />
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                type={showConfirmPassword ? 'text' : 'password'}
+                autoComplete="new-password"
+                disabled={isPending}
+                className="pr-10"
+                {...register('confirmPassword')}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="absolute top-0 right-0 h-full px-3 hover:bg-transparent"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                tabIndex={-1}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="text-muted-foreground size-4" />
+                ) : (
+                  <Eye className="text-muted-foreground size-4" />
+                )}
+              </Button>
+            </div>
             {errors.confirmPassword && (
               <p className="text-destructive text-sm">{errors.confirmPassword.message}</p>
             )}
           </div>
         </CardContent>
 
-        <CardFooter className="flex flex-col space-y-4">
+        <CardFooter className="mt-6 flex flex-col space-y-4">
           <Button type="submit" className="w-full" disabled={isPending}>
             {isPending ? 'Creating account...' : 'Sign up'}
           </Button>
