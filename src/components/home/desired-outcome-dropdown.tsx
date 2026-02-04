@@ -5,12 +5,14 @@ interface DesiredOutcomeDropdownProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  positionBelow?: boolean;
 }
 
 export function DesiredOutcomeDropdown({
   value,
   onChange,
   placeholder = 'What do you need right now?',
+  positionBelow = false,
 }: DesiredOutcomeDropdownProps) {
   const sections: HeroSearchDropdownSection[] = [
     {
@@ -57,6 +59,7 @@ export function DesiredOutcomeDropdown({
       placeholder={placeholder}
       sections={sections}
       alignToSearchBar={true}
+      positionBelow={positionBelow}
     />
   );
 }

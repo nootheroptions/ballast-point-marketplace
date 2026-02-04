@@ -11,12 +11,14 @@ interface LocationDropdownProps {
   value: LocationData | null;
   onChange: (location: LocationData | null) => void;
   placeholder?: string;
+  positionBelow?: boolean;
 }
 
 export function LocationDropdown({
   value,
   onChange,
   placeholder = 'Current location',
+  positionBelow = false,
 }: LocationDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState<{
@@ -67,10 +69,10 @@ export function LocationDropdown({
 
     setDropdownPosition({
       left: rect.left,
-      top: rect.top - 8,
+      top: positionBelow ? rect.bottom + 8 : rect.top - 8,
       width: rect.width,
     });
-  }, []);
+  }, [positionBelow]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -209,7 +211,7 @@ export function LocationDropdown({
                   ...dropdownPosition,
                   pointerEvents: 'auto',
                 }}
-                className="max-h-[500px] -translate-y-full overflow-y-auto rounded-2xl border border-gray-100 bg-white py-3 shadow-2xl"
+                className={`max-h-[500px] overflow-y-auto rounded-2xl border border-gray-100 bg-white py-3 shadow-2xl ${positionBelow ? '' : '-translate-y-full'}`}
               >
                 {/* Search Input */}
                 <div className="px-4 pb-3">

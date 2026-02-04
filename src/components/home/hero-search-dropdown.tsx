@@ -23,6 +23,7 @@ interface CustomHeroSearchDropdownProps {
   disabled?: boolean;
   className?: string;
   alignToSearchBar?: boolean;
+  positionBelow?: boolean;
 }
 
 export function HeroSearchCustomDropdown({
@@ -33,6 +34,7 @@ export function HeroSearchCustomDropdown({
   disabled = false,
   className = '',
   alignToSearchBar = false,
+  positionBelow = false,
 }: CustomHeroSearchDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState<{
@@ -79,8 +81,8 @@ export function HeroSearchCustomDropdown({
     const anchorEl = searchBar ?? buttonRef.current;
     const anchorRect = anchorEl.getBoundingClientRect();
 
-    // Anchor dropdown so its bottom sits 8px above the search bar.
-    const top = anchorRect.top - 8;
+    // Position dropdown above or below based on positionBelow prop
+    const top = positionBelow ? anchorRect.bottom + 8 : anchorRect.top - 8;
 
     if (alignToSearchBar) {
       // Left aligns to the entire search bar container
@@ -99,7 +101,7 @@ export function HeroSearchCustomDropdown({
         width: sectionRect?.width ?? anchorRect.width,
       });
     }
-  }, [alignToSearchBar]);
+  }, [alignToSearchBar, positionBelow]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -145,7 +147,7 @@ export function HeroSearchCustomDropdown({
                   ...dropdownPosition,
                   pointerEvents: 'auto',
                 }}
-                className="max-h-[500px] -translate-y-full overflow-y-auto rounded-2xl border border-gray-100 bg-white py-3 shadow-2xl"
+                className={`max-h-[500px] overflow-y-auto rounded-2xl border border-gray-100 bg-white py-3 shadow-2xl ${positionBelow ? '' : '-translate-y-full'}`}
               >
                 {sections.map((section, sectionIndex) => (
                   <div key={sectionIndex}>

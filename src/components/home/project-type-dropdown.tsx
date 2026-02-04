@@ -5,12 +5,14 @@ interface ProjectTypeDropdownProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  positionBelow?: boolean;
 }
 
 export function ProjectTypeDropdown({
   value,
   onChange,
   placeholder = 'Project type',
+  positionBelow = false,
 }: ProjectTypeDropdownProps) {
   const sections: HeroSearchDropdownSection[] = [
     {
@@ -52,6 +54,7 @@ export function ProjectTypeDropdown({
       placeholder={placeholder}
       sections={sections}
       alignToSearchBar={true}
+      positionBelow={positionBelow}
     />
   );
 }

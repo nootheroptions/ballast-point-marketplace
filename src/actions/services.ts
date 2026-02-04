@@ -23,6 +23,16 @@ import {
 import { CURRENT_TEAM_COOKIE } from '@/lib/constants';
 
 /**
+ * Search for published services in the marketplace
+ * This is a public action (no authentication required)
+ */
+export async function searchServices() {
+  const serviceRepo = createServiceRepository();
+  const services = await serviceRepo.findPublishedServices();
+  return services;
+}
+
+/**
  * Get services for the current team's provider profile
  */
 export const getServices = createAuthenticatedAction(async (user) => {

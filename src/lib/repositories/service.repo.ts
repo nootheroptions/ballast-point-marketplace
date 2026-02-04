@@ -1,6 +1,23 @@
 import { prisma } from '@/lib/db/prisma';
 import { Prisma, Service, TemplateKey, DeliveryMode } from '@prisma/client';
 
+/**
+ * Service with provider profile included
+ */
+export type ServiceWithProvider = Prisma.ServiceGetPayload<{
+  include: { providerProfile: true };
+}>;
+
+/**
+ * Service with full details for detail page
+ */
+export type ServiceWithDetails = Prisma.ServiceGetPayload<{
+  include: {
+    providerProfile: true;
+    addOns: true;
+  };
+}>;
+
 export type CreateServiceData = {
   // Basic fields
   name: string;
@@ -134,9 +151,22 @@ export interface ServiceRepository {
   /**
    * Find all published marketplace services
    * @param tx - Optional transaction client
-   * @returns Array of published services
+   * @returns Array of published services with provider profile
    */
-  findPublishedServices(tx?: Prisma.TransactionClient): Promise<Service[]>;
+  findPublishedServices(tx?: Prisma.TransactionClient): Promise<ServiceWithProvider[]>;
+
+  /**
+   * Find a published service by provider slug and service slug with full details
+   * @param providerSlug - The provider slug
+   * @param serviceSlug - The service slug
+   * @param tx - Optional transaction client
+   * @returns The service with full details if exists and published, null otherwise
+   */
+  findPublishedBySlug(
+    providerSlug: string,
+    serviceSlug: string,
+    tx?: Prisma.TransactionClient
+  ): Promise<ServiceWithDetails | null>;
 }
 
 /**
@@ -301,7 +331,7 @@ export function createServiceRepository(): ServiceRepository {
       });
     },
 
-    async findPublishedServices(tx?: Prisma.TransactionClient): Promise<Service[]> {
+    async findPublishedServices(tx?: Prisma.TransactionClient): Promise<ServiceWithProvider[]> {
       const client = tx ?? prisma;
       return await client.service.findMany({
         where: {
@@ -311,6 +341,27 @@ export function createServiceRepository(): ServiceRepository {
           providerProfile: true,
         },
         orderBy: { createdAt: 'desc' },
+      });
+    },
+
+    async findPublishedBySlug(
+      providerSlug: string,
+      serviceSlug: string,
+      tx?: Prisma.TransactionClient
+    ): Promise<ServiceWithDetails | null> {
+      const client = tx ?? prisma;
+      return await client.service.findFirst({
+        where: {
+          slug: serviceSlug,
+          isPublished: true,
+          providerProfile: {
+            slug: providerSlug,
+          },
+        },
+        include: {
+          providerProfile: true,
+          addOns: true,
+        },
       });
     },
   };

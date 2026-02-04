@@ -19,23 +19,21 @@ export function HeroSearch() {
   const showFollowUp = Boolean(selectedLocation && desiredOutcome);
 
   const handleSearch = () => {
-    if (!selectedLocation || !desiredOutcome || !propertyType || !projectType) {
-      return;
-    }
-
     // Build search URL
     const params = new URLSearchParams({
-      lng: selectedLocation.coordinates.lng.toString(),
-      lat: selectedLocation.coordinates.lat.toString(),
-      outcome: desiredOutcome,
-      propertyType: propertyType,
-      projectType: projectType,
+      ...(selectedLocation?.coordinates.lng && {
+        lng: selectedLocation.coordinates.lng.toString(),
+      }),
+      ...(selectedLocation?.coordinates.lat && {
+        lat: selectedLocation.coordinates.lat.toString(),
+      }),
+      ...(desiredOutcome && { outcome: desiredOutcome }),
+      ...(propertyType && { propertyType: propertyType }),
+      ...(projectType && { projectType: projectType }),
     });
 
     router.push(`/search?${params.toString()}`);
   };
-
-  const isSearchEnabled = selectedLocation && desiredOutcome && propertyType && projectType;
 
   return (
     <div className="mx-auto w-full max-w-5xl">
@@ -89,7 +87,6 @@ export function HeroSearch() {
           {/* Search Button */}
           <Button
             onClick={handleSearch}
-            disabled={!isSearchEnabled}
             className="w-full rounded-full bg-black py-6 text-base font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
             size="lg"
           >
@@ -147,7 +144,6 @@ export function HeroSearch() {
           {/* Search Button */}
           <Button
             onClick={handleSearch}
-            disabled={!isSearchEnabled}
             className="mt-2 rounded-full bg-black py-6 text-base font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
             size="lg"
           >
