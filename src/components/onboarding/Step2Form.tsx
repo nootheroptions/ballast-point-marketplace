@@ -31,7 +31,7 @@ export function Step2Form({ description, onChange, onValidChange }: Step2FormPro
   }, [description, validateForm, onValidChange]);
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-8 md:px-6 md:py-12">
+    <div className="max-w-xl">
       <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
         Tell us a bit about your business
       </h1>

@@ -11,7 +11,7 @@ export default async function ProviderDashboard() {
   // User has a team - show dashboard
   if (currentTeamId) {
     return (
-      <div className="p-6 lg:p-8">
+      <div>
         <h1 className="text-2xl font-semibold tracking-tight">Home</h1>
         <p className="text-muted-foreground mt-2">Welcome to the Ballast Point Partner Portal.</p>
       </div>
@@ -20,7 +20,7 @@ export default async function ProviderDashboard() {
 
   // User has no team - show onboarding CTA
   return (
-    <div className="flex min-h-[80vh] items-center justify-center p-6 lg:p-8">
+    <div className="flex min-h-[80vh] items-center justify-center">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Welcome to Ballast Point</CardTitle>

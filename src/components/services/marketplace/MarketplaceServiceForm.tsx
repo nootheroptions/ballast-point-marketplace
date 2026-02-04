@@ -150,7 +150,7 @@ export function MarketplaceServiceForm({ service }: MarketplaceServiceFormProps)
           isSaving={isSaving}
           isDisabled={!form.formState.isDirty}
         />
-        <div className="mx-auto max-w-4xl px-6 py-8">
+        <div className="max-w-4xl">
           {error && (
             <div className="border-destructive/50 bg-destructive/10 mb-6 rounded-lg border p-4">
               <p className="text-destructive text-sm">{error}</p>

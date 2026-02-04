@@ -8,7 +8,7 @@ export default async function AvailabilityPage() {
   // Handle error state
   if (!result.success) {
     return (
-      <div className="container mx-auto max-w-4xl px-4 py-8">
+      <div className="max-w-4xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Availability</h1>
           <p className="text-muted-foreground mt-2">Set your weekly availability schedule</p>
@@ -24,7 +24,7 @@ export default async function AvailabilityPage() {
   const availability = (result.data ?? []) as Availability[];
 
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-8">
+    <div className="max-w-4xl">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Availability</h1>

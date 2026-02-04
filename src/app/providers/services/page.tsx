@@ -8,7 +8,7 @@ export default async function ServicesPage() {
 
   if (!result.success) {
     return (
-      <div className="container mx-auto max-w-7xl px-4 py-8">
+      <div className="max-w-7xl">
         <ServicesHeader />
         <div className="border-destructive/50 bg-destructive/10 mt-8 rounded-lg border p-6">
           <p className="text-destructive text-sm">{result.error}</p>
@@ -20,7 +20,7 @@ export default async function ServicesPage() {
   const services = (result.data ?? []) as Service[];
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-8">
+    <div className="max-w-7xl">
       <ServicesHeader />
       <ServiceList services={services} />
     </div>

@@ -33,7 +33,9 @@ export function AppShell({ children, user, hasProvider, providerSlug }: AppShell
       </div>
 
       {/* Main content - offset for sidebar on desktop, header on mobile */}
-      <main className="flex-1 pt-14 lg:pt-16 lg:pl-16">{children}</main>
+      <main className="flex-1 pt-14 lg:pt-16 lg:pl-16">
+        <div className="p-6 lg:p-8">{children}</div>
+      </main>
     </div>
   );
 }

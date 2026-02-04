@@ -92,7 +92,7 @@ export function Step1Form({ name, slug, onChange, onValidChange }: Step1FormProp
   }, [isFormValid, slugAvailable, checkingSlug, onValidChange]);
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-8 md:px-6 md:py-12">
+    <div className="max-w-xl">
       <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Business essentials</h1>
       <p className="text-muted-foreground mt-2">
         Add your business name and choose a URL for your profile page.
