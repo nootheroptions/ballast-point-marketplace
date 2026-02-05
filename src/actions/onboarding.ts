@@ -1,8 +1,10 @@
 'use server';
 
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db/prisma';
+import { env } from '@/lib/config/env';
 import { createProviderOnboardingProgressRepository } from '@/lib/repositories/provider-onboarding-progress.repo';
 import { createProviderProfileRepository } from '@/lib/repositories/provider-profile.repo';
 import { createTeamRepository } from '@/lib/repositories/team.repo';
@@ -125,8 +127,18 @@ export const completeOnboarding = createAuthenticatedAction(
 
     // Set team membership cookie (same pattern as login)
     const cookieStore = await cookies();
-    cookieStore.set(CURRENT_TEAM_COOKIE, result.id, createCookieOptions());
+    const cookieOptions = createCookieOptions();
 
-    return { message: 'Onboarding completed successfully' };
+    cookieStore.set({
+      name: CURRENT_TEAM_COOKIE,
+      value: result.id,
+      ...(cookieOptions ?? {}),
+    });
+
+    // Revalidate to ensure the cookie is picked up
+    revalidatePath('/', 'layout');
+
+    // Redirect to dashboard - this ensures cookie is set before redirect
+    redirect(env.NEXT_PUBLIC_PROVIDER_DASHBOARD_URL);
   }
 );

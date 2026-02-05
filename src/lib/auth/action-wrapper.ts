@@ -41,6 +41,18 @@ import type { ActionResult } from '@/actions/types';
 import type { AuthUser } from '@/lib/services/auth/types';
 import type { ZodSchema } from 'zod';
 
+function isNextNavigationError(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+
+  const digest = (error as { digest?: unknown }).digest;
+  if (typeof digest !== 'string') return false;
+
+  // `redirect()` / `notFound()` throw special errors that Next.js must handle.
+  // If we swallow them, the framework won't send the intended response
+  // (and side-effects like Set-Cookie may not be committed).
+  return digest.startsWith('NEXT_REDIRECT') || digest.startsWith('NEXT_NOT_FOUND');
+}
+
 /**
  * Handler function that receives validated data and authenticated user
  */
@@ -136,6 +148,8 @@ export function createAuthenticatedAction<TInput, TOutput>(
         const result = await handlerFn(user);
         return normalizeResult(result);
       } catch (error) {
+        if (isNextNavigationError(error)) throw error;
+
         if (error instanceof UnauthorizedError) {
           return {
             success: false,
@@ -173,6 +187,8 @@ export function createAuthenticatedAction<TInput, TOutput>(
       const result = await handlerFn(validatedData.data, user);
       return normalizeResult(result);
     } catch (error) {
+      if (isNextNavigationError(error)) throw error;
+
       if (error instanceof UnauthorizedError) {
         return {
           success: false,
@@ -237,6 +253,8 @@ export function createAction<TInput, TOutput>(
         const result = await handlerFn();
         return normalizeResult(result);
       } catch (error) {
+        if (isNextNavigationError(error)) throw error;
+
         console.error('Action error:', error);
         return {
           success: false,
@@ -265,6 +283,8 @@ export function createAction<TInput, TOutput>(
       const result = await handlerFn(validatedData.data);
       return normalizeResult(result);
     } catch (error) {
+      if (isNextNavigationError(error)) throw error;
+
       console.error('Action error:', error);
       return {
         success: false,

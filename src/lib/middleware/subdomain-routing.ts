@@ -24,7 +24,11 @@ export function withSubdomainRouting(
   response: NextResponse
 ): NextResponse | null {
   const url = request.nextUrl.clone();
-  const hostname = request.headers.get('host') || '';
+  const hostname =
+    request.headers.get('x-forwarded-host') ||
+    request.nextUrl.host ||
+    request.headers.get('host') ||
+    '';
 
   // Extract subdomain and determine route group
   const subdomain = getSubdomain(hostname, env.NEXT_PUBLIC_ROOT_APP_DOMAIN);
@@ -44,17 +48,15 @@ export function withSubdomainRouting(
     return NextResponse.redirect(loginUrl.toString());
   }
 
-  // Rewrite to subdomain route group if applicable (after auth check)
-  // Don't rewrite Next.js server action requests (they have Next-Action header)
-  const isServerAction = request.headers.get('Next-Action') !== null;
+  // Rewrite to subdomain route group if applicable (after auth check).
+  // This must apply to Server Actions too (they POST to the current URL).
+  if (routeGroup && !url.pathname.startsWith('/_next') && !url.pathname.startsWith('/api')) {
+    // Avoid double-prefixing if a user (or a redirect) already includes the route group.
+    if (url.pathname === routeGroup || url.pathname.startsWith(`${routeGroup}/`)) {
+      return null;
+    }
 
-  if (
-    routeGroup &&
-    !url.pathname.startsWith('/_next') &&
-    !url.pathname.startsWith('/api') &&
-    !isServerAction
-  ) {
-    url.pathname = `${routeGroup}${url.pathname}`;
+    url.pathname = url.pathname === '/' ? routeGroup : `${routeGroup}${url.pathname}`;
 
     // Preserve cookies from the original response (includes Supabase session cookies)
     const previousResponseCookies = response.cookies.getAll();

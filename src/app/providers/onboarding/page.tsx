@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { OnboardingFlow } from '@/components/onboarding';
 import { getOnboardingProgress } from '@/actions/onboarding';
+import { env } from '@/lib/config/env';
 import { CURRENT_TEAM_COOKIE } from '@/lib/constants';
 
 export default async function OnboardingPage() {
@@ -10,7 +11,7 @@ export default async function OnboardingPage() {
 
   // If user already has a team, redirect to home
   if (currentTeamId) {
-    redirect('/');
+    redirect(env.NEXT_PUBLIC_PROVIDER_DASHBOARD_URL);
   }
 
   const result = await getOnboardingProgress();

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { OnboardingHeader } from './OnboardingHeader';
 import { IntroStep } from './IntroStep';
 import { Step1Form } from './Step1Form';
@@ -14,7 +13,6 @@ interface OnboardingFlowProps {
 }
 
 export function OnboardingFlow({ initialData }: OnboardingFlowProps) {
-  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(initialData?.currentStep ?? 0);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,8 +26,9 @@ export function OnboardingFlow({ initialData }: OnboardingFlowProps) {
   const [step2Valid, setStep2Valid] = useState(false);
 
   const handleClose = useCallback(() => {
-    router.push('/');
-  }, [router]);
+    // Ensure we stay on the same subdomain
+    window.location.href = '/';
+  }, []);
 
   const handleSaveAndExit = useCallback(async () => {
     setIsLoading(true);
@@ -40,11 +39,12 @@ export function OnboardingFlow({ initialData }: OnboardingFlowProps) {
         slug: slug || undefined,
         description: description || undefined,
       });
-      router.push('/');
+      // Ensure we stay on the same subdomain
+      window.location.href = '/';
     } finally {
       setIsLoading(false);
     }
-  }, [currentStep, name, slug, description, router]);
+  }, [currentStep, name, slug, description]);
 
   const handleBack = useCallback(() => {
     setCurrentStep((prev: number) => Math.max(0, prev - 1));
@@ -75,27 +75,26 @@ export function OnboardingFlow({ initialData }: OnboardingFlowProps) {
     }
 
     if (currentStep === 2) {
-      // Complete onboarding
+      // Complete onboarding - redirect happens on server
       setIsLoading(true);
       try {
-        const result = await completeOnboarding({
+        await completeOnboarding({
           name,
           slug,
           description,
         });
-
-        if (result.success) {
-          router.push('/');
-          router.refresh();
-        } else {
-          // Handle error - could add toast notification here
-          console.error(result.error);
+        // If we reach here, redirect didn't happen (error case)
+      } catch (error) {
+        // Server action redirect throws error that Next.js catches
+        // Only log actual errors (not redirect)
+        if (error instanceof Error && !error.message.includes('NEXT_REDIRECT')) {
+          console.error('Onboarding error:', error);
         }
       } finally {
         setIsLoading(false);
       }
     }
-  }, [currentStep, name, slug, description, router]);
+  }, [currentStep, name, slug, description]);
 
   const handleStep1Change = useCallback((data: { name: string; slug: string }) => {
     setName(data.name);

@@ -178,7 +178,7 @@ export default function BookingSuccessPage() {
           </div>
 
           <div className="bg-muted mb-6 w-full rounded-md p-4 text-left">
-            <p className="text-muted-foreground mb-1 text-xs">Booking Reference</p>
+            <p className="text-muted-foreground mb-1 text-xs">Order Reference</p>
             <p className="font-mono text-sm break-all">{bookingData.bookingId}</p>
           </div>
 
