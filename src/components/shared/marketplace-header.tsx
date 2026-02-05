@@ -17,6 +17,7 @@ import { DesiredOutcomeDropdown } from '@/components/home/desired-outcome-dropdo
 import { PropertyTypeDropdown } from '@/components/home/property-type-dropdown';
 import { ProjectTypeDropdown } from '@/components/home/project-type-dropdown';
 import type { LocationData } from '@/lib/types/location';
+import { env } from '@/lib/config/env';
 
 interface MarketplaceHeaderProps {
   showSearchBar?: boolean;
@@ -200,7 +201,10 @@ export function MarketplaceHeader({
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/providers/onboarding" className="w-full cursor-pointer">
+                    <Link
+                      href={`${env.NEXT_PUBLIC_PROVIDER_DASHBOARD_URL}/onboarding`}
+                      className="w-full cursor-pointer"
+                    >
                       List your business
                     </Link>
                   </DropdownMenuItem>
@@ -227,7 +231,9 @@ export function MarketplaceHeader({
                   variant="default"
                   className="rounded-full border-gray-300 hover:bg-gray-50"
                 >
-                  <Link href="/providers/onboarding">List your business</Link>
+                  <Link href={`${env.NEXT_PUBLIC_PROVIDER_DASHBOARD_URL}/onboarding`}>
+                    List your business
+                  </Link>
                 </Button>
               </div>
             )}
@@ -268,7 +274,10 @@ export function MarketplaceHeader({
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/providers/onboarding" className="w-full cursor-pointer">
+                    <Link
+                      href={`${env.NEXT_PUBLIC_PROVIDER_DASHBOARD_URL}/onboarding`}
+                      className="w-full cursor-pointer"
+                    >
                       List your business
                     </Link>
                   </DropdownMenuItem>

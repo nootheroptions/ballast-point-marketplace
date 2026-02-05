@@ -3,10 +3,14 @@
 import { Menu } from 'lucide-react';
 import { MobileNav, MobileNavTrigger } from './MobileNav';
 
-export function MobileHeader() {
+interface MobileHeaderProps {
+  hasProvider?: boolean;
+}
+
+export function MobileHeader({ hasProvider = true }: MobileHeaderProps) {
   return (
     <header className="border-sidebar-border bg-sidebar flex h-14 items-center border-b px-4">
-      <MobileNav>
+      <MobileNav hasProvider={hasProvider}>
         <MobileNavTrigger>
           <Menu className="text-sidebar-foreground h-5 w-5" />
           <span className="sr-only">Open menu</span>

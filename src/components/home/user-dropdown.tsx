@@ -75,7 +75,9 @@ export function UserDropdown({ user, hasProvider, providerSlug }: UserDropdownPr
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem asChild>
-            <Link href="/providers/onboarding">List your business</Link>
+            <Link href={`${env.NEXT_PUBLIC_PROVIDER_DASHBOARD_URL}/onboarding`}>
+              List your business
+            </Link>
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />

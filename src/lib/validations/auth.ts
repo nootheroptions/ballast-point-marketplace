@@ -11,6 +11,7 @@ export const signUpSchema = z
         'Password must contain at least one uppercase letter, one lowercase letter, and one number'
       ),
     confirmPassword: z.string().min(1, 'Please confirm your password'),
+    timezone: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CURRENT_TEAM_COOKIE } from '@/lib/constants';
+import { getOnboardingProgress } from '@/actions/onboarding';
 
 export default async function ProviderDashboard() {
   const cookieStore = await cookies();
@@ -18,6 +19,10 @@ export default async function ProviderDashboard() {
     );
   }
 
+  // Check if user has started onboarding
+  const onboardingProgress = await getOnboardingProgress();
+  const hasStarted = Boolean(onboardingProgress.data);
+
   // User has no team - show onboarding CTA
   return (
     <div className="flex min-h-[80vh] items-center justify-center">
@@ -25,12 +30,12 @@ export default async function ProviderDashboard() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Welcome to Ballast Point</CardTitle>
           <CardDescription>
-            Set up your provider profile to start connecting with customers.
+            Set up your business profile to start connecting with clients.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center">
           <Button asChild size="lg">
-            <Link href="/onboarding">Start Now</Link>
+            <Link href="/onboarding">{hasStarted ? 'Continue' : 'Start Now'}</Link>
           </Button>
         </CardContent>
       </Card>

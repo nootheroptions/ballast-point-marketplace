@@ -19,12 +19,12 @@ export function AppShell({ children, user, hasProvider, providerSlug }: AppShell
     <div className="bg-background flex min-h-screen">
       {/* Desktop sidebar - hidden on mobile */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex">
-        <Sidebar />
+        <Sidebar hasProvider={hasProvider} />
       </aside>
 
       {/* Mobile header with hamburger menu */}
       <div className="fixed inset-x-0 top-0 z-50 lg:hidden">
-        <MobileHeader />
+        <MobileHeader hasProvider={hasProvider} />
       </div>
 
       {/* Provider header - shown on desktop only */}

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import { UserDropdown } from '@/components/home/user-dropdown';
 
 interface ProviderHeaderProps {
@@ -22,13 +23,20 @@ export function ProviderHeader({ user, hasProvider, providerSlug }: ProviderHead
         </Link>
 
         {/* Navigation */}
-        {user && (
-          <UserDropdown
-            user={user}
-            hasProvider={hasProvider ?? false}
-            providerSlug={providerSlug}
-          />
-        )}
+        <div className="flex items-center gap-4">
+          {user && !hasProvider && (
+            <Button asChild>
+              <Link href="/onboarding">Continue onboarding</Link>
+            </Button>
+          )}
+          {user && (
+            <UserDropdown
+              user={user}
+              hasProvider={hasProvider ?? false}
+              providerSlug={providerSlug}
+            />
+          )}
+        </div>
       </div>
     </header>
   );

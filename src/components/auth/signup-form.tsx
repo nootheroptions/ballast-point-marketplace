@@ -17,7 +17,7 @@ import { signUpSchema, type SignUpFormData } from '@/lib/validations/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
-import { useActionState, useState } from 'react';
+import { useActionState, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 export function SignUpForm() {
@@ -31,10 +31,17 @@ export function SignUpForm() {
   const {
     register,
     formState: { errors },
+    setValue,
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     mode: 'onBlur',
   });
+
+  // Automatically detect and set user's timezone
+  useEffect(() => {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    setValue('timezone', timezone);
+  }, [setValue]);
 
   if (state?.success) {
     return (
@@ -143,6 +150,9 @@ export function SignUpForm() {
               <p className="text-destructive text-sm">{errors.confirmPassword.message}</p>
             )}
           </div>
+
+          {/* Hidden timezone field */}
+          <input type="hidden" {...register('timezone')} />
         </CardContent>
 
         <CardFooter className="mt-6 flex flex-col space-y-4">

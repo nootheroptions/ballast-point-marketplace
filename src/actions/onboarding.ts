@@ -1,6 +1,7 @@
 'use server';
 
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db/prisma';
 import { createProviderOnboardingProgressRepository } from '@/lib/repositories/provider-onboarding-progress.repo';
 import { createProviderProfileRepository } from '@/lib/repositories/provider-profile.repo';
@@ -74,6 +75,13 @@ export const completeOnboarding = createAuthenticatedAction(
       };
     }
 
+    // Get user's timezone preference
+    const userProfile = await prisma.userProfile.findUnique({
+      where: { id: user.id },
+      select: { timezone: true },
+    });
+    const userTimezone = userProfile?.timezone || 'UTC';
+
     // Create repositories and services
     const teamRepository = createTeamRepository();
     const onboardingProgressRepository = createProviderOnboardingProgressRepository();
@@ -92,7 +100,7 @@ export const completeOnboarding = createAuthenticatedAction(
           role: 'ADMIN',
         },
         {
-          timezone: 'UTC', // TODO: Could be customized based on user location/preference
+          timezone: userTimezone,
           createDefaultAvailability: true,
         },
         tx
@@ -115,7 +123,7 @@ export const completeOnboarding = createAuthenticatedAction(
       return team;
     });
 
-    // Set current team cookie
+    // Set team membership cookie (same pattern as login)
     const cookieStore = await cookies();
     cookieStore.set(CURRENT_TEAM_COOKIE, result.id, createCookieOptions());
 

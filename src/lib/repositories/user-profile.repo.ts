@@ -7,6 +7,7 @@ import { UserProfile } from '@prisma/client';
 export interface CreateUserProfileData {
   id: string;
   email: string;
+  timezone?: string;
 }
 
 /**
@@ -58,6 +59,7 @@ export function createUserProfileRepository(): UserProfileRepository {
         data: {
           id: data.id,
           email: data.email,
+          timezone: data.timezone,
         },
       });
     },

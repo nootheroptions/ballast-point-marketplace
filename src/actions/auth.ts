@@ -18,6 +18,7 @@ export async function signUp(
     email: formData.get('email'),
     password: formData.get('password'),
     confirmPassword: formData.get('confirmPassword'),
+    timezone: formData.get('timezone'),
   };
 
   const validatedFields = signUpSchema.safeParse(rawData);
@@ -29,7 +30,7 @@ export async function signUp(
     };
   }
 
-  const { email, password } = validatedFields.data;
+  const { email, password, timezone } = validatedFields.data;
 
   try {
     const authService = await createAuthService();
@@ -60,6 +61,7 @@ export async function signUp(
       await userProfileRepository.create({
         id: user.id,
         email: user.email,
+        timezone,
       });
     } catch (dbError) {
       console.error('Failed to create user profile:', dbError);

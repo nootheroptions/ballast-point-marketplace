@@ -44,7 +44,8 @@ export function WeeklyAvailabilityForm({
   initialAvailability = [],
   serviceId = null,
 }: WeeklyAvailabilityFormProps) {
-  const [timezone, setTimezone] = useState(getUserTimezone());
+  // Use timezone from existing availabilities, otherwise fall back to browser timezone
+  const [timezone, setTimezone] = useState(initialAvailability[0]?.timezone || getUserTimezone());
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{
     type: 'success' | 'error';
@@ -78,11 +79,6 @@ export function WeeklyAvailabilityForm({
         endTime: avail.endTime,
       });
     });
-
-    // Set timezone from first availability entry
-    if (initialAvailability[0]?.timezone) {
-      setTimezone(initialAvailability[0].timezone);
-    }
 
     return initial;
   });
