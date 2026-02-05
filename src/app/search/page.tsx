@@ -1,8 +1,9 @@
 import { searchServices } from '@/actions/services';
+import { getUserWithProvider } from '@/actions/users';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { SearchHeader } from '@/components/search/search-header';
+import { MarketplaceHeader } from '@/components/shared/marketplace-header';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -18,10 +19,16 @@ function formatPrice(cents: number) {
 
 export default async function SearchPage() {
   const services = await searchServices();
+  const { user, hasProvider, providerSlug } = await getUserWithProvider();
 
   return (
     <>
-      <SearchHeader />
+      <MarketplaceHeader
+        showSearchBar={true}
+        user={user}
+        hasProvider={hasProvider}
+        providerSlug={providerSlug}
+      />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="mb-2 text-3xl font-bold">Architecture Services</h1>

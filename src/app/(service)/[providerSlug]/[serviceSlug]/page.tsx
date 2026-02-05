@@ -1,15 +1,14 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
 import type { Metadata } from 'next';
 import { getServiceBySlug } from '@/actions/services';
+import { getUserWithProvider } from '@/actions/users';
+import { MarketplaceHeader } from '@/components/shared/marketplace-header';
 import { ServiceDetailHeader } from '@/components/marketplace/service/service-detail-header';
 import { WhatsIncluded } from '@/components/marketplace/service/whats-included';
 import { ClientRequirements } from '@/components/marketplace/service/client-requirements';
 import { WhatsNotIncluded } from '@/components/marketplace/service/whats-not-included';
 import { ProviderInfo } from '@/components/marketplace/service/provider-info';
 import { BookingCard } from '@/components/marketplace/service/booking-card';
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { formatPrice } from '@/lib/utils/format-price';
 
@@ -43,6 +42,7 @@ export async function generateMetadata({ params }: ServiceDetailPageProps): Prom
 export default async function ServiceDetailPage({ params }: ServiceDetailPageProps) {
   const { providerSlug, serviceSlug } = await params;
   const service = await getServiceBySlug(providerSlug, serviceSlug);
+  const { user, hasProvider, providerSlug: userProviderSlug } = await getUserWithProvider();
 
   if (!service) {
     notFound();
@@ -53,17 +53,12 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
 
   return (
     <div className="bg-background min-h-screen">
-      {/* Back navigation */}
-      <div className="border-b bg-white">
-        <div className="container mx-auto px-4 py-4">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/search">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to search
-            </Link>
-          </Button>
-        </div>
-      </div>
+      <MarketplaceHeader
+        showSearchBar={true}
+        user={user}
+        hasProvider={hasProvider}
+        providerSlug={userProviderSlug}
+      />
 
       {/* Main content */}
       <div className="container mx-auto px-4 py-8">
@@ -176,6 +171,8 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
           <div className="lg:col-span-1">
             {/* Booking Card - sticky and full height */}
             <BookingCard
+              providerSlug={providerSlug}
+              serviceSlug={serviceSlug}
               priceCents={service.priceCents}
               leadTimeDays={service.leadTimeDays}
               turnaroundDays={service.turnaroundDays}
