@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { searchServices } from '@/actions/services';
 import { getUserWithProvider } from '@/actions/users';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,16 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { MarketplaceHeader } from '@/components/shared/marketplace-header';
 import Link from 'next/link';
 import Image from 'next/image';
-
-// Format price from cents to AUD
-function formatPrice(cents: number) {
-  return new Intl.NumberFormat('en-AU', {
-    style: 'currency',
-    currency: 'AUD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(cents / 100);
-}
+import { formatPrice } from '@/lib/utils/format-price';
 
 export default async function SearchPage() {
   const services = await searchServices();
