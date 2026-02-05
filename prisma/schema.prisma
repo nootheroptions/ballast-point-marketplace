@@ -344,6 +344,9 @@ model BookingParticipant {
   /// REQUIRED for INVITEE when userId is NULL
   email  String?
 
+  /// Optional display name (primarily for external invitees)
+  name   String?
+
   /// Role of the participant in this booking
   role   BookingRole
 

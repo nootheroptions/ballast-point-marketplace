@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Calendar } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { formatPrice } from '@/lib/utils/format-price';
 
 interface BookingCardProps {
+  providerSlug: string;
+  serviceSlug: string;
   priceCents: number;
   leadTimeDays: number;
   turnaroundDays: number;
@@ -28,6 +31,8 @@ function formatDeliveryMode(mode: string): string {
 }
 
 export function BookingCard({
+  providerSlug,
+  serviceSlug,
   priceCents,
   leadTimeDays,
   turnaroundDays,
@@ -35,6 +40,7 @@ export function BookingCard({
   selectedAddOnsCost = 0,
 }: BookingCardProps) {
   const totalPrice = priceCents + selectedAddOnsCost;
+  const bookingUrl = `/${providerSlug}/${serviceSlug}/book`;
 
   return (
     <Card className="sticky top-8 h-fit max-h-[calc(100vh-4rem)]">
@@ -80,9 +86,11 @@ export function BookingCard({
       </CardContent>
 
       <CardFooter className="flex flex-col gap-3">
-        <Button className="w-full" size="lg">
-          <Calendar className="mr-2 h-4 w-4" />
-          Book now
+        <Button className="w-full" size="lg" asChild>
+          <Link href={bookingUrl}>
+            <Calendar className="mr-2 h-4 w-4" />
+            Book now
+          </Link>
         </Button>
 
         <p className="text-muted-foreground text-center text-xs">

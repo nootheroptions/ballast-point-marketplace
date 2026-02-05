@@ -1,5 +1,48 @@
-import { format, parse } from 'date-fns';
+import { format } from 'date-fns';
 import { fromZonedTime, toZonedTime } from 'date-fns-tz';
+
+/**
+ * Add days to a UTC date without timezone conversion
+ * @param date - UTC Date object
+ * @param days - Number of days to add (can be negative)
+ * @returns New UTC Date with days added
+ */
+export function addUtcDays(date: Date, days: number): Date {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + days));
+}
+
+/**
+ * Convert a date key string to a UTC Date object
+ * @param dateKey - Date string in YYYY-MM-DD format (e.g., "2024-01-15")
+ * @returns UTC Date object set to midnight
+ */
+export function dateKeyToUtcDate(dateKey: string): Date {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  return new Date(Date.UTC(year ?? 0, (month ?? 1) - 1, day ?? 1));
+}
+
+/**
+ * Convert a UTC Date to a date key string
+ * @param date - UTC Date object
+ * @returns Date string in YYYY-MM-DD format (e.g., "2024-01-15")
+ */
+export function utcDateToDateKey(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+/**
+ * Convert a time string to total minutes since midnight
+ * @param timeString - Time in HH:mm format (e.g., "09:30")
+ * @returns Total minutes (e.g., 570 for "09:30")
+ */
+export function timeStringToMinutes(timeString: string): number {
+  const [hoursRaw, minutesRaw] = timeString.split(':');
+  const hours = Number(hoursRaw);
+  const minutes = Number(minutesRaw);
+  const safeHours = Number.isFinite(hours) ? hours : 0;
+  const safeMinutes = Number.isFinite(minutes) ? minutes : 0;
+  return safeHours * 60 + safeMinutes;
+}
 
 /**
  * Convert a time string (HH:mm) and date to a UTC Date object
@@ -9,15 +52,19 @@ import { fromZonedTime, toZonedTime } from 'date-fns-tz';
  * @returns UTC Date object
  */
 export function timeStringToUtc(timeString: string, date: Date, timezone: string): Date {
-  // Parse the time string
-  const [hours, minutes] = timeString.split(':').map(Number);
+  const [hoursRaw, minutesRaw] = timeString.split(':');
+  const hours = Number(hoursRaw);
+  const minutes = Number(minutesRaw);
 
-  // Create a date in the target timezone
-  const zonedDate = new Date(date);
-  zonedDate.setHours(hours ?? 0, minutes ?? 0, 0, 0);
+  const safeHours = Number.isFinite(hours) ? hours : 0;
+  const safeMinutes = Number.isFinite(minutes) ? minutes : 0;
 
-  // Convert to UTC
-  return fromZonedTime(zonedDate, timezone);
+  // Derive the local calendar date in the target timezone from the provided instant.
+  // Then interpret `${localDate} ${timeString}` as a wall-clock time in that timezone.
+  const localDateKey = format(toZonedTime(date, timezone), 'yyyy-MM-dd');
+  const hh = String(safeHours).padStart(2, '0');
+  const mm = String(safeMinutes).padStart(2, '0');
+  return parseInTimezone(`${localDateKey} ${hh}:${mm}`, 'yyyy-MM-dd HH:mm', timezone);
 }
 
 /**
@@ -86,8 +133,17 @@ export function getDayOfWeekInTimezone(date: Date, timezone: string): number {
  * @returns UTC Date object
  */
 export function parseInTimezone(dateString: string, formatString: string, timezone: string): Date {
-  const parsed = parse(dateString, formatString, new Date());
-  return fromZonedTime(parsed, timezone);
+  // Avoid parsing the wall-clock time in the server's timezone (DST-dependent).
+  // We only use this helper with ISO-like strings such as "yyyy-MM-dd HH:mm".
+  if (formatString !== 'yyyy-MM-dd HH:mm') {
+    throw new Error(
+      `parseInTimezone only supports formatString "yyyy-MM-dd HH:mm" (got "${formatString}")`
+    );
+  }
+
+  // date-fns-tz `fromZonedTime` supports parsing ISO-like strings when a timeZone is provided.
+  // Example: fromZonedTime("2026-02-05 12:00", "America/New_York") -> UTC instant for that wall time.
+  return fromZonedTime(dateString, timezone);
 }
 
 /**
