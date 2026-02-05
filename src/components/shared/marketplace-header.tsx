@@ -49,7 +49,7 @@ export function MarketplaceHeader({
           lng: parseFloat(lng),
           lat: parseFloat(lat),
         },
-        display: 'Selected location',
+        formattedAddress: 'Selected location',
       };
     }
     return null;

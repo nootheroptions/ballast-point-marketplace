@@ -18,12 +18,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useActionState, useEffect, useState } from 'react';
+import { Suspense, useActionState, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-export function LoginForm() {
+function LoginFormInner({ redirectTo }: { redirectTo?: string | null }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [state, formAction, isPending] = useActionState<ActionResult | null, FormData>(login, null);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -37,7 +36,6 @@ export function LoginForm() {
 
   useEffect(() => {
     if (state?.success) {
-      const redirectTo = searchParams.get('redirectTo');
       if (redirectTo) {
         // Use window.location for full URL redirects (e.g., cross-subdomain)
         window.location.href = redirectTo;
@@ -45,7 +43,7 @@ export function LoginForm() {
         router.push('/');
       }
     }
-  }, [state?.success, router, searchParams]);
+  }, [state?.success, router, redirectTo]);
 
   return (
     <Card>
@@ -127,5 +125,19 @@ export function LoginForm() {
         </CardFooter>
       </form>
     </Card>
+  );
+}
+
+function LoginFormWithParams() {
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirectTo');
+  return <LoginFormInner redirectTo={redirectTo} />;
+}
+
+export function LoginForm() {
+  return (
+    <Suspense fallback={<LoginFormInner />}>
+      <LoginFormWithParams />
+    </Suspense>
   );
 }

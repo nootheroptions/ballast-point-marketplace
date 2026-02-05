@@ -125,12 +125,12 @@ export function createAuthenticatedAction<TInput, TOutput>(
 export function createAuthenticatedAction<TInput, TOutput>(
   schemaOrHandler: ZodSchema<TInput> | AuthenticatedHandlerNoInput<TOutput>,
   handler?: AuthenticatedHandler<TInput, TOutput>
-): (data?: TInput) => Promise<ActionResult<TOutput>> {
+) {
   // Case 1: No schema, handler only (no input validation)
   if (typeof schemaOrHandler === 'function') {
     const handlerFn = schemaOrHandler as AuthenticatedHandlerNoInput<TOutput>;
 
-    return async () => {
+    return async (): Promise<ActionResult<TOutput>> => {
       try {
         const user = await requireUser();
         const result = await handlerFn(user);
@@ -156,7 +156,7 @@ export function createAuthenticatedAction<TInput, TOutput>(
   const schema = schemaOrHandler as ZodSchema<TInput>;
   const handlerFn = handler as AuthenticatedHandler<TInput, TOutput>;
 
-  return async (data: TInput) => {
+  return async (data: TInput): Promise<ActionResult<TOutput>> => {
     try {
       const user = await requireUser();
 
@@ -227,12 +227,12 @@ export function createAction<TInput, TOutput>(
 export function createAction<TInput, TOutput>(
   schemaOrHandler: ZodSchema<TInput> | PublicHandlerNoInput<TOutput>,
   handler?: PublicHandler<TInput, TOutput>
-): (data?: TInput) => Promise<ActionResult<TOutput>> {
+) {
   // Case 1: No schema, handler only (no input validation)
   if (typeof schemaOrHandler === 'function') {
     const handlerFn = schemaOrHandler as PublicHandlerNoInput<TOutput>;
 
-    return async () => {
+    return async (): Promise<ActionResult<TOutput>> => {
       try {
         const result = await handlerFn();
         return normalizeResult(result);
@@ -250,7 +250,7 @@ export function createAction<TInput, TOutput>(
   const schema = schemaOrHandler as ZodSchema<TInput>;
   const handlerFn = handler as PublicHandler<TInput, TOutput>;
 
-  return async (data: TInput) => {
+  return async (data: TInput): Promise<ActionResult<TOutput>> => {
     try {
       // Validate input
       const validatedData = schema.safeParse(data);

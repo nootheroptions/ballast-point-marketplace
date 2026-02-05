@@ -104,6 +104,8 @@ export default function BookingPage() {
     }
 
     async function loadAllSlots() {
+      if (!serviceId) return;
+
       try {
         setLoadingSlots(true);
         setSelectedSlot(null);

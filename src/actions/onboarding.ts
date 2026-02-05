@@ -23,7 +23,7 @@ export const getOnboardingProgress = createAuthenticatedAction(async (user) => {
   const onboardingProgressRepository = createProviderOnboardingProgressRepository();
   const progress = await onboardingProgressRepository.findByUserId(user.id);
 
-  return { data: progress };
+  return progress;
 });
 
 /**
