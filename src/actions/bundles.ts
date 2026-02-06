@@ -23,6 +23,8 @@ import {
 import { CURRENT_TEAM_COOKIE } from '@/lib/constants';
 import { TEMPLATE_STAGE_ORDER } from '@/lib/marketplace/templates';
 import { TemplateKey, BundlePricingType } from '@prisma/client';
+import { toPublicBundleWithServices } from '@/lib/types/public-mappers';
+import type { PublicBundleWithServices } from '@/lib/types/public';
 
 /**
  * Helper to validate that bundle services follow template stage order
@@ -430,3 +432,28 @@ export const publishBundle = createAuthenticatedAction(
     }
   }
 );
+
+/**
+ * Get published bundles by provider slug
+ * This is a public action (no authentication required)
+ */
+export async function getPublishedBundlesByProviderSlug(
+  providerSlug: string
+): Promise<PublicBundleWithServices[]> {
+  const bundleRepo = createBundleRepository();
+  const bundles = await bundleRepo.findPublishedByProviderSlug(providerSlug);
+
+  // Calculate actual prices for SUM_OF_PARTS bundles and map to public types
+  const publicBundles = await Promise.all(
+    bundles.map(async (bundle) => {
+      const calculatedPriceCents =
+        bundle.pricingType === BundlePricingType.SUM_OF_PARTS
+          ? await bundleRepo.calculateSumOfPartsPriceCents(bundle.id)
+          : bundle.priceCents;
+
+      return toPublicBundleWithServices({ ...bundle, calculatedPriceCents });
+    })
+  );
+
+  return publicBundles;
+}

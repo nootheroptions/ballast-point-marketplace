@@ -21,25 +21,55 @@ import {
   requireProviderAccess,
 } from '@/lib/auth/provider-authorization';
 import { CURRENT_TEAM_COOKIE } from '@/lib/constants';
+import {
+  toPublicService,
+  toPublicServiceWithProvider,
+  toPublicServiceWithDetails,
+} from '@/lib/types/public-mappers';
+import type {
+  PublicService,
+  PublicServiceWithProvider,
+  PublicServiceWithDetails,
+} from '@/lib/types/public';
 
 /**
  * Search for published services in the marketplace
  * This is a public action (no authentication required)
  */
-export async function searchServices() {
+export async function searchServices(): Promise<PublicServiceWithProvider[]> {
   const serviceRepo = createServiceRepository();
   const services = await serviceRepo.findPublishedServices();
-  return services;
+  return services.map(toPublicServiceWithProvider);
 }
 
 /**
  * Get a published service by provider slug and service slug
  * This is a public action (no authentication required)
  */
-export async function getServiceBySlug(providerSlug: string, serviceSlug: string) {
+export async function getServiceBySlug(
+  providerSlug: string,
+  serviceSlug: string
+): Promise<PublicServiceWithDetails | null> {
   const serviceRepo = createServiceRepository();
   const service = await serviceRepo.findPublishedBySlug(providerSlug, serviceSlug);
-  return service;
+
+  if (!service) {
+    return null;
+  }
+
+  return toPublicServiceWithDetails(service);
+}
+
+/**
+ * Get published services by provider slug
+ * This is a public action (no authentication required)
+ */
+export async function getPublishedServicesByProviderSlug(
+  providerSlug: string
+): Promise<PublicService[]> {
+  const serviceRepo = createServiceRepository();
+  const services = await serviceRepo.findPublishedByProviderSlug(providerSlug);
+  return services.map(toPublicService);
 }
 
 /**

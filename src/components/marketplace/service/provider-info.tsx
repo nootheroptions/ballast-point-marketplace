@@ -3,10 +3,10 @@ import Link from 'next/link';
 import { Building2, MapPin, Award } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import type { ProviderProfile } from '@prisma/client';
+import type { PublicProvider } from '@/lib/types/public';
 
 interface ProviderInfoProps {
-  provider: ProviderProfile;
+  provider: PublicProvider;
 }
 
 export function ProviderInfo({ provider }: ProviderInfoProps) {

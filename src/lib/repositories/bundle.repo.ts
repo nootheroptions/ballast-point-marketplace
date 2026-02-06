@@ -101,6 +101,10 @@ export interface BundleRepository {
     bundleSlug: string,
     tx?: Prisma.TransactionClient
   ): Promise<BundleWithDetails | null>;
+  findPublishedByProviderSlug(
+    providerSlug: string,
+    tx?: Prisma.TransactionClient
+  ): Promise<BundleWithServices[]>;
   /**
    * Calculate the total price of a bundle based on its services
    * Used when pricing type is SUM_OF_PARTS
@@ -308,6 +312,32 @@ export function createBundleRepository(): BundleRepository {
           },
           addOns: true,
         },
+      });
+    },
+
+    async findPublishedByProviderSlug(
+      providerSlug: string,
+      tx?: Prisma.TransactionClient
+    ): Promise<BundleWithServices[]> {
+      const client = tx ?? prisma;
+      return await client.bundle.findMany({
+        where: {
+          isPublished: true,
+          providerProfile: {
+            slug: providerSlug,
+          },
+        },
+        include: {
+          services: {
+            include: {
+              service: true,
+            },
+            orderBy: {
+              sortOrder: 'asc',
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
       });
     },
 

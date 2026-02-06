@@ -167,6 +167,17 @@ export interface ServiceRepository {
     serviceSlug: string,
     tx?: Prisma.TransactionClient
   ): Promise<ServiceWithDetails | null>;
+
+  /**
+   * Find all published services by provider slug
+   * @param providerSlug - The provider slug
+   * @param tx - Optional transaction client
+   * @returns Array of published services
+   */
+  findPublishedByProviderSlug(
+    providerSlug: string,
+    tx?: Prisma.TransactionClient
+  ): Promise<Service[]>;
 }
 
 /**
@@ -362,6 +373,22 @@ export function createServiceRepository(): ServiceRepository {
           providerProfile: true,
           addOns: true,
         },
+      });
+    },
+
+    async findPublishedByProviderSlug(
+      providerSlug: string,
+      tx?: Prisma.TransactionClient
+    ): Promise<Service[]> {
+      const client = tx ?? prisma;
+      return await client.service.findMany({
+        where: {
+          isPublished: true,
+          providerProfile: {
+            slug: providerSlug,
+          },
+        },
+        orderBy: { createdAt: 'desc' },
       });
     },
   };

@@ -13,6 +13,8 @@ import {
   NotFoundError,
 } from '@/lib/auth/provider-authorization';
 import { CURRENT_TEAM_COOKIE } from '@/lib/constants';
+import { toPublicProvider } from '@/lib/types/public-mappers';
+import type { PublicProvider } from '@/lib/types/public';
 
 /**
  * Get the current provider profile
@@ -122,3 +124,18 @@ export const updateProviderProfile = createAuthenticatedAction(
     }
   }
 );
+
+/**
+ * Get a public provider profile by slug
+ * This is a public action (no authentication required)
+ */
+export async function getProviderBySlug(slug: string): Promise<PublicProvider | null> {
+  const providerRepo = createProviderProfileRepository();
+  const provider = await providerRepo.findBySlug(slug);
+
+  if (!provider) {
+    return null;
+  }
+
+  return toPublicProvider(provider);
+}
