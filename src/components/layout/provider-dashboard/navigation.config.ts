@@ -38,7 +38,14 @@ export const navItems: NavItem[] = [
 ];
 
 export function isItemActive(item: NavItem, pathname: string): boolean {
-  return pathname === item.href;
+  // For home, require exact match
+  if (item.href === '/') {
+    return pathname === item.href;
+  }
+
+  // For other routes, match if pathname starts with the href
+  // This allows /services, /services/new, /services/123/edit to all match
+  return pathname === item.href || pathname.startsWith(item.href + '/');
 }
 
 export function useNavigation() {
