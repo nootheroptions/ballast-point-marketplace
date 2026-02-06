@@ -247,6 +247,7 @@ export const createBundle = createAuthenticatedAction(
         priceCents,
         positioning: data.positioning,
         services: orderedServices,
+        isPublished: true, // Haven't implemented drafts so just publish immediately by default for now
       });
 
       return {

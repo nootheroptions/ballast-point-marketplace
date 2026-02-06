@@ -47,6 +47,7 @@ export type CreateBundleData = {
   slug: string;
   description: string;
   providerProfileId: string;
+  isPublished: boolean;
   pricingType: BundlePricingType;
   priceCents: number;
   positioning?: string;
@@ -197,6 +198,7 @@ export function createBundleRepository(): BundleRepository {
               id: data.providerProfileId,
             },
           },
+          isPublished: data.isPublished,
           pricingType: data.pricingType,
           priceCents: data.priceCents,
           positioning: data.positioning,

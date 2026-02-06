@@ -24,6 +24,7 @@ export type CreateServiceData = {
   slug: string;
   description: string;
   providerProfileId: string;
+  isPublished: boolean;
 
   // Marketplace fields (required for marketplace services)
   templateKey: TemplateKey;
@@ -233,6 +234,7 @@ export function createServiceRepository(): ServiceRepository {
               id: data.providerProfileId,
             },
           },
+          isPublished: data.isPublished,
           // Marketplace fields (required)
           templateKey: data.templateKey,
           templateData: data.templateData as Prisma.InputJsonValue,

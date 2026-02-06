@@ -204,6 +204,7 @@ export const createService = createAuthenticatedAction(
       const service = await serviceRepo.create({
         ...data,
         providerProfileId: providerProfile.id,
+        isPublished: true, // Haven't implemented drafts so just publish immediately by default for now
       });
 
       return {
