@@ -154,6 +154,59 @@ export const bookingRepo = {
   },
 
   /**
+   * Find bookings by provider profile ID
+   * Gets all bookings across all services for a provider
+   */
+  findByProviderId: async (
+    providerProfileId: string,
+    options?: {
+      status?: BookingStatus | BookingStatus[];
+      startAfter?: Date;
+      startBefore?: Date;
+    },
+    tx?: Prisma.TransactionClient
+  ) => {
+    const db = tx ?? prisma;
+
+    const whereClause: Prisma.BookingWhereInput = {
+      service: {
+        providerProfileId,
+      },
+    };
+
+    if (options?.status) {
+      whereClause.status = Array.isArray(options.status) ? { in: options.status } : options.status;
+    }
+
+    if (options?.startAfter || options?.startBefore) {
+      whereClause.startTime = {};
+      if (options.startAfter) {
+        whereClause.startTime.gte = options.startAfter;
+      }
+      if (options.startBefore) {
+        whereClause.startTime.lte = options.startBefore;
+      }
+    }
+
+    return db.booking.findMany({
+      where: whereClause,
+      include: {
+        service: true,
+        participants: {
+          include: {
+            teamMember: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { startTime: 'asc' },
+    });
+  },
+
+  /**
    * Find bookings within a date range for a service
    * Used for checking conflicts and calculating availability
    */

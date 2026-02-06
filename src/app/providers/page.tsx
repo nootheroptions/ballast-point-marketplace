@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { CURRENT_TEAM_COOKIE } from '@/lib/constants';
 import { getOnboardingProgress } from '@/actions/onboarding';
 import { getServices } from '@/actions/services';
+import { getProviderBookings } from '@/actions/bookings';
+import { BookingsPageContent, type BookingWithDetails } from '@/components/bookings';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,6 +45,20 @@ export default async function ProviderDashboard() {
           </Card>
         </div>
       );
+    }
+
+    // Has services - check for bookings
+    const bookingsResult = await getProviderBookings();
+
+    const hasBookings =
+      bookingsResult.success &&
+      Array.isArray(bookingsResult.data) &&
+      bookingsResult.data.length > 0;
+
+    // Has bookings - show bookings page
+    if (hasBookings) {
+      const bookings = bookingsResult.data as BookingWithDetails[];
+      return <BookingsPageContent bookings={bookings} />;
     }
 
     // Has services but no bookings yet

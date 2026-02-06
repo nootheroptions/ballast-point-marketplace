@@ -1,5 +1,6 @@
 'use server';
 
+import { cookies } from 'next/headers';
 import { createAction, createAuthenticatedAction } from '@/lib/auth/action-wrapper';
 import {
   ForbiddenError,
@@ -10,6 +11,7 @@ import {
 import { prisma } from '@/lib/db/prisma';
 import { availabilityRepo } from '@/lib/repositories/availability.repo';
 import { bookingRepo } from '@/lib/repositories/booking.repo';
+import { createProviderProfileRepository } from '@/lib/repositories/provider-profile.repo';
 import { createServiceRepository } from '@/lib/repositories/service.repo';
 import {
   calculateAvailableSlots,
@@ -25,6 +27,7 @@ import {
   type GetAvailableSlotsData,
   type GetBookingsForServiceData,
 } from '@/lib/validations/booking';
+import { CURRENT_TEAM_COOKIE } from '@/lib/constants';
 import { Prisma } from '@prisma/client';
 import { addMinutes } from 'date-fns';
 
@@ -249,6 +252,52 @@ export const createBooking = createAction(createBookingSchema, async (data: Crea
       success: false,
       error: 'Failed to create booking',
     };
+  }
+});
+
+/**
+ * Get all bookings for the current team's provider profile (AUTHENTICATED)
+ * Returns all bookings across all services for the provider
+ */
+export const getProviderBookings = createAuthenticatedAction(async (user) => {
+  // Get team ID from cookie
+  const cookieStore = await cookies();
+  const teamId = cookieStore.get(CURRENT_TEAM_COOKIE)?.value;
+
+  if (!teamId) {
+    return {
+      success: false,
+      error: 'No team selected. Please complete provider onboarding first.',
+    };
+  }
+
+  // Resolve provider profile from team ID
+  const providerRepo = createProviderProfileRepository();
+  const providerProfile = await providerRepo.findByTeamId(teamId);
+
+  if (!providerProfile) {
+    return {
+      success: false,
+      error: 'Provider profile not found. Please complete provider onboarding first.',
+    };
+  }
+
+  try {
+    // Verify user is actually a member of this team
+    await requireProviderAccess(user, providerProfile.id);
+
+    // Get all bookings for this provider
+    const bookings = await bookingRepo.findByProviderId(providerProfile.id);
+
+    return bookings;
+  } catch (error) {
+    if (error instanceof ForbiddenError || error instanceof NotFoundError) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+    throw error;
   }
 });
 
