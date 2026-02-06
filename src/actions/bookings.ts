@@ -70,7 +70,7 @@ export const getAvailableSlots = createAction(
       );
 
       // Calculate available slots
-      const slots = calculateAvailableSlots(availabilities, existingBookings, {
+      const slotsRaw = calculateAvailableSlots(availabilities, existingBookings, {
         startDate,
         endDate,
         slotDuration: service.slotDuration,
@@ -79,6 +79,17 @@ export const getAvailableSlots = createAction(
         advanceBookingMax: service.advanceBookingMax,
         clientTimezone: timezone,
       });
+
+      // Public booking flow: multiple team members can produce the same time window.
+      // Collapse duplicates so the invitee sees each time once.
+      const uniqueByWindow = new Map<string, (typeof slotsRaw)[number]>();
+      for (const slot of slotsRaw) {
+        const key = `${slot.startTime.getTime()}-${slot.endTime.getTime()}`;
+        if (!uniqueByWindow.has(key)) uniqueByWindow.set(key, slot);
+      }
+      const slots = Array.from(uniqueByWindow.values()).sort(
+        (a, b) => a.startTime.getTime() - b.startTime.getTime()
+      );
 
       return {
         success: true,

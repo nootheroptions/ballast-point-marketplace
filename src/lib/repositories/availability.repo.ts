@@ -1,4 +1,4 @@
-import type { Prisma, PrismaClient } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db/prisma';
 
 export type AvailabilityCreateInput = {
@@ -70,6 +70,18 @@ export const availabilityRepo = {
     return db.availability.findMany({
       where: {
         OR: [{ serviceId }, { serviceId: null }],
+        // Scope to the provider team that owns this service.
+        // Without this, `serviceId: null` (default) availability would be pulled for every team member
+        // in the entire database.
+        teamMember: {
+          team: {
+            providerProfile: {
+              services: {
+                some: { id: serviceId },
+              },
+            },
+          },
+        },
       },
       include: {
         teamMember: {
