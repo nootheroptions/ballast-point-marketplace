@@ -104,33 +104,6 @@ export function PricingAndTimingFields({ form }: PricingAndTimingFieldsProps) {
         />
         <p className="text-muted-foreground text-sm">Delivery time once work begins</p>
       </div>
-
-      {/* Positioning (optional) */}
-      <div className="space-y-2">
-        <Label htmlFor="positioning">Positioning (Optional)</Label>
-        <Input
-          id="positioning"
-          placeholder="e.g., Best for simple residential projects"
-          maxLength={200}
-          {...form.register('positioning')}
-        />
-        <p className="text-muted-foreground text-sm">Short marketing text (max 200 characters)</p>
-      </div>
-
-      {/* Assumptions (optional) */}
-      <div className="space-y-2">
-        <Label htmlFor="assumptions">Assumptions (Optional)</Label>
-        <Textarea
-          id="assumptions"
-          placeholder="e.g., Assumes standard complexity with no unusual site conditions"
-          maxLength={1000}
-          rows={3}
-          {...form.register('assumptions')}
-        />
-        <p className="text-muted-foreground text-sm">
-          Clarify assumptions about the scope (max 1000 characters)
-        </p>
-      </div>
     </div>
   );
 }

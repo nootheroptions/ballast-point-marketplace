@@ -194,6 +194,33 @@ export function MarketplaceServiceForm({ service }: MarketplaceServiceFormProps)
                 </p>
               )}
             </div>
+
+            {/* Positioning */}
+            <div className="space-y-2">
+              <Label htmlFor="positioning">Positioning (Optional)</Label>
+              <Input
+                id="positioning"
+                placeholder="e.g., Best for simple residential projects"
+                maxLength={200}
+                {...form.register('positioning')}
+              />
+              <p className="text-muted-foreground text-sm">
+                Optional short text to highlight what makes this service unique
+              </p>
+            </div>
+
+            {/* Assumptions */}
+            <div className="space-y-2">
+              <Label htmlFor="assumptions">Assumptions (Optional)</Label>
+              <Textarea
+                id="assumptions"
+                placeholder="e.g., Assumes standard complexity with no unusual site conditions"
+                maxLength={1000}
+                rows={3}
+                {...form.register('assumptions')}
+              />
+              <p className="text-muted-foreground text-sm">Clarify assumptions about the scope</p>
+            </div>
           </div>
         </section>
 
