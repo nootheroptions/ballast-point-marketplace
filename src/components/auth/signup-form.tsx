@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { signUpSchema, type SignUpFormData } from '@/lib/validations/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
@@ -27,6 +28,7 @@ export function SignUpForm() {
   );
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [userType, setUserType] = useState<'client' | 'provider'>('client');
 
   const {
     register,
@@ -35,6 +37,9 @@ export function SignUpForm() {
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     mode: 'onBlur',
+    defaultValues: {
+      userType: 'client',
+    },
   });
 
   // Automatically detect and set user's timezone
@@ -42,6 +47,11 @@ export function SignUpForm() {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     setValue('timezone', timezone);
   }, [setValue]);
+
+  // Update userType in form when tab changes
+  useEffect(() => {
+    setValue('userType', userType);
+  }, [userType, setValue]);
 
   if (state?.success) {
     return (
@@ -66,7 +76,9 @@ export function SignUpForm() {
     <Card>
       <CardHeader>
         <CardTitle>Create an account</CardTitle>
-        <CardDescription>Enter your email below to create your account</CardDescription>
+        <CardDescription>
+          Choose what you want to do first, and then enter your details
+        </CardDescription>
       </CardHeader>
       <form action={formAction}>
         <CardContent className="space-y-4">
@@ -75,6 +87,29 @@ export function SignUpForm() {
               {state.error}
             </div>
           )}
+
+          <Tabs
+            value={userType}
+            onValueChange={(value) => setUserType(value as 'client' | 'provider')}
+            className="w-full"
+          >
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="client">Book services</TabsTrigger>
+              <TabsTrigger value="provider">Offer services</TabsTrigger>
+            </TabsList>
+            <TabsContent value="client" className="text-muted-foreground mt-3 text-center text-sm">
+              Find and book architectural services. You can create or join a business later.
+            </TabsContent>
+            <TabsContent
+              value="provider"
+              className="text-muted-foreground mt-3 text-center text-sm"
+            >
+              List your services. You can also hire architects with the same account.
+            </TabsContent>
+          </Tabs>
+
+          {/* Hidden userType field */}
+          <input type="hidden" {...register('userType')} />
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>

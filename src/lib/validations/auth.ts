@@ -12,6 +12,7 @@ export const signUpSchema = z
       ),
     confirmPassword: z.string().min(1, 'Please confirm your password'),
     timezone: z.string().optional(),
+    userType: z.enum(['client', 'provider']),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',

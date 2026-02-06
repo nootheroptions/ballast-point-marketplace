@@ -19,6 +19,7 @@ export async function signUp(
     password: formData.get('password'),
     confirmPassword: formData.get('confirmPassword'),
     timezone: formData.get('timezone'),
+    userType: formData.get('userType'),
   };
 
   const validatedFields = signUpSchema.safeParse(rawData);
@@ -30,15 +31,25 @@ export async function signUp(
     };
   }
 
-  const { email, password, timezone } = validatedFields.data;
+  const { email, password, timezone, userType } = validatedFields.data;
 
   try {
     const authService = await createAuthService();
 
+    // Set nextUrl in redirect URL based on user type
+    // so that they get redirect to correct place
+    // after verifying email
+    const nextUrl =
+      userType === 'provider'
+        ? `${env.NEXT_PUBLIC_PROVIDER_DASHBOARD_URL}/onboarding`
+        : env.NEXT_PUBLIC_SITE_URL;
+
+    const redirectUrl = `${env.NEXT_PUBLIC_SITE_URL}/api/auth/callback?next=${encodeURIComponent(nextUrl)}`;
+
     const { data: user, error } = await authService.signUp({
       email,
       password,
-      emailRedirectTo: `${env.NEXT_PUBLIC_SITE_URL}/api/auth/callback`,
+      emailRedirectTo: redirectUrl,
     });
 
     if (error) {
