@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation';
 import { Service } from '@prisma/client';
 import { getBundleById } from '@/actions/bundles';
 import { getServices } from '@/actions/services';
+import { PageHeader } from '@/components/layout/provider-dashboard/PageHeader';
+import { PageHeaderProvider } from '@/components/layout/provider-dashboard/PageHeaderContext';
 import { BundleForm } from '@/components/services/bundles/BundleForm';
 import { BundleWithServices } from '@/lib/repositories/bundle.repo';
 
@@ -25,5 +27,15 @@ export default async function EditBundlePage({ params }: EditBundlePageProps) {
 
   const services = (servicesResult.success ? (servicesResult.data ?? []) : []) as Service[];
 
-  return <BundleForm bundle={bundle} services={services} />;
+  return (
+    <PageHeaderProvider>
+      <div className="max-w-4xl">
+        <PageHeader
+          title="Edit Bundle"
+          subtitle="Update your bundle details and included services"
+        />
+        <BundleForm bundle={bundle} services={services} />
+      </div>
+    </PageHeaderProvider>
+  );
 }

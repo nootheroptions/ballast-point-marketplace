@@ -1,5 +1,7 @@
 import { Service } from '@prisma/client';
 import { getServices } from '@/actions/services';
+import { PageHeader } from '@/components/layout/provider-dashboard/PageHeader';
+import { PageHeaderProvider } from '@/components/layout/provider-dashboard/PageHeaderContext';
 import { BundleForm } from '@/components/services/bundles/BundleForm';
 
 export default async function NewBundlePage() {
@@ -8,6 +10,10 @@ export default async function NewBundlePage() {
   if (!result.success) {
     return (
       <div className="max-w-4xl">
+        <PageHeader
+          title="New Bundle"
+          subtitle="Combine multiple services into a discounted package"
+        />
         <div className="border-destructive/50 bg-destructive/10 rounded-lg border p-6">
           <p className="text-destructive text-sm">{result.error}</p>
         </div>
@@ -21,7 +27,10 @@ export default async function NewBundlePage() {
   if (services.length < 2) {
     return (
       <div className="max-w-4xl">
-        <h1 className="mb-4 text-2xl font-bold tracking-tight md:text-3xl">New Bundle</h1>
+        <PageHeader
+          title="New Bundle"
+          subtitle="Combine multiple services into a discounted package"
+        />
         <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-6">
           <p className="text-sm text-amber-700 dark:text-amber-400">
             You need at least 2 services to create a bundle. Please create more services first.
@@ -31,5 +40,15 @@ export default async function NewBundlePage() {
     );
   }
 
-  return <BundleForm services={services} />;
+  return (
+    <PageHeaderProvider>
+      <div className="max-w-4xl">
+        <PageHeader
+          title="New Bundle"
+          subtitle="Combine multiple services into a discounted package"
+        />
+        <BundleForm services={services} />
+      </div>
+    </PageHeaderProvider>
+  );
 }

@@ -1,21 +1,22 @@
 'use client';
 
 import { createBundle, updateBundle } from '@/actions/bundles';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import { useRegisterPageHeaderSave } from '@/components/layout/provider-dashboard/PageHeaderContext';
 import { createBundleSchema, type CreateBundleData } from '@/lib/validations/bundle';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Service, BundlePricingType, TemplateKey } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormHeader } from '../FormHeader';
 import { TEMPLATES, TEMPLATE_STAGE_ORDER } from '@/lib/marketplace/templates';
 import { cn } from '@/lib/utils/shadcn';
 import { generateSlug } from '@/lib/utils/slug';
-import { Check } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 import { BundleWithServices } from '@/lib/repositories/bundle.repo';
 import { formatPrice } from '@/lib/utils/format-price';
 
@@ -154,10 +155,6 @@ export function BundleForm({ bundle, services }: BundleFormProps) {
     }));
   };
 
-  const handleClose = () => {
-    router.push('/services');
-  };
-
   const onSubmit = async (data: CreateBundleData) => {
     setError(null);
     setIsSaving(true);
@@ -188,23 +185,17 @@ export function BundleForm({ bundle, services }: BundleFormProps) {
     form.handleSubmit(onSubmit, onError)();
   };
 
-  return (
-    <div className="max-w-4xl">
-      <FormHeader
-        title={isEditMode ? 'Edit Bundle' : 'New Bundle'}
-        onClose={handleClose}
-        onSave={handleSave}
-        isSaving={isSaving}
-        isDisabled={!form.formState.isDirty && !isEditMode}
-      />
+  useRegisterPageHeaderSave(handleSave, isSaving, !form.formState.isDirty && !isEditMode);
 
+  return (
+    <>
       {error && (
         <div className="border-destructive/50 bg-destructive/10 mb-6 rounded-lg border p-4">
           <p className="text-destructive text-sm">{error}</p>
         </div>
       )}
 
-      <div className="mt-8 space-y-8">
+      <div className="space-y-6">
         {/* Basic Details */}
         <section>
           <h2 className="mb-6 text-xl font-semibold">Basic Details</h2>
@@ -521,6 +512,17 @@ export function BundleForm({ bundle, services }: BundleFormProps) {
           </div>
         </section>
       </div>
-    </div>
+
+      {/* Save Button */}
+      <div className="mt-6 flex justify-end">
+        <Button
+          onClick={handleSave}
+          disabled={isSaving || (!form.formState.isDirty && !isEditMode)}
+        >
+          {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isSaving ? 'Saving...' : 'Save'}
+        </Button>
+      </div>
+    </>
   );
 }

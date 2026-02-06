@@ -1,5 +1,7 @@
 import { getMyAvailability } from '@/actions/availabilities';
 import { WeeklyAvailabilityForm } from '@/components/availability/WeeklyAvailabilityForm';
+import { PageHeader } from '@/components/layout/provider-dashboard/PageHeader';
+import { PageHeaderProvider } from '@/components/layout/provider-dashboard/PageHeaderContext';
 import type { Availability } from '@prisma/client';
 
 export default async function AvailabilityPage() {
@@ -9,10 +11,7 @@ export default async function AvailabilityPage() {
   if (!result.success) {
     return (
       <div className="max-w-4xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Availability</h1>
-          <p className="text-muted-foreground mt-2">Set your weekly availability schedule</p>
-        </div>
+        <PageHeader title="Availability" subtitle="Set your weekly availability schedule" />
 
         <div className="border-destructive/50 bg-destructive/10 rounded-lg border p-6">
           <p className="text-destructive text-sm">{result.error}</p>
@@ -24,18 +23,15 @@ export default async function AvailabilityPage() {
   const availability = (result.data ?? []) as Availability[];
 
   return (
-    <div className="max-w-4xl">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Availability</h1>
-        <p className="text-muted-foreground mt-2">
-          Set your weekly availability schedule. This determines when clients can book appointments
-          with you.
-        </p>
-      </div>
+    <PageHeaderProvider>
+      <div className="max-w-4xl">
+        <PageHeader
+          title="Availability"
+          subtitle="Set your weekly availability schedule. This determines when clients can book appointments with you."
+        />
 
-      {/* Form */}
-      <WeeklyAvailabilityForm initialAvailability={availability} />
-    </div>
+        <WeeklyAvailabilityForm initialAvailability={availability} />
+      </div>
+    </PageHeaderProvider>
   );
 }

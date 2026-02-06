@@ -1,10 +1,13 @@
 'use client';
 
 import { createService, updateService } from '@/actions/services';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import { Loader2 } from 'lucide-react';
+import { useRegisterPageHeaderSave } from '@/components/layout/provider-dashboard/PageHeaderContext';
 import { createServiceSchema, type CreateServiceData } from '@/lib/validations/service';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Service } from '@prisma/client';
@@ -12,7 +15,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { generateSlug } from '@/lib/utils/slug';
-import { FormHeader } from '../FormHeader';
 import { BookingFields } from './BookingFields';
 import { CoveragePackageSelector } from './CoveragePackageSelector';
 import { DeliveryModeSelector } from './DeliveryModeSelector';
@@ -73,6 +75,12 @@ export function MarketplaceServiceForm({ service }: MarketplaceServiceFormProps)
   const name = form.watch('name');
   const [previousTemplateKey, setPreviousTemplateKey] = useState(templateKey);
 
+  const handleSave = () => {
+    form.handleSubmit(onSubmit, onError)();
+  };
+
+  useRegisterPageHeaderSave(handleSave, isSaving, !form.formState.isDirty);
+
   // Auto-generate slug from name
   useEffect(() => {
     if (isSlugManuallyEdited) return;
@@ -91,10 +99,6 @@ export function MarketplaceServiceForm({ service }: MarketplaceServiceFormProps)
     }
     setPreviousTemplateKey(templateKey);
   }, [templateKey, previousTemplateKey, form]);
-
-  const handleClose = () => {
-    router.push('/services');
-  };
 
   const onSubmit = async (data: CreateServiceData) => {
     setError(null);
@@ -122,28 +126,15 @@ export function MarketplaceServiceForm({ service }: MarketplaceServiceFormProps)
     setError('Please fix the validation errors before saving');
   };
 
-  const handleSave = () => {
-    // Use form.handleSubmit to trigger validation
-    form.handleSubmit(onSubmit, onError)();
-  };
-
   return (
-    <div className="max-w-4xl">
-      <FormHeader
-        title={isEditMode ? 'Edit Marketplace Service' : 'New Marketplace Service'}
-        onClose={handleClose}
-        onSave={handleSave}
-        isSaving={isSaving}
-        isDisabled={!form.formState.isDirty}
-      />
-
+    <>
       {error && (
         <div className="border-destructive/50 bg-destructive/10 mb-6 rounded-lg border p-4">
           <p className="text-destructive text-sm">{error}</p>
         </div>
       )}
 
-      <div className="mt-8 space-y-8">
+      <div className="space-y-6">
         {/* Basic Details */}
         <section>
           <h2 className="mb-6 text-xl font-semibold">Basic Details</h2>
@@ -281,6 +272,14 @@ export function MarketplaceServiceForm({ service }: MarketplaceServiceFormProps)
           <BookingFields form={form} />
         </section>
       </div>
-    </div>
+
+      {/* Save Button */}
+      <div className="mt-6 flex justify-end">
+        <Button onClick={handleSave} disabled={isSaving || !form.formState.isDirty}>
+          {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isSaving ? 'Saving...' : 'Save'}
+        </Button>
+      </div>
+    </>
   );
 }

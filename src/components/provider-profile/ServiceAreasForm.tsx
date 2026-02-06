@@ -1,23 +1,24 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import {
-  AU_JURISDICTIONS,
-  NSW_REGIONS,
-  AU_LOCALITIES,
-  type AustralianJurisdiction,
-} from '@/lib/locations';
 import { getProviderLicensing } from '@/actions/provider-licences';
 import {
   getProviderServiceAreas,
   updateProviderServiceAreas,
 } from '@/actions/provider-service-areas';
+import { useRegisterPageHeaderSave } from '@/components/layout/provider-dashboard/PageHeaderContext';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  AU_JURISDICTIONS,
+  AU_LOCALITIES,
+  NSW_REGIONS,
+  type AustralianJurisdiction,
+} from '@/lib/locations';
+import { ChevronDown, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 
 function getLocalityKey(jurisdiction: string, localityName: string): string {
   return `${jurisdiction}-${localityName}`;
@@ -159,8 +160,7 @@ export function ServiceAreasForm({ onTabChange }: ServiceAreasFormProps) {
     });
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  const handleSave = useCallback(async () => {
     setIsSubmitting(true);
     setErrorMessage(null);
     setSuccessMessage(null);
@@ -198,7 +198,15 @@ export function ServiceAreasForm({ onTabChange }: ServiceAreasFormProps) {
     } finally {
       setIsSubmitting(false);
     }
+  }, [selectedServiceAreas, router]);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    handleSave();
   }
+
+  // Register save handler with page header
+  useRegisterPageHeaderSave(handleSave, isSubmitting, !isDirty);
 
   if (isLoading) {
     return (
@@ -438,7 +446,7 @@ export function ServiceAreasForm({ onTabChange }: ServiceAreasFormProps) {
 
       <div className="flex justify-end">
         <Button type="submit" disabled={!isDirty || isSubmitting}>
-          {isSubmitting ? 'Saving...' : 'Save Changes'}
+          {isSubmitting ? 'Saving...' : 'Save'}
         </Button>
       </div>
     </form>

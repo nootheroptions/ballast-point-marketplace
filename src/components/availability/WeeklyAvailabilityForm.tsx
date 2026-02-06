@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { DayToggle } from './DayToggle';
 import { TimezoneSelector } from './TimezoneSelector';
 import { updateWeeklyAvailability } from '@/actions/availabilities';
 import type { Availability } from '@prisma/client';
 import { Loader2 } from 'lucide-react';
+import { useRegisterPageHeaderSave } from '@/components/layout/provider-dashboard/PageHeaderContext';
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -197,7 +197,7 @@ export function WeeklyAvailabilityForm({
     setWeeklyAvailability(newAvailability);
   };
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     setIsSaving(true);
     setSaveMessage(null);
 
@@ -232,7 +232,10 @@ export function WeeklyAvailabilityForm({
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [weeklyAvailability, timezone, serviceId]);
+
+  // Register save handler with page header
+  useRegisterPageHeaderSave(handleSave, isSaving, false);
 
   return (
     <div className="space-y-6">
@@ -276,7 +279,7 @@ export function WeeklyAvailabilityForm({
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={isSaving} size="lg">
           {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Availability
+          Save
         </Button>
       </div>
 

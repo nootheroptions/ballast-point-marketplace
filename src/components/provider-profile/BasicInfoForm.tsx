@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -22,6 +22,7 @@ import {
   type UpdateProviderProfileData,
 } from '@/lib/validations/provider-profile';
 import { updateProviderProfile } from '@/actions/providers';
+import { useRegisterPageHeaderSave } from '../layout/provider-dashboard/PageHeaderContext';
 
 interface BasicInfoFormProps {
   profile: ProviderProfile;
@@ -45,37 +46,48 @@ export function BasicInfoForm({ profile }: BasicInfoFormProps) {
 
   const { isDirty } = form.formState;
 
-  async function onSubmit(data: UpdateProviderProfileData) {
-    setIsSubmitting(true);
-    setErrorMessage(null);
-    setSuccessMessage(null);
+  const onSubmit = useCallback(
+    async (data: UpdateProviderProfileData) => {
+      setIsSubmitting(true);
+      setErrorMessage(null);
+      setSuccessMessage(null);
 
-    try {
-      const result = await updateProviderProfile(data);
+      try {
+        const result = await updateProviderProfile(data);
 
-      if ('success' in result && !result.success) {
-        setErrorMessage(result.error || 'Failed to update profile');
-        return;
+        if ('success' in result && !result.success) {
+          setErrorMessage(result.error || 'Failed to update profile');
+          return;
+        }
+
+        setSuccessMessage('Profile updated successfully');
+        // Reset form state to mark as not dirty after successful save
+        if ('data' in result && result.data) {
+          form.reset({
+            name: result.data.name,
+            slug: result.data.slug,
+            description: result.data.description ?? '',
+            logoUrl: result.data.logoUrl ?? '',
+          });
+        }
+        router.refresh();
+      } catch (error) {
+        setErrorMessage('An unexpected error occurred');
+        console.error(error);
+      } finally {
+        setIsSubmitting(false);
       }
+    },
+    [form, router]
+  );
 
-      setSuccessMessage('Profile updated successfully');
-      // Reset form state to mark as not dirty after successful save
-      if ('data' in result && result.data) {
-        form.reset({
-          name: result.data.name,
-          slug: result.data.slug,
-          description: result.data.description ?? '',
-          logoUrl: result.data.logoUrl ?? '',
-        });
-      }
-      router.refresh();
-    } catch (error) {
-      setErrorMessage('An unexpected error occurred');
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
+  // Create a save handler for the page header
+  const handleSave = useCallback(() => {
+    form.handleSubmit(onSubmit)();
+  }, [form, onSubmit]);
+
+  // Register save handler with page header
+  useRegisterPageHeaderSave(handleSave, isSubmitting, !isDirty);
 
   return (
     <Form {...form}>
@@ -174,7 +186,7 @@ export function BasicInfoForm({ profile }: BasicInfoFormProps) {
 
         <div className="flex justify-end">
           <Button type="submit" disabled={!isDirty || isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save Changes'}
+            {isSubmitting ? 'Saving...' : 'Save'}
           </Button>
         </div>
       </form>

@@ -51,7 +51,7 @@ export function ServicesPageContent({ services, bundles }: ServicesPageContentPr
     <div className="max-w-7xl">
       <ServicesHeader />
 
-      <div className="mt-8 flex gap-8">
+      <div className="flex gap-8">
         {/* Left sidebar - Category menu */}
         <CategoryMenu
           selectedCategory={selectedCategory}

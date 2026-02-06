@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { getProviderLicensing, updateProviderLicenses } from '@/actions/provider-licences';
+import { useRegisterPageHeaderSave } from '@/components/layout/provider-dashboard/PageHeaderContext';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { AU_JURISDICTIONS, getAuJurisdictionInfo } from '@/lib/locations';
-import { getProviderLicensing, updateProviderLicenses } from '@/actions/provider-licences';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 
 interface LicensingFormProps {
   onLicensesChange?: (licensedJurisdictions: string[]) => void;
@@ -65,8 +66,7 @@ export function LicensingForm({ onLicensesChange }: LicensingFormProps) {
     });
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  const handleSave = useCallback(async () => {
     setIsSubmitting(true);
     setErrorMessage(null);
     setSuccessMessage(null);
@@ -98,7 +98,15 @@ export function LicensingForm({ onLicensesChange }: LicensingFormProps) {
     } finally {
       setIsSubmitting(false);
     }
+  }, [selectedJurisdictions, onLicensesChange, router]);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    handleSave();
   }
+
+  // Register save handler with page header
+  useRegisterPageHeaderSave(handleSave, isSubmitting, !isDirty);
 
   if (isLoading) {
     return (
@@ -172,7 +180,7 @@ export function LicensingForm({ onLicensesChange }: LicensingFormProps) {
 
       <div className="flex justify-end">
         <Button type="submit" disabled={!isDirty || isSubmitting}>
-          {isSubmitting ? 'Saving...' : 'Save Changes'}
+          {isSubmitting ? 'Saving...' : 'Save'}
         </Button>
       </div>
     </form>
