@@ -14,7 +14,7 @@ model UserProfile {
   firstName String?  @map("first_name")
   lastName  String?  @map("last_name")
   avatarUrl String?  @map("avatar_url")
-  timezone  String?  /// IANA timezone (e.g. America/New_York, Australia/Sydney)
+  timezone  String? /// IANA timezone (e.g. America/New_York, Australia/Sydney)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -88,7 +88,125 @@ model ProviderProfile {
   /// Bundles offered by this provider
   bundles  Bundle[]
 
+  /// Licensing and service area relations
+  licenses        ProviderLicense[]
+  serviceAreas    ProviderServiceArea[]
+  localExperience ProviderLocalExperience[]
+
   @@map("provider_profiles")
+}
+
+/// =======================================================
+/// PROVIDER LICENSING
+/// =======================================================
+///
+/// Stores which jurisdictions (states/provinces/regions) a provider is
+/// licensed or eligible to work in. This is the SOURCE OF TRUTH
+/// for where a provider can offer services.
+///
+/// Service areas must be a strict subset of licensed jurisdictions.
+model ProviderLicense {
+  id String @id @default(uuid()) @db.Uuid
+
+  /// ISO 3166-1 alpha-2 country code (e.g., "AU", "US", "UK")
+  country String @db.VarChar(2)
+
+  /// The jurisdiction within the country (e.g., "VIC", "CA", "England")
+  /// Validated against code-defined constants per country
+  jurisdiction String @db.VarChar(50)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  /// The provider this license belongs to
+  providerProfile   ProviderProfile @relation(fields: [providerProfileId], references: [id], onDelete: Cascade)
+  providerProfileId String          @map("provider_profile_id") @db.Uuid
+
+  @@unique([providerProfileId, country, jurisdiction])
+  @@index([country])
+  @@map("provider_licenses")
+}
+
+/// =======================================================
+/// PROVIDER SERVICE AREA
+/// =======================================================
+///
+/// Defines where a provider actively accepts projects.
+/// Service areas are DERIVED from and CONSTRAINED by licensing.
+///
+/// A provider can only have service areas in jurisdictions where they
+/// hold a valid license (ProviderLicense).
+///
+/// Service areas are stored at the locality level (e.g., "City of Sydney", "Los Angeles County").
+/// Higher-level regions (e.g., "Greater Sydney") are derived from code mappings for organizational purposes.
+model ProviderServiceArea {
+  id String @id @default(uuid()) @db.Uuid
+
+  /// ISO 3166-1 alpha-2 country code
+  country String @db.VarChar(2)
+
+  /// The jurisdiction within the country (state/province/territory)
+  /// MUST match a jurisdiction in ProviderLicense for this provider
+  jurisdiction String @db.VarChar(50)
+
+  /// The locality name (e.g., "City of Sydney", "Los Angeles County", "London Borough of Camden")
+  /// Validated against code-defined locality lists per country/jurisdiction
+  localityName String @map("locality_name") @db.VarChar(100)
+
+  /// Optional locality type for display/filtering (e.g., "council", "county", "borough")
+  localityType String? @map("locality_type") @db.VarChar(30)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  /// The provider this service area belongs to
+  providerProfile   ProviderProfile @relation(fields: [providerProfileId], references: [id], onDelete: Cascade)
+  providerProfileId String          @map("provider_profile_id") @db.Uuid
+
+  @@unique([providerProfileId, country, jurisdiction, localityName])
+  @@index([country, jurisdiction])
+  @@map("provider_service_areas")
+}
+
+/// =======================================================
+/// PROVIDER LOCAL EXPERIENCE
+/// =======================================================
+///
+/// Optional high-value data capturing which local authorities
+/// (councils, counties, boroughs, etc.) a provider has worked with.
+/// Used for trust badges and ranking boosts.
+///
+/// Localities must be within the provider's licensed jurisdictions.
+model ProviderLocalExperience {
+  id String @id @default(uuid()) @db.Uuid
+
+  /// ISO 3166-1 alpha-2 country code
+  country String @db.VarChar(2)
+
+  /// The jurisdiction this locality is in
+  jurisdiction String @db.VarChar(50)
+
+  /// The locality name (e.g., "City of Melbourne", "Los Angeles County")
+  localityName String @map("locality_name")
+
+  /// Optional locality type for display (e.g., "council", "county", "borough")
+  localityType String? @map("locality_type") @db.VarChar(30)
+
+  /// Whether this experience is currently active
+  /// Set to false when licensing changes invalidate it
+  isActive Boolean @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  /// The provider this experience belongs to
+  providerProfile   ProviderProfile @relation(fields: [providerProfileId], references: [id], onDelete: Cascade)
+  providerProfileId String          @map("provider_profile_id") @db.Uuid
+
+  @@unique([providerProfileId, country, jurisdiction, localityName])
+  @@index([country, jurisdiction])
+  @@index([isActive])
+  @@map("provider_local_experiences")
 }
 
 /// Stores partial onboarding progress for users who haven't completed setup
@@ -132,9 +250,9 @@ enum DeliveryMode {
 /// Services offered by providers
 /// Supports both marketplace listings AND booking/scheduling
 model Service {
-  id          String  @id @default(uuid()) @db.Uuid
+  id          String @id @default(uuid()) @db.Uuid
   name        String
-  slug        String  /// URL-friendly identifier, unique per provider
+  slug        String /// URL-friendly identifier, unique per provider
   description String
 
   /// =======================================================
@@ -181,8 +299,8 @@ model Service {
   /// =======================================================
 
   /// Slot configuration (minutes)
-  slotDuration      Int @map("slot_duration")
-  slotBuffer        Int @map("slot_buffer")
+  slotDuration Int @map("slot_duration")
+  slotBuffer   Int @map("slot_buffer")
 
   /// Booking window constraints (minutes)
   advanceBookingMin Int @map("advance_booking_min")
@@ -229,26 +347,26 @@ model Service {
 ///
 /// Service-wide pauses or shutdowns must NOT be modeled here.
 model Availability {
-  id           String   @id @default(uuid()) @db.Uuid
+  id String @id @default(uuid()) @db.Uuid
 
   /// 0 = Sunday, 6 = Saturday
-  dayOfWeek    Int
+  dayOfWeek Int
 
   /// Local time in the member's timezone
-  startTime    String   /// HH:mm
-  endTime      String   /// HH:mm
-  timezone     String   /// IANA timezone (e.g. Australia/Sydney)
+  startTime String /// HH:mm
+  endTime   String /// HH:mm
+  timezone  String /// IANA timezone (e.g. Australia/Sydney)
 
-  teamMemberId String   @db.Uuid @map("team_member_id")
+  teamMemberId String     @map("team_member_id") @db.Uuid
   teamMember   TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
 
   /// NULL = default member availability
   /// NOT NULL = override for this member when delivering this service
-  serviceId    String?  @db.Uuid @map("service_id")
-  service      Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId String?  @map("service_id") @db.Uuid
+  service   Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([teamMemberId, dayOfWeek])
   @@index([serviceId])
@@ -264,19 +382,19 @@ model Availability {
 /// - People are attached via BookingParticipant
 /// - This supports future expansion without refactors
 model Booking {
-  id        String   @id @default(uuid()) @db.Uuid
+  id String @id @default(uuid()) @db.Uuid
 
   /// Stored in UTC
   startTime DateTime @map("start_time")
   endTime   DateTime @map("end_time")
-  timezone  String   /// Client timezone for display
+  timezone  String /// Client timezone for display
 
-  status    BookingStatus @default(CONFIRMED)
+  status BookingStatus @default(CONFIRMED)
 
   notes       String?
   cancelledAt DateTime? @map("cancelled_at")
 
-  serviceId String  @db.Uuid @map("service_id")
+  serviceId String  @map("service_id") @db.Uuid
   service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   /// Hosts, co-hosts, invitees
@@ -330,26 +448,26 @@ model BookingParticipant {
   id String @id @default(uuid()) @db.Uuid
 
   /// Owning booking
-  bookingId String  @db.Uuid @map("booking_id")
+  bookingId String  @map("booking_id") @db.Uuid
   booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
   /// Internal participant (hosts / co-hosts)
-  teamMemberId String?     @db.Uuid @map("team_member_id")
+  teamMemberId String?     @map("team_member_id") @db.Uuid
   teamMember   TeamMember? @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
 
   /// Platform user (optional; future-proof)
   /// Example: returning client with an account
-  userId String? @db.Uuid @map("user_id")
+  userId String? @map("user_id") @db.Uuid
 
   /// External invitee identifier
   /// REQUIRED for INVITEE when userId is NULL
-  email  String?
+  email String?
 
   /// Optional display name (primarily for external invitees)
-  name   String?
+  name String?
 
   /// Role of the participant in this booking
-  role   BookingRole
+  role BookingRole
 
   /// Per-participant booking state
   status ParticipantStatus @default(ACCEPTED)
@@ -412,13 +530,13 @@ model ServiceAddOn {
 
 /// Bundles are curated, ordered sets of services
 model Bundle {
-  id          String  @id @default(uuid()) @db.Uuid
+  id          String @id @default(uuid()) @db.Uuid
   name        String
-  slug        String  /// URL-friendly identifier, unique per provider
+  slug        String /// URL-friendly identifier, unique per provider
   description String
 
   /// Pricing configuration
-  pricingType   BundlePricingType @map("pricing_type")
+  pricingType BundlePricingType @map("pricing_type")
 
   /// If pricingType = FIXED, this is the bundle price
   /// If pricingType = SUM_OF_PARTS, this should be 0

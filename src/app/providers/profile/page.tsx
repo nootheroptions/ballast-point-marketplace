@@ -2,6 +2,7 @@ import { getProviderProfile } from '@/actions/providers';
 import { ProviderProfilePageClient } from '@/components/provider-profile/ProviderfilePageContent';
 import { ProviderProfile } from '@prisma/client';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 
 export default async function ProfilePage() {
   const result = await getProviderProfile();
@@ -13,5 +14,9 @@ export default async function ProfilePage() {
 
   const profile = result.data as ProviderProfile;
 
-  return <ProviderProfilePageClient profile={profile} />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProviderProfilePageClient profile={profile} />
+    </Suspense>
+  );
 }
