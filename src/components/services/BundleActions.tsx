@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Service } from '@prisma/client';
+import { Bundle } from '@prisma/client';
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,26 +21,25 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { deleteService } from '@/actions/services';
+import { deleteBundle } from '@/actions/bundles';
 
-interface ServiceActionsProps {
-  service: Service;
-  editOnly?: boolean;
+interface BundleActionsProps {
+  bundle: Bundle;
 }
 
-export function ServiceActions({ service, editOnly = false }: ServiceActionsProps) {
+export function BundleActions({ bundle }: BundleActionsProps) {
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleEdit = () => {
-    router.push(`/services/${service.id}/edit`);
+    router.push(`/services/bundles/${bundle.id}/edit`);
   };
 
   const handleDeleteConfirm = async () => {
     setIsDeleting(true);
     try {
-      const result = await deleteService({ id: service.id });
+      const result = await deleteBundle({ id: bundle.id });
       if (result.success) {
         setIsDeleteDialogOpen(false);
         router.refresh();
@@ -48,8 +47,8 @@ export function ServiceActions({ service, editOnly = false }: ServiceActionsProp
         alert(result.error);
       }
     } catch (error) {
-      console.error('Error deleting service:', error);
-      alert('Failed to delete service');
+      console.error('Error deleting bundle:', error);
+      alert('Failed to delete bundle');
     } finally {
       setIsDeleting(false);
     }
@@ -69,15 +68,13 @@ export function ServiceActions({ service, editOnly = false }: ServiceActionsProp
             <Pencil className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>
-          {!editOnly && (
-            <DropdownMenuItem
-              onClick={() => setIsDeleteDialogOpen(true)}
-              className="text-destructive"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
-          )}
+          <DropdownMenuItem
+            onClick={() => setIsDeleteDialogOpen(true)}
+            className="text-destructive"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -86,7 +83,7 @@ export function ServiceActions({ service, editOnly = false }: ServiceActionsProp
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete &quot;{service.name}&quot;? This action cannot be
+              Are you sure you want to delete &quot;{bundle.name}&quot;? This action cannot be
               undone.
             </AlertDialogDescription>
           </AlertDialogHeader>

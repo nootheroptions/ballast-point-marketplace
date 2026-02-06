@@ -5,22 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { checkSlugAvailability } from '@/actions/onboarding';
 import { step1Schema } from '@/lib/validations/onboarding';
+import { generateSlug } from '@/lib/utils/slug';
 
 interface Step1FormProps {
   name: string;
   slug: string;
   onChange: (data: { name: string; slug: string }) => void;
   onValidChange: (valid: boolean) => void;
-}
-
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
 }
 
 export function Step1Form({ name, slug, onChange, onValidChange }: Step1FormProps) {

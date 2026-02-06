@@ -2,7 +2,13 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Plus, ChevronDown, FileText, Package } from 'lucide-react';
 
 export function ServicesHeader() {
   return (
@@ -13,12 +19,29 @@ export function ServicesHeader() {
           View and manage the services offered by your business.
         </p>
       </div>
-      <Button asChild>
-        <Link href="/services/new">
-          <Plus className="mr-2 h-4 w-4" />
-          Add
-        </Link>
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Add
+            <ChevronDown className="ml-2 h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem asChild>
+            <Link href="/services/new" className="flex items-center">
+              <FileText className="mr-2 h-4 w-4" />
+              Create Service
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/services/new-bundle" className="flex items-center">
+              <Package className="mr-2 h-4 w-4" />
+              Create Bundle
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

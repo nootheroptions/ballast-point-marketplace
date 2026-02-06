@@ -11,6 +11,7 @@ import { Service } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { generateSlug } from '@/lib/utils/slug';
 import { FormHeader } from '../FormHeader';
 import { BookingFields } from './BookingFields';
 import { CoveragePackageSelector } from './CoveragePackageSelector';
@@ -21,19 +22,6 @@ import { TemplateSelector } from './TemplateSelector';
 
 interface MarketplaceServiceFormProps {
   service?: Service;
-}
-
-/**
- * Convert a service name to a URL-friendly slug
- */
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
 }
 
 export function MarketplaceServiceForm({ service }: MarketplaceServiceFormProps) {

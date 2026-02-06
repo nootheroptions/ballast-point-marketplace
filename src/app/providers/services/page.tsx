@@ -1,23 +1,30 @@
 import { Service } from '@prisma/client';
 import { getServices } from '@/actions/services';
+import { getBundles } from '@/actions/bundles';
 import { ServicesHeader } from '@/components/services/ServicesHeader';
 import { ServicesPageContent } from '@/components/services/ServicesPageContent';
+import { BundleWithServices } from '@/lib/repositories/bundle.repo';
 
 export default async function ServicesPage() {
-  const result = await getServices();
+  const [servicesResult, bundlesResult] = await Promise.all([getServices(), getBundles()]);
 
-  if (!result.success) {
+  if (!servicesResult.success) {
     return (
       <div className="max-w-7xl">
         <ServicesHeader />
         <div className="border-destructive/50 bg-destructive/10 mt-8 rounded-lg border p-6">
-          <p className="text-destructive text-sm">{result.error}</p>
+          <p className="text-destructive text-sm">{servicesResult.error}</p>
         </div>
       </div>
     );
   }
 
-  const services = (result.data ?? []) as Service[];
+  const services = (servicesResult.data ?? []) as Service[];
+  const bundles = (
+    bundlesResult.success ? (bundlesResult.data ?? []) : []
+  ) as (BundleWithServices & {
+    calculatedPriceCents: number;
+  })[];
 
-  return <ServicesPageContent services={services} />;
+  return <ServicesPageContent services={services} bundles={bundles} />;
 }
