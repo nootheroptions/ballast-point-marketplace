@@ -2,6 +2,7 @@ import { AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { TemplateKey } from '@prisma/client';
 import type { TemplateData } from '@/lib/validations/template-data';
+import { formatTemplateValue } from '@/lib/utils/format-template-value';
 
 interface ClientRequirementsProps {
   templateKey: TemplateKey;
@@ -70,17 +71,27 @@ function getRequirementsForTemplate(
   switch (templateKey) {
     case 'CONSULTATION':
       if (templateData.siteContext) {
-        requirements.push(templateData.siteContext as string);
+        const siteContextLabel = formatTemplateValue(
+          templateKey,
+          'siteContext',
+          String(templateData.siteContext)
+        );
+        requirements.push(siteContextLabel);
       }
       requirements.push('Clear description of your project goals and constraints');
-      if (templateData.delivery === 'On-site') {
+      if (templateData.delivery === 'ON_SITE') {
         requirements.push('Site access for in-person consultation');
       }
       break;
 
     case 'FEASIBILITY':
       if (templateData.inputsRequired) {
-        requirements.push(templateData.inputsRequired as string);
+        const inputsLabel = formatTemplateValue(
+          templateKey,
+          'inputsRequired',
+          String(templateData.inputsRequired)
+        );
+        requirements.push(inputsLabel);
       } else {
         requirements.push('Photos and measurements of the property');
         requirements.push('Existing plans (if available)');
@@ -106,7 +117,12 @@ function getRequirementsForTemplate(
 
     case 'REVIEW':
       if (templateData.inputsRequired) {
-        requirements.push(templateData.inputsRequired as string);
+        const inputsLabel = formatTemplateValue(
+          templateKey,
+          'inputsRequired',
+          String(templateData.inputsRequired)
+        );
+        requirements.push(inputsLabel);
       } else {
         requirements.push('Complete set of documents to review (PDFs)');
       }

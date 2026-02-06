@@ -2,6 +2,7 @@ import { Check } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { TemplateKey } from '@prisma/client';
 import { TemplateData } from '@/lib/validations/template-data';
+import { formatTemplateValue, formatTemplateValues } from '@/lib/utils/format-template-value';
 
 interface WhatsIncludedProps {
   templateKey: TemplateKey;
@@ -67,19 +68,41 @@ function getInclusionsForTemplate(templateKey: TemplateKey, templateData: Templa
         inclusions.push(`${templateData.duration}-minute consultation`);
       }
       if (templateData.delivery) {
-        inclusions.push(`${templateData.delivery} delivery`);
+        const deliveryLabel = formatTemplateValue(
+          templateKey,
+          'delivery',
+          String(templateData.delivery)
+        );
+        inclusions.push(deliveryLabel);
       }
       if (templateData.focus && Array.isArray(templateData.focus)) {
-        templateData.focus.forEach((f) => inclusions.push(`${f} guidance`));
+        const focusLabels = formatTemplateValues(
+          templateKey,
+          'focus',
+          templateData.focus as string[]
+        );
+        focusLabels.forEach((label) => inclusions.push(label));
       }
       if (templateData.followUp) {
-        inclusions.push(`${templateData.followUp}`);
+        const followUpLabel = formatTemplateValue(
+          templateKey,
+          'followUp',
+          String(templateData.followUp)
+        );
+        if (followUpLabel !== 'None') {
+          inclusions.push(followUpLabel);
+        }
       }
       break;
 
     case 'FEASIBILITY':
       if (templateData.analysisTypes && Array.isArray(templateData.analysisTypes)) {
-        templateData.analysisTypes.forEach((type) => inclusions.push(type as string));
+        const analysisLabels = formatTemplateValues(
+          templateKey,
+          'analysisTypes',
+          templateData.analysisTypes as string[]
+        );
+        analysisLabels.forEach((label) => inclusions.push(label));
       }
       if (templateData.optionsCount) {
         inclusions.push(`${templateData.optionsCount} design options`);
@@ -93,10 +116,22 @@ function getInclusionsForTemplate(templateKey: TemplateKey, templateData: Templa
         inclusions.push(`${templateData.optionsCount} concept options`);
       }
       if (templateData.drawingTypes && Array.isArray(templateData.drawingTypes)) {
-        templateData.drawingTypes.forEach((type) => inclusions.push(type as string));
+        const drawingLabels = formatTemplateValues(
+          templateKey,
+          'drawingTypes',
+          templateData.drawingTypes as string[]
+        );
+        drawingLabels.forEach((label) => inclusions.push(label));
       }
-      if (templateData.threeD && templateData.threeD !== 'None') {
-        inclusions.push(`${templateData.threeD} 3D visualisation`);
+      if (templateData.threeDLevel && templateData.threeDLevel !== 'NONE') {
+        const threeDLabel = formatTemplateValue(
+          templateKey,
+          'threeDLevel',
+          String(templateData.threeDLevel)
+        );
+        if (threeDLabel !== 'None') {
+          inclusions.push(`${threeDLabel} 3D visualisation`);
+        }
       }
       inclusions.push('Concept plans PDF');
       inclusions.push('Design notes');
@@ -104,10 +139,20 @@ function getInclusionsForTemplate(templateKey: TemplateKey, templateData: Templa
 
     case 'PLANNING_APPROVALS':
       if (templateData.submissionType) {
-        inclusions.push(`${templateData.submissionType} submission`);
+        const submissionLabel = formatTemplateValue(
+          templateKey,
+          'submissionType',
+          String(templateData.submissionType)
+        );
+        inclusions.push(submissionLabel);
       }
       if (templateData.scope && Array.isArray(templateData.scope)) {
-        templateData.scope.forEach((item) => inclusions.push(item as string));
+        const scopeLabels = formatTemplateValues(
+          templateKey,
+          'scope',
+          templateData.scope as string[]
+        );
+        scopeLabels.forEach((label) => inclusions.push(label));
       }
       inclusions.push('Lodged application');
       inclusions.push('Council response handling');
@@ -115,10 +160,20 @@ function getInclusionsForTemplate(templateKey: TemplateKey, templateData: Templa
 
     case 'REVIEW':
       if (templateData.reviewTarget) {
-        inclusions.push(`${templateData.reviewTarget} review`);
+        const targetLabel = formatTemplateValue(
+          templateKey,
+          'reviewTarget',
+          String(templateData.reviewTarget)
+        );
+        inclusions.push(`${targetLabel} review`);
       }
       if (templateData.reviewDepth) {
-        inclusions.push(`${templateData.reviewDepth} analysis`);
+        const depthLabel = formatTemplateValue(
+          templateKey,
+          'reviewDepth',
+          String(templateData.reviewDepth)
+        );
+        inclusions.push(depthLabel);
       }
       inclusions.push('Annotated PDFs');
       inclusions.push('Written recommendations');
