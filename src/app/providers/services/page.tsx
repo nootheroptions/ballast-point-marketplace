@@ -1,11 +1,23 @@
+import { Suspense } from 'react';
 import { Service } from '@prisma/client';
 import { getServices } from '@/actions/services';
 import { getBundles } from '@/actions/bundles';
 import { ServicesHeader } from '@/components/services/ServicesHeader';
-import { ServicesPageContent } from '@/components/services/ServicesPageContent';
+import {
+  ServicesPageContent,
+  ServicesPageContentSkeleton,
+} from '@/components/services/ServicesPageContent';
 import { BundleWithServices } from '@/lib/repositories/bundle.repo';
 
-export default async function ServicesPage() {
+export default function ServicesPage() {
+  return (
+    <Suspense fallback={<ServicesPageContentSkeleton />}>
+      <ServicesPageAsync />
+    </Suspense>
+  );
+}
+
+async function ServicesPageAsync() {
   const [servicesResult, bundlesResult] = await Promise.all([getServices(), getBundles()]);
 
   if (!servicesResult.success) {

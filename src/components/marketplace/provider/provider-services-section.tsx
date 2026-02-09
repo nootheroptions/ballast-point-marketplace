@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { PublicProvider, PublicService, PublicBundleWithServices } from '@/lib/types/public';
 import { ServiceCard } from './service-card';
 import { BundleCard } from './bundle-card';
@@ -66,6 +67,28 @@ export function ProviderServicesSection({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+export function ProviderServicesSectionSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="h-5 w-40" />
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="space-y-3 rounded-lg border p-4">
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-2/3" />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

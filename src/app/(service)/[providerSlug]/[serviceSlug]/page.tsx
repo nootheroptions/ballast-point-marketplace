@@ -1,8 +1,12 @@
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getServiceBySlug } from '@/actions/services';
 import { getUserWithProvider } from '@/actions/users';
-import { MarketplaceHeader } from '@/components/shared/marketplace-header';
+import {
+  MarketplaceHeader,
+  MarketplaceHeaderSkeleton,
+} from '@/components/shared/marketplace-header';
 import { ServiceDetailHeader } from '@/components/marketplace/service/service-detail-header';
 import { WhatsIncluded } from '@/components/marketplace/service/whats-included';
 import { ClientRequirements } from '@/components/marketplace/service/client-requirements';
@@ -10,6 +14,7 @@ import { WhatsNotIncluded } from '@/components/marketplace/service/whats-not-inc
 import { ProviderInfo } from '@/components/marketplace/service/provider-info';
 import { BookingCard } from '@/components/marketplace/service/booking-card';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import { formatPrice } from '@/lib/utils/format-price';
 
 interface ServiceDetailPageProps {
@@ -41,8 +46,41 @@ export async function generateMetadata({ params }: ServiceDetailPageProps): Prom
 
 export default async function ServiceDetailPage({ params }: ServiceDetailPageProps) {
   const { providerSlug, serviceSlug } = await params;
-  const service = await getServiceBySlug(providerSlug, serviceSlug);
+
+  return (
+    <div className="bg-background min-h-screen">
+      <Suspense fallback={<MarketplaceHeaderSkeleton />}>
+        <MarketplaceHeaderAsync />
+      </Suspense>
+
+      <Suspense fallback={<ServiceDetailSkeleton />}>
+        <ServiceDetailContent providerSlug={providerSlug} serviceSlug={serviceSlug} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function MarketplaceHeaderAsync() {
   const { user, hasProvider, providerSlug: userProviderSlug } = await getUserWithProvider();
+
+  return (
+    <MarketplaceHeader
+      showSearchBar={true}
+      user={user}
+      hasProvider={hasProvider}
+      providerSlug={userProviderSlug}
+    />
+  );
+}
+
+async function ServiceDetailContent({
+  providerSlug,
+  serviceSlug,
+}: {
+  providerSlug: string;
+  serviceSlug: string;
+}) {
+  const service = await getServiceBySlug(providerSlug, serviceSlug);
 
   if (!service) {
     notFound();
@@ -52,132 +90,149 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
   const clientResponsibilities = service.clientResponsibilities as string[] | undefined;
 
   return (
-    <div className="bg-background min-h-screen">
-      <MarketplaceHeader
-        showSearchBar={true}
-        user={user}
-        hasProvider={hasProvider}
-        providerSlug={userProviderSlug}
-      />
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        {/* Left column - Scrollable content */}
+        <div className="space-y-8 lg:col-span-2">
+          {/* Placeholder Image */}
+          <div className="bg-muted relative h-64 w-full overflow-hidden rounded-lg md:h-96">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="64"
+                height="64"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-muted-foreground/40"
+              >
+                <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                <circle cx="9" cy="9" r="2" />
+                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+              </svg>
+            </div>
+          </div>
 
-      {/* Main content */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {/* Left column - Scrollable content */}
-          <div className="space-y-8 lg:col-span-2">
-            {/* Placeholder Image */}
-            <div className="bg-muted relative h-64 w-full overflow-hidden rounded-lg md:h-96">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="64"
-                  height="64"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-muted-foreground/40"
-                >
-                  <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                  <circle cx="9" cy="9" r="2" />
-                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                </svg>
+          {/* Header */}
+          <ServiceDetailHeader
+            serviceName={service.name}
+            providerName={service.providerProfile.name}
+            positioning={service.positioning || undefined}
+            templateKey={service.templateKey}
+          />
+
+          <Separator />
+
+          {/* Description */}
+          <div className="space-y-3">
+            <h2 className="text-2xl font-semibold">About This Service</h2>
+            <p className="text-muted-foreground leading-relaxed">{service.description}</p>
+          </div>
+
+          {/* What's Included */}
+          <WhatsIncluded
+            templateKey={service.templateKey}
+            templateData={templateData}
+            coveragePackageKey={service.coveragePackageKey || undefined}
+            leadTimeDays={service.leadTimeDays}
+            turnaroundDays={service.turnaroundDays}
+          />
+
+          {/* What We Need From You */}
+          <ClientRequirements
+            templateKey={service.templateKey}
+            templateData={templateData}
+            clientResponsibilities={clientResponsibilities}
+            assumptions={service.assumptions || undefined}
+          />
+
+          {/* What's NOT Included */}
+          <WhatsNotIncluded templateKey={service.templateKey} />
+
+          {/* Provider Info - shown above How It Works on all screen sizes */}
+          <ProviderInfo provider={service.providerProfile} />
+
+          {/* Timeline/Process placeholder */}
+          <div className="space-y-3">
+            <h2 className="text-2xl font-semibold">How It Works</h2>
+            <div className="bg-muted/50 space-y-4 rounded-lg p-6">
+              <div className="flex gap-4">
+                <div className="bg-primary text-primary-foreground flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-semibold">
+                  1
+                </div>
+                <div>
+                  <h3 className="mb-1 font-semibold">Request Booking</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Submit your project details and any required documents
+                  </p>
+                </div>
               </div>
-            </div>
-
-            {/* Header */}
-            <ServiceDetailHeader
-              serviceName={service.name}
-              providerName={service.providerProfile.name}
-              positioning={service.positioning || undefined}
-              templateKey={service.templateKey}
-            />
-
-            <Separator />
-
-            {/* Description */}
-            <div className="space-y-3">
-              <h2 className="text-2xl font-semibold">About This Service</h2>
-              <p className="text-muted-foreground leading-relaxed">{service.description}</p>
-            </div>
-
-            {/* What's Included */}
-            <WhatsIncluded
-              templateKey={service.templateKey}
-              templateData={templateData}
-              coveragePackageKey={service.coveragePackageKey || undefined}
-              leadTimeDays={service.leadTimeDays}
-              turnaroundDays={service.turnaroundDays}
-            />
-
-            {/* What We Need From You */}
-            <ClientRequirements
-              templateKey={service.templateKey}
-              templateData={templateData}
-              clientResponsibilities={clientResponsibilities}
-              assumptions={service.assumptions || undefined}
-            />
-
-            {/* What's NOT Included */}
-            <WhatsNotIncluded templateKey={service.templateKey} />
-
-            {/* Provider Info - shown above How It Works on all screen sizes */}
-            <ProviderInfo provider={service.providerProfile} />
-
-            {/* Timeline/Process placeholder */}
-            <div className="space-y-3">
-              <h2 className="text-2xl font-semibold">How It Works</h2>
-              <div className="bg-muted/50 space-y-4 rounded-lg p-6">
-                <div className="flex gap-4">
-                  <div className="bg-primary text-primary-foreground flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-semibold">
-                    1
-                  </div>
-                  <div>
-                    <h3 className="mb-1 font-semibold">Request Booking</h3>
-                    <p className="text-muted-foreground text-sm">
-                      Submit your project details and any required documents
-                    </p>
-                  </div>
+              <div className="flex gap-4">
+                <div className="bg-primary text-primary-foreground flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-semibold">
+                  2
                 </div>
-                <div className="flex gap-4">
-                  <div className="bg-primary text-primary-foreground flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-semibold">
-                    2
-                  </div>
-                  <div>
-                    <h3 className="mb-1 font-semibold">Kickoff Meeting</h3>
-                    <p className="text-muted-foreground text-sm">
-                      Meet with the provider to discuss your vision and requirements
-                    </p>
-                  </div>
+                <div>
+                  <h3 className="mb-1 font-semibold">Kickoff Meeting</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Meet with the provider to discuss your vision and requirements
+                  </p>
                 </div>
-                <div className="flex gap-4">
-                  <div className="bg-primary text-primary-foreground flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-semibold">
-                    3
-                  </div>
-                  <div>
-                    <h3 className="mb-1 font-semibold">Delivery</h3>
-                    <p className="text-muted-foreground text-sm">
-                      Receive your completed service within {service.turnaroundDays} days
-                    </p>
-                  </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="bg-primary text-primary-foreground flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-semibold">
+                  3
+                </div>
+                <div>
+                  <h3 className="mb-1 font-semibold">Delivery</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Receive your completed service within {service.turnaroundDays} days
+                  </p>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Right column - Pinned booking card */}
-          <div className="lg:col-span-1">
-            {/* Booking Card - sticky and full height */}
-            <BookingCard
-              providerSlug={providerSlug}
-              serviceSlug={serviceSlug}
-              priceCents={service.priceCents}
-              leadTimeDays={service.leadTimeDays}
-              turnaroundDays={service.turnaroundDays}
-              deliveryMode={service.deliveryMode}
-            />
+        {/* Right column - Pinned booking card */}
+        <div className="lg:col-span-1">
+          {/* Booking Card - sticky and full height */}
+          <BookingCard
+            providerSlug={providerSlug}
+            serviceSlug={serviceSlug}
+            priceCents={service.priceCents}
+            leadTimeDays={service.leadTimeDays}
+            turnaroundDays={service.turnaroundDays}
+            deliveryMode={service.deliveryMode}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ServiceDetailSkeleton() {
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="space-y-8 lg:col-span-2">
+          <Skeleton className="h-64 w-full rounded-lg md:h-96" />
+          <div className="space-y-3">
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-6 w-1/2" />
+          </div>
+          <div className="space-y-3">
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-20 w-full" />
+          </div>
+        </div>
+        <div className="lg:col-span-1">
+          <div className="space-y-4 rounded-lg border p-6">
+            <Skeleton className="h-8 w-32" />
+            <Skeleton className="h-6 w-20" />
+            <Skeleton className="h-12 w-full" />
           </div>
         </div>
       </div>

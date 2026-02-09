@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { Service, TemplateKey } from '@prisma/client';
+import { Skeleton } from '@/components/ui/skeleton';
 import { CategoryMenu, CategoryType } from './CategoryMenu';
 import { ServiceList } from './ServiceList';
 import { BundleList } from './BundleList';
@@ -81,6 +82,36 @@ export function ServicesPageContent({ services, bundles }: ServicesPageContentPr
               </p>
             </div>
           )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function ServicesPageContentSkeleton() {
+  return (
+    <div className="max-w-7xl">
+      <div className="mb-8 flex items-center justify-between">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+        <Skeleton className="h-10 w-40" />
+      </div>
+      <div className="flex gap-8">
+        <div className="w-64 space-y-2">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <div className="min-w-0 flex-1 space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="rounded-lg border p-4">
+              <Skeleton className="h-6 w-48" />
+              <Skeleton className="mt-2 h-4 w-32" />
+            </div>
+          ))}
         </div>
       </div>
     </div>

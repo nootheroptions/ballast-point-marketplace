@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { DayToggle } from './DayToggle';
 import { TimezoneSelector } from './TimezoneSelector';
 import { updateWeeklyAvailability } from '@/actions/availabilities';
@@ -320,6 +321,31 @@ export function WeeklyAvailabilityForm({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+    </div>
+  );
+}
+
+export function WeeklyAvailabilityFormSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <Skeleton className="h-5 w-32" />
+        <Skeleton className="h-10 w-full max-w-md" />
+      </div>
+      <div className="space-y-4">
+        {[...Array(7)].map((_, i) => (
+          <div key={i} className="rounded-lg border p-4">
+            <div className="flex items-center gap-4">
+              <Skeleton className="h-5 w-24" />
+              <Skeleton className="h-10 flex-1" />
+              <Skeleton className="h-10 w-32" />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-end">
+        <Skeleton className="h-10 w-24" />
+      </div>
     </div>
   );
 }

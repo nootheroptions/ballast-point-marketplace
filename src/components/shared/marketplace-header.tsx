@@ -16,6 +16,7 @@ import { LocationDropdown } from '@/components/home/location-dropdown';
 import { DesiredOutcomeDropdown } from '@/components/home/desired-outcome-dropdown';
 import { PropertyTypeDropdown } from '@/components/home/property-type-dropdown';
 import { ProjectTypeDropdown } from '@/components/home/project-type-dropdown';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { LocationData } from '@/lib/types/location';
 import { env } from '@/lib/config/env';
 
@@ -366,6 +367,29 @@ export function MarketplaceHeader({
               </div>
             </div>
           )}
+        </div>
+      </div>
+    </header>
+  );
+}
+
+export function MarketplaceHeaderSkeleton() {
+  return (
+    <header className="sticky top-0 z-50 border-b bg-white shadow-sm">
+      <div className="container mx-auto px-4 lg:px-8">
+        {/* Desktop Layout */}
+        <div className="hidden items-center justify-between gap-8 py-4 lg:flex">
+          <Skeleton className="h-8 w-24" />
+          <Skeleton className="h-14 flex-1 rounded-full" />
+          <Skeleton className="h-10 w-10 rounded-full" />
+        </div>
+
+        {/* Mobile Layout */}
+        <div className="lg:hidden">
+          <div className="flex items-center justify-between py-4">
+            <Skeleton className="h-6 w-20" />
+            <Skeleton className="h-10 w-10 rounded-full" />
+          </div>
         </div>
       </div>
     </header>

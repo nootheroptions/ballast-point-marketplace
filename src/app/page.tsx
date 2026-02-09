@@ -1,18 +1,17 @@
+import { Suspense } from 'react';
 import { getUserWithProvider } from '@/actions/users';
-import { MarketplaceHeader } from '@/components/shared/marketplace-header';
+import {
+  MarketplaceHeader,
+  MarketplaceHeaderSkeleton,
+} from '@/components/shared/marketplace-header';
 import { HeroSearch } from '@/components/home/hero-search';
 
-export default async function Home() {
-  const { user, hasProvider, providerSlug } = await getUserWithProvider();
-
+export default function Home() {
   return (
     <div className="from-primary/20 via-primary/10 to-primary/5 min-h-screen bg-gradient-to-b">
-      <MarketplaceHeader
-        showSearchBar={false}
-        user={user}
-        hasProvider={hasProvider}
-        providerSlug={providerSlug}
-      />
+      <Suspense fallback={<MarketplaceHeaderSkeleton />}>
+        <MarketplaceHeaderAsync />
+      </Suspense>
 
       <main className="px-4 pt-32 pb-20 lg:px-8">
         <div className="container mx-auto max-w-7xl">
@@ -32,5 +31,18 @@ export default async function Home() {
         </div>
       </main>
     </div>
+  );
+}
+
+async function MarketplaceHeaderAsync() {
+  const { user, hasProvider, providerSlug } = await getUserWithProvider();
+
+  return (
+    <MarketplaceHeader
+      showSearchBar={false}
+      user={user}
+      hasProvider={hasProvider}
+      providerSlug={providerSlug}
+    />
   );
 }
