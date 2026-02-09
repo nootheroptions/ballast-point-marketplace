@@ -2,6 +2,7 @@
 
 import { ProviderProfile } from '@prisma/client';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { Skeleton } from '@/components/ui/skeleton';
 import { BasicInfoForm } from './BasicInfoForm';
 import { LicensingForm } from './LicensingForm';
 import { ServiceAreasForm } from './ServiceAreasForm';
@@ -33,7 +34,7 @@ export function ProviderProfilePageClient({ profile }: ProfilePageClientProps) {
   };
 
   return (
-    <PageHeaderProvider key={selectedTab}>
+    <PageHeaderProvider>
       <div className="max-w-7xl">
         <PageHeader title="Profile" subtitle="Manage your business profile information." />
 
@@ -44,11 +45,74 @@ export function ProviderProfilePageClient({ profile }: ProfilePageClientProps) {
           {/* Right side - Profile content */}
           <div className="min-w-0 flex-1">
             {selectedTab === 'basic-info' && <BasicInfoForm profile={profile} />}
-            {selectedTab === 'licensing' && <LicensingForm />}
-            {selectedTab === 'service-areas' && <ServiceAreasForm onTabChange={handleTabChange} />}
+            {selectedTab === 'licensing' && <LicensingForm key="licensing" />}
+            {selectedTab === 'service-areas' && (
+              <ServiceAreasForm key="service-areas" onTabChange={handleTabChange} />
+            )}
           </div>
         </div>
       </div>
     </PageHeaderProvider>
+  );
+}
+
+function FormSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <Skeleton className="h-5 w-32" />
+        <Skeleton className="h-10 w-full" />
+      </div>
+      <div className="space-y-4">
+        <Skeleton className="h-5 w-32" />
+        <Skeleton className="h-10 w-full" />
+      </div>
+      <div className="space-y-4">
+        <Skeleton className="h-5 w-32" />
+        <Skeleton className="h-10 w-full" />
+      </div>
+      <Skeleton className="h-10 w-24" />
+    </div>
+  );
+}
+
+export function ProviderProfilePageSkeleton() {
+  return (
+    <div className="max-w-7xl">
+      <div className="mb-8 space-y-2">
+        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-5 w-64" />
+      </div>
+
+      <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
+        {/* Left sidebar skeleton */}
+        <div className="w-full lg:w-64">
+          <div className="space-y-2">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+
+        {/* Right side form skeleton */}
+        <div className="min-w-0 flex-1">
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+            <div className="space-y-4">
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+            <div className="space-y-4">
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-24 w-full" />
+            </div>
+            <Skeleton className="h-10 w-24" />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

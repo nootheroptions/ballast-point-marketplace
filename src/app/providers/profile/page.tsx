@@ -1,10 +1,21 @@
+import { Suspense } from 'react';
 import { getProviderProfile } from '@/actions/providers';
-import { ProviderProfilePageClient } from '@/components/provider-profile/ProviderfilePageContent';
+import {
+  ProviderProfilePageClient,
+  ProviderProfilePageSkeleton,
+} from '@/components/provider-profile/ProviderfilePageContent';
 import { ProviderProfile } from '@prisma/client';
 import { redirect } from 'next/navigation';
-import { Suspense } from 'react';
 
-export default async function ProfilePage() {
+export default function ProfilePage() {
+  return (
+    <Suspense fallback={<ProviderProfilePageSkeleton />}>
+      <ProfilePageContent />
+    </Suspense>
+  );
+}
+
+async function ProfilePageContent() {
   const result = await getProviderProfile();
 
   // Handle error cases
@@ -14,9 +25,5 @@ export default async function ProfilePage() {
 
   const profile = result.data as ProviderProfile;
 
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ProviderProfilePageClient profile={profile} />
-    </Suspense>
-  );
+  return <ProviderProfilePageClient profile={profile} />;
 }
