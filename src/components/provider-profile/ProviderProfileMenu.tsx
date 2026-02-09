@@ -58,6 +58,7 @@ export function ProviderProfileMenu({ selectedTab, onTabChange }: ProfileMenuPro
           {MENU_ITEMS.map((item) => (
             <button
               key={item.id}
+              type="button"
               onClick={() => onTabChange(item.id)}
               className={cn(
                 'flex w-full items-center justify-between rounded-lg px-4 py-2.5 text-left text-sm font-medium transition-colors',

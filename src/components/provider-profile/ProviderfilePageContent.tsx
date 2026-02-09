@@ -1,7 +1,8 @@
 'use client';
 
 import { ProviderProfile } from '@prisma/client';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BasicInfoForm } from './BasicInfoForm';
 import { LicensingForm } from './LicensingForm';
@@ -20,18 +21,43 @@ function isValidTab(tab: string | null): tab is ProfileTab {
   return VALID_TABS.includes(tab as ProfileTab);
 }
 
+function getTabFromSearchParams(searchParams: URLSearchParams): ProfileTab {
+  const tabParam = searchParams.get('tab');
+  return isValidTab(tabParam) ? tabParam : 'basic-info';
+}
+
 export function ProviderProfilePageClient({ profile }: ProfilePageClientProps) {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
-  const tabParam = searchParams.get('tab');
-  const selectedTab: ProfileTab = isValidTab(tabParam) ? tabParam : 'basic-info';
+  const [selectedTab, setSelectedTab] = useState<ProfileTab>(() => {
+    return getTabFromSearchParams(new URLSearchParams(searchParams.toString()));
+  });
 
-  const handleTabChange = (tab: ProfileTab) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', tab);
-    router.push(`?${params.toString()}`, { scroll: false });
-  };
+  const handleTabChange = useCallback((tab: ProfileTab) => {
+    const currentParams = new URLSearchParams(window.location.search);
+    if (currentParams.get('tab') === tab) return;
+
+    setSelectedTab(tab);
+
+    currentParams.set('tab', tab);
+
+    const nextUrl = `${window.location.pathname}?${currentParams.toString()}${window.location.hash}`;
+    const nextState =
+      window.history.state && typeof window.history.state === 'object'
+        ? { ...window.history.state }
+        : window.history.state;
+    window.history.pushState(nextState, '', nextUrl);
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const nextTab = getTabFromSearchParams(new URLSearchParams(window.location.search));
+      setSelectedTab(nextTab);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   return (
     <PageHeaderProvider>
