@@ -177,7 +177,12 @@ export async function logout(): Promise<ActionResult> {
 
     // Clear team membership cookie
     const cookieStore = await cookies();
-    cookieStore.delete(CURRENT_TEAM_COOKIE);
+    cookieStore.set({
+      name: CURRENT_TEAM_COOKIE,
+      value: '',
+      ...createCookieOptions(),
+      maxAge: 0,
+    });
 
     return {
       success: true,
