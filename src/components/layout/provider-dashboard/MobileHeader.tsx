@@ -16,7 +16,7 @@ export function MobileHeader({ hasProvider = true }: MobileHeaderProps) {
           <span className="sr-only">Open menu</span>
         </MobileNavTrigger>
       </MobileNav>
-      <span className="text-sidebar-foreground ml-3 text-lg font-bold">Ballast Point</span>
+      <span className="text-sidebar-foreground ml-3 text-lg font-bold">Colabri</span>
     </header>
   );
 }

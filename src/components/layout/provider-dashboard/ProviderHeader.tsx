@@ -19,7 +19,7 @@ export function ProviderHeader({ user, hasProvider, providerSlug }: ProviderHead
       <div className="flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link href="/" className="flex items-center">
-          <div className="text-2xl font-bold text-gray-900">Logo</div>
+          <div className="text-2xl font-bold text-gray-900">Colabri</div>
         </Link>
 
         {/* Navigation */}

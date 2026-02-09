@@ -28,7 +28,7 @@ export function MobileNav({ children, hasProvider = true }: MobileNavProps) {
       <SheetContent side="left" className="bg-sidebar w-72 p-0">
         <SheetHeader className="border-sidebar-border border-b p-4">
           <SheetTitle className="text-sidebar-foreground text-left">
-            <span className="text-lg font-bold">Ballast Point</span>
+            <span className="text-lg font-bold">Colabri</span>
           </SheetTitle>
         </SheetHeader>
         <TooltipProvider delayDuration={0}>

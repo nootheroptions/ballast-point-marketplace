@@ -86,7 +86,7 @@ export function MarketplaceHeader({
         <div className="hidden items-center justify-between gap-8 py-4 lg:flex">
           {/* Logo */}
           <Link href="/" className="flex flex-shrink-0 items-center">
-            <div className="text-2xl font-bold text-gray-900">Logo</div>
+            <div className="text-2xl font-bold text-gray-900">Colabri</div>
           </Link>
 
           {/* Search Bar (optional) */}
@@ -245,7 +245,7 @@ export function MarketplaceHeader({
           {/* Mobile Logo and User */}
           <div className="flex items-center justify-between border-b py-4">
             <Link href="/" className="flex items-center">
-              <div className="text-xl font-bold text-gray-900">Logo</div>
+              <div className="text-xl font-bold text-gray-900">Colabri</div>
             </Link>
             {user ? (
               <UserDropdown
