@@ -1,9 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MapPin, Loader2, Navigation } from 'lucide-react';
+import { MapPin, Loader2 } from 'lucide-react';
 import { createPortal } from 'react-dom';
-import { getCurrentLocation, GeolocationError } from '@/lib/services/maps';
 import type { LocationData, MapboxFeature } from '@/lib/types/location';
 import { env } from '@/lib/config/env';
 
@@ -28,7 +27,6 @@ export function LocationDropdown({
   } | null>(null);
   const [searchInput, setSearchInput] = useState('');
   const [suggestions, setSuggestions] = useState<MapboxFeature[]>([]);
-  const [isLoadingCurrent, setIsLoadingCurrent] = useState(false);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -142,28 +140,6 @@ export function LocationDropdown({
     };
   }, [searchInput, isOpen]);
 
-  // Handle "Use Current Location"
-  const handleCurrentLocation = useCallback(async () => {
-    setIsLoadingCurrent(true);
-    setError(null);
-
-    try {
-      const location = await getCurrentLocation();
-      onChange(location);
-      setIsOpen(false);
-      setSearchInput('');
-    } catch (err) {
-      if (err instanceof GeolocationError) {
-        setError(err.message);
-      } else {
-        setError('Failed to get current location');
-      }
-      console.error('Geolocation error:', err);
-    } finally {
-      setIsLoadingCurrent(false);
-    }
-  }, [onChange]);
-
   // Handle suggestion selection
   const handleSelectSuggestion = useCallback(
     (feature: MapboxFeature) => {
@@ -231,28 +207,6 @@ export function LocationDropdown({
                   <div className="mx-4 mb-2 rounded-lg bg-red-50 px-4 py-2 text-sm text-red-600">
                     {error}
                   </div>
-                )}
-
-                {/* Use Current Location Button */}
-                <button
-                  type="button"
-                  onClick={handleCurrentLocation}
-                  disabled={isLoadingCurrent}
-                  className="flex w-full items-center gap-3 px-4 py-3 transition-colors hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-gray-200">
-                    {isLoadingCurrent ? (
-                      <Loader2 className="text-primary h-5 w-5 animate-spin" />
-                    ) : (
-                      <Navigation className="text-primary h-5 w-5" />
-                    )}
-                  </div>
-                  <span className="text-base font-medium text-gray-900">Use current location</span>
-                </button>
-
-                {/* Divider */}
-                {(suggestions.length > 0 || isLoadingSuggestions) && (
-                  <div className="my-2 border-t border-gray-200" />
                 )}
 
                 {/* Loading Suggestions */}
