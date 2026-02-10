@@ -22,6 +22,67 @@ import {
 const prisma = new PrismaClient();
 
 const DEFAULT_TZ = 'Australia/Sydney';
+const UNSPLASH_IMAGE_PARAMS = 'auto=format&fit=crop&w=1800&q=80';
+
+function unsplashImage(photoId) {
+  return `https://images.unsplash.com/photo-${photoId}?${UNSPLASH_IMAGE_PARAMS}`;
+}
+
+const PROVIDER_IMAGE_URLS_BY_SLUG = {
+  'harbour-atelier-architects': [
+    unsplashImage('1487958449943-2429e8be8625'),
+    unsplashImage('1493397212122-2b85dda8106b'),
+    unsplashImage('1486406146926-c627a92ad1ab'),
+  ],
+  'laneway-studio-architecture': [
+    unsplashImage('1479839672679-a46483c0e7c8'),
+    unsplashImage('1518005020951-eccb494ad742'),
+    unsplashImage('1460574283810-2aab119d8511'),
+  ],
+  'subtropic-design-co': [
+    unsplashImage('1431576901776-e539bd916ba2'),
+    unsplashImage('1527576539890-dfa815648363'),
+    unsplashImage('1766802981813-e532002dfc22'),
+  ],
+  'coastal-craft-architects': [
+    unsplashImage('1451976426598-a7593bd6d0b2'),
+    unsplashImage('1551038247-3d9af20df552'),
+    unsplashImage('1525286335722-c30c6b5df541'),
+  ],
+  'terrace-timber-studio': [
+    unsplashImage('1488972685288-c3fd157d7c7a'),
+    unsplashImage('1560924288-1f65d09c730f'),
+    unsplashImage('1486406146926-c627a92ad1ab'),
+  ],
+};
+
+const SERVICE_IMAGE_URLS_BY_TEMPLATE = {
+  [TemplateKey.CONSULTATION]: [
+    unsplashImage('1560924288-1f65d09c730f'),
+    unsplashImage('1488972685288-c3fd157d7c7a'),
+    unsplashImage('1486406146926-c627a92ad1ab'),
+  ],
+  [TemplateKey.FEASIBILITY]: [
+    unsplashImage('1493397212122-2b85dda8106b'),
+    unsplashImage('1479839672679-a46483c0e7c8'),
+    unsplashImage('1525286335722-c30c6b5df541'),
+  ],
+  [TemplateKey.CONCEPT_DESIGN]: [
+    unsplashImage('1487958449943-2429e8be8625'),
+    unsplashImage('1527576539890-dfa815648363'),
+    unsplashImage('1766802981813-e532002dfc22'),
+  ],
+  [TemplateKey.PLANNING_APPROVALS]: [
+    unsplashImage('1518005020951-eccb494ad742'),
+    unsplashImage('1551038247-3d9af20df552'),
+    unsplashImage('1460574283810-2aab119d8511'),
+  ],
+  [TemplateKey.REVIEW]: [
+    unsplashImage('1451976426598-a7593bd6d0b2'),
+    unsplashImage('1486406146926-c627a92ad1ab'),
+    unsplashImage('1488972685288-c3fd157d7c7a'),
+  ],
+};
 
 function aud(audDollars) {
   return Math.round(audDollars * 100);
@@ -29,6 +90,45 @@ function aud(audDollars) {
 
 function uuid() {
   return randomUUID();
+}
+
+function rotateImages(images, seedText) {
+  if (!images || images.length === 0) {
+    return [];
+  }
+
+  const seed = [...seedText].reduce((sum, character) => sum + character.charCodeAt(0), 0);
+  const start = seed % images.length;
+
+  return Array.from({ length: Math.min(images.length, 3) }, (_, index) => {
+    return images[(start + index) % images.length];
+  });
+}
+
+function getProviderSeedImages(provider) {
+  if (provider.imageUrls && provider.imageUrls.length > 0) {
+    return provider.imageUrls;
+  }
+
+  const mappedImages = PROVIDER_IMAGE_URLS_BY_SLUG[provider.slug];
+  if (mappedImages && mappedImages.length > 0) {
+    return mappedImages;
+  }
+
+  return rotateImages(SERVICE_IMAGE_URLS_BY_TEMPLATE[TemplateKey.CONCEPT_DESIGN], provider.slug);
+}
+
+function getServiceSeedImages(service) {
+  if (service.imageUrls && service.imageUrls.length > 0) {
+    return service.imageUrls;
+  }
+
+  const templateImages = SERVICE_IMAGE_URLS_BY_TEMPLATE[service.templateKey];
+  if (templateImages && templateImages.length > 0) {
+    return rotateImages(templateImages, service.slug);
+  }
+
+  return rotateImages(SERVICE_IMAGE_URLS_BY_TEMPLATE[TemplateKey.CONSULTATION], service.slug);
 }
 
 async function upsertUserProfile(user) {
@@ -53,6 +153,8 @@ async function upsertUserProfile(user) {
 
 async function ensureProviderWithTeam({ provider, ownerUser }) {
   const owner = await upsertUserProfile(ownerUser);
+  const providerImages = getProviderSeedImages(provider);
+  const providerLogoUrl = provider.logoUrl ?? providerImages[0] ?? null;
 
   const providerProfile = await prisma.providerProfile.upsert({
     where: { slug: provider.slug },
@@ -60,7 +162,8 @@ async function ensureProviderWithTeam({ provider, ownerUser }) {
       name: provider.name,
       slug: provider.slug,
       description: provider.description ?? null,
-      logoUrl: provider.logoUrl ?? null,
+      logoUrl: providerLogoUrl,
+      imageUrls: providerImages,
       team: {
         create: {
           id: uuid(),
@@ -70,7 +173,8 @@ async function ensureProviderWithTeam({ provider, ownerUser }) {
     update: {
       name: provider.name,
       description: provider.description ?? null,
-      logoUrl: provider.logoUrl ?? null,
+      logoUrl: providerLogoUrl,
+      imageUrls: providerImages,
     },
   });
 
@@ -170,6 +274,8 @@ async function replaceProviderMarketplace(providerProfileId, { services, bundles
   const createdServicesBySlug = new Map();
 
   for (const service of services) {
+    const serviceImages = getServiceSeedImages(service);
+
     const createdService = await prisma.service.create({
       data: {
         id: uuid(),
@@ -177,6 +283,7 @@ async function replaceProviderMarketplace(providerProfileId, { services, bundles
         name: service.name,
         slug: service.slug,
         description: service.description,
+        imageUrls: serviceImages,
         templateKey: service.templateKey,
         templateData: service.templateData,
         coveragePackageKey: service.coveragePackageKey,
@@ -1167,4 +1274,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-
