@@ -203,7 +203,7 @@ export function MarketplaceHeader({
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link
-                      href={`${env.NEXT_PUBLIC_PROVIDER_DASHBOARD_URL}/onboarding`}
+                      href={`${env.NEXT_PUBLIC_SITE_URL}/signup?tab=provider`}
                       className="w-full cursor-pointer"
                     >
                       List your business
@@ -227,12 +227,8 @@ export function MarketplaceHeader({
                 >
                   <Link href="/signup">Sign up</Link>
                 </Button>
-                <Button
-                  asChild
-                  variant="default"
-                  className="rounded-full border-gray-300 hover:bg-gray-50"
-                >
-                  <Link href={`${env.NEXT_PUBLIC_PROVIDER_DASHBOARD_URL}/onboarding`}>
+                <Button asChild variant="default" className="rounded-full">
+                  <Link href={`${env.NEXT_PUBLIC_SITE_URL}/signup?tab=provider`}>
                     List your business
                   </Link>
                 </Button>
@@ -276,7 +272,7 @@ export function MarketplaceHeader({
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link
-                      href={`${env.NEXT_PUBLIC_PROVIDER_DASHBOARD_URL}/onboarding`}
+                      href={`${env.NEXT_PUBLIC_SITE_URL}/signup?tab=provider`}
                       className="w-full cursor-pointer"
                     >
                       List your business

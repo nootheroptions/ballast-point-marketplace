@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { UserDropdown } from '@/components/home/user-dropdown';
+import { env } from '@/lib/config/env';
 
 interface ProviderHeaderProps {
   user?: {
@@ -18,7 +19,7 @@ export function ProviderHeader({ user, hasProvider, providerSlug }: ProviderHead
     <header className="fixed top-0 right-0 left-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
       <div className="flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center">
+        <Link href={env.NEXT_PUBLIC_SITE_URL} className="flex items-center">
           <div className="text-2xl font-bold text-gray-900">Colabri</div>
         </Link>
 

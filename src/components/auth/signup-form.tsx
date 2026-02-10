@@ -18,17 +18,21 @@ import { signUpSchema, type SignUpFormData } from '@/lib/validations/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useActionState, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 export function SignUpForm() {
+  const searchParams = useSearchParams();
   const [state, formAction, isPending] = useActionState<ActionResult | null, FormData>(
     signUp,
     null
   );
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [userType, setUserType] = useState<'client' | 'provider'>('client');
+  const [userType, setUserType] = useState<'client' | 'provider'>(
+    searchParams.get('tab') === 'provider' ? 'provider' : 'client'
+  );
 
   const {
     register,
@@ -38,7 +42,7 @@ export function SignUpForm() {
     resolver: zodResolver(signUpSchema),
     mode: 'onBlur',
     defaultValues: {
-      userType: 'client',
+      userType: searchParams.get('tab') === 'provider' ? 'provider' : 'client',
     },
   });
 
