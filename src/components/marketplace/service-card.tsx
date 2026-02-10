@@ -20,6 +20,9 @@ function hasProviderProfile(
 
 export function ServiceCard({ service, variant = 'default', className }: ServiceCardProps) {
   const previewImageUrl = service.imageUrls[0];
+  const providerProfileImageUrl = hasProviderProfile(service)
+    ? service.providerProfile.profileUrl
+    : null;
 
   return (
     <Card
@@ -95,10 +98,10 @@ export function ServiceCard({ service, variant = 'default', className }: Service
 
             {/* Provider Info Section */}
             <div className="flex items-start gap-3">
-              {service.providerProfile.imageUrls[0] ? (
+              {providerProfileImageUrl ? (
                 <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full border">
                   <Image
-                    src={service.providerProfile.imageUrls[0]}
+                    src={providerProfileImageUrl}
                     alt={`${service.providerProfile.name} logo`}
                     fill
                     className="object-cover"

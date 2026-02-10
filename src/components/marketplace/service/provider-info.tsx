@@ -10,8 +10,6 @@ interface ProviderInfoProps {
 }
 
 export function ProviderInfo({ provider }: ProviderInfoProps) {
-  const primaryImageUrl = provider.imageUrls[0];
-
   return (
     <Card>
       <CardHeader>
@@ -19,10 +17,10 @@ export function ProviderInfo({ provider }: ProviderInfoProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-start gap-4">
-          {primaryImageUrl ? (
+          {provider.profileUrl ? (
             <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border">
               <Image
-                src={primaryImageUrl}
+                src={provider.profileUrl}
                 alt={`${provider.name} logo`}
                 fill
                 className="object-cover"

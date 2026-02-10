@@ -154,7 +154,7 @@ async function upsertUserProfile(user) {
 async function ensureProviderWithTeam({ provider, ownerUser }) {
   const owner = await upsertUserProfile(ownerUser);
   const providerImages = getProviderSeedImages(provider);
-  const providerLogoUrl = provider.logoUrl ?? providerImages[0] ?? null;
+  const providerProfileUrl = provider.profileUrl ?? providerImages[0] ?? null;
 
   const providerProfile = await prisma.providerProfile.upsert({
     where: { slug: provider.slug },
@@ -162,7 +162,7 @@ async function ensureProviderWithTeam({ provider, ownerUser }) {
       name: provider.name,
       slug: provider.slug,
       description: provider.description ?? null,
-      logoUrl: providerLogoUrl,
+      profileUrl: providerProfileUrl,
       imageUrls: providerImages,
       team: {
         create: {
@@ -173,7 +173,7 @@ async function ensureProviderWithTeam({ provider, ownerUser }) {
     update: {
       name: provider.name,
       description: provider.description ?? null,
-      logoUrl: providerLogoUrl,
+      profileUrl: providerProfileUrl,
       imageUrls: providerImages,
     },
   });

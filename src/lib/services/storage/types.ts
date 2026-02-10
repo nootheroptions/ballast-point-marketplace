@@ -1,6 +1,6 @@
 export interface StorageUploadFile {
   path: string;
-  data: ArrayBuffer;
+  data: ArrayBuffer | Uint8Array;
   contentType?: string;
   cacheControl?: string;
   upsert?: boolean;

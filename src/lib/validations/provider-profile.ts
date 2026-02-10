@@ -25,6 +25,7 @@ export const updateProviderProfileSchema = z.object({
     .max(600, 'Description must be less than 600 characters')
     .optional()
     .nullable(),
+  profileUrl: z.string().url('Invalid profile image URL').optional().nullable().or(z.literal('')),
   imageUrls: z.array(z.string().url('Invalid image URL')).max(10, 'Maximum 10 images allowed'),
 });
 

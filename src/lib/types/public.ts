@@ -27,6 +27,7 @@ export interface PublicProvider {
   name: string;
   slug: string;
   description: string | null;
+  profileUrl: string | null;
   imageUrls: string[];
 }
 

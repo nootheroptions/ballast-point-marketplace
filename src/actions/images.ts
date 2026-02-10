@@ -99,7 +99,7 @@ async function uploadFilesToStorage(
 
         return {
           path: `${basePath}/${fileName}`,
-          data: await file.arrayBuffer(),
+          data: new Uint8Array(await file.arrayBuffer()),
           contentType: file.type,
           upsert: false,
         };
@@ -144,9 +144,10 @@ export async function uploadProviderImages(
     }
 
     console.error('Provider image upload failed:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to upload images';
     return {
       success: false,
-      error: 'Failed to upload images',
+      error: errorMessage,
     };
   }
 }
@@ -200,9 +201,10 @@ export async function uploadServiceImages(
     }
 
     console.error('Service image upload failed:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to upload images';
     return {
       success: false,
-      error: 'Failed to upload images',
+      error: errorMessage,
     };
   }
 }

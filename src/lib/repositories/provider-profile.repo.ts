@@ -18,7 +18,7 @@ export interface UpdateProviderProfileData {
   name?: string;
   slug?: string;
   description?: string | null;
-  logoUrl?: string | null;
+  profileUrl?: string | null;
   imageUrls?: string[];
 }
 

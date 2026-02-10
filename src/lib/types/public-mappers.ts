@@ -35,6 +35,7 @@ export function toPublicProvider(provider: ProviderProfile): PublicProvider {
     name: provider.name,
     slug: provider.slug,
     description: provider.description,
+    profileUrl: provider.profileUrl ?? null,
     imageUrls: provider.imageUrls.length > 0 ? provider.imageUrls : [],
   };
 }

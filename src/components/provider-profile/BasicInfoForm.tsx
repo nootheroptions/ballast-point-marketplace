@@ -24,7 +24,7 @@ import {
 } from '@/lib/validations/provider-profile';
 import { updateProviderProfile } from '@/actions/providers';
 import { uploadProviderImages } from '@/actions/images';
-import { Upload, X } from 'lucide-react';
+import { Camera, Upload, User, X } from 'lucide-react';
 import { useRegisterPageHeaderSave } from '../layout/provider-dashboard/PageHeaderContext';
 
 interface BasicInfoFormProps {
@@ -35,8 +35,10 @@ const MAX_IMAGE_COUNT = 10;
 
 export function BasicInfoForm({ profile }: BasicInfoFormProps) {
   const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const profileFileInputRef = useRef<HTMLInputElement | null>(null);
+  const imageFileInputRef = useRef<HTMLInputElement | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingProfileImage, setIsUploadingProfileImage] = useState(false);
   const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -47,6 +49,7 @@ export function BasicInfoForm({ profile }: BasicInfoFormProps) {
       name: profile.name,
       slug: profile.slug,
       description: profile.description ?? '',
+      profileUrl: profile.profileUrl ?? '',
       imageUrls: profile.imageUrls.length > 0 ? profile.imageUrls : [],
     },
   });
@@ -74,6 +77,7 @@ export function BasicInfoForm({ profile }: BasicInfoFormProps) {
             name: result.data.name,
             slug: result.data.slug,
             description: result.data.description ?? '',
+            profileUrl: result.data.profileUrl ?? '',
             imageUrls: result.data.imageUrls ?? [],
           });
         }
@@ -148,6 +152,44 @@ export function BasicInfoForm({ profile }: BasicInfoFormProps) {
     [form]
   );
 
+  const handleProfileImageUpload = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const [file] = Array.from(event.target.files ?? []);
+      event.target.value = '';
+
+      if (!file) {
+        return;
+      }
+
+      setErrorMessage(null);
+      setSuccessMessage(null);
+      setIsUploadingProfileImage(true);
+
+      try {
+        const formData = new FormData();
+        formData.append('files', file);
+
+        const result = await uploadProviderImages(formData);
+        if (!result.success || !result.data || result.data.imageUrls.length === 0) {
+          setErrorMessage(result.error ?? 'Failed to upload profile image');
+          return;
+        }
+
+        const uploadedProfileUrl = result.data.imageUrls[0];
+        form.setValue('profileUrl', uploadedProfileUrl, {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
+      } catch (error) {
+        console.error(error);
+        setErrorMessage('Failed to upload profile image');
+      } finally {
+        setIsUploadingProfileImage(false);
+      }
+    },
+    [form]
+  );
+
   const handleRemoveImage = useCallback(
     (imageUrl: string) => {
       const imageUrls = form.getValues('imageUrls') ?? [];
@@ -178,44 +220,98 @@ export function BasicInfoForm({ profile }: BasicInfoFormProps) {
           </div>
         )}
 
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Business Name <span className="text-destructive">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input placeholder="Enter your business name" {...field} />
-              </FormControl>
-              <FormDescription>
-                This is the name that will be displayed publicly on your profile.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="flex flex-col items-start gap-4 md:flex-row md:gap-6">
+          <FormField
+            control={form.control}
+            name="profileUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="space-y-2">
+                    <Input
+                      ref={profileFileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleProfileImageUpload}
+                      disabled={isUploadingProfileImage || isSubmitting}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => profileFileInputRef.current?.click()}
+                      disabled={isUploadingProfileImage || isSubmitting}
+                      className="relative"
+                      aria-label="Upload profile image"
+                    >
+                      <div className="bg-muted relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border md:h-28 md:w-28">
+                        {field.value ? (
+                          <Image
+                            src={field.value}
+                            alt="Profile image"
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <User className="text-muted-foreground h-10 w-10" />
+                        )}
+                        <div className="absolute inset-0 flex items-end justify-end bg-black/0 p-2 hover:bg-black/25">
+                          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-black">
+                            <Camera className="h-4 w-4" />
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+                    <p className="text-muted-foreground text-xs">
+                      {isUploadingProfileImage ? 'Uploading...' : 'Click to upload profile image'}
+                    </p>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="slug"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                URL Slug <span className="text-destructive">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input placeholder="your-business-name" {...field} />
-              </FormControl>
-              <FormDescription>
-                This will be used in your public profile URL. Only lowercase letters, numbers, and
-                hyphens.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <div className="w-full space-y-6">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Business Name <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your business name" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    This is the name that will be displayed publicly on your profile.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="slug"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    URL Slug <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="your-business-name" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    This will be used in your public profile URL. Only lowercase letters, numbers,
+                    and hyphens.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
 
         <FormField
           control={form.control}
@@ -248,7 +344,7 @@ export function BasicInfoForm({ profile }: BasicInfoFormProps) {
               <FormControl>
                 <div className="space-y-3">
                   <Input
-                    ref={fileInputRef}
+                    ref={imageFileInputRef}
                     type="file"
                     accept="image/*"
                     multiple
@@ -259,7 +355,7 @@ export function BasicInfoForm({ profile }: BasicInfoFormProps) {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={() => imageFileInputRef.current?.click()}
                     disabled={isUploadingImages || isSubmitting}
                   >
                     <Upload className="mr-2 h-4 w-4" />

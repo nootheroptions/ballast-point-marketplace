@@ -74,7 +74,7 @@ model ProviderProfile {
   name        String /// Also used as team name
   slug        String  @unique /// URL-friendly identifier
   description String?
-  logoUrl     String? @map("logo_url")
+  profileUrl  String? @map("profile_url")
   imageUrls   String[] @default([]) @map("image_urls")
 
   createdAt DateTime @default(now()) @map("created_at")
