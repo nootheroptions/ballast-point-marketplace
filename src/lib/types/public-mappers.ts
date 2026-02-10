@@ -35,7 +35,7 @@ export function toPublicProvider(provider: ProviderProfile): PublicProvider {
     name: provider.name,
     slug: provider.slug,
     description: provider.description,
-    logoUrl: provider.logoUrl,
+    imageUrls: provider.imageUrls.length > 0 ? provider.imageUrls : [],
   };
 }
 
@@ -52,6 +52,7 @@ export function toPublicService(service: Service): PublicService {
     name: service.name,
     slug: service.slug,
     description: service.description,
+    imageUrls: service.imageUrls,
     templateKey: service.templateKey,
     templateData: service.templateData,
     coveragePackageKey: service.coveragePackageKey,

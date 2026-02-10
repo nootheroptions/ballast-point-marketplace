@@ -27,7 +27,7 @@ export interface PublicProvider {
   name: string;
   slug: string;
   description: string | null;
-  logoUrl: string | null;
+  imageUrls: string[];
 }
 
 // =============================================================================
@@ -43,6 +43,7 @@ export interface PublicService {
   name: string;
   slug: string;
   description: string;
+  imageUrls: string[];
   templateKey: TemplateKey;
   templateData: unknown;
   coveragePackageKey: string | null;

@@ -75,6 +75,7 @@ model ProviderProfile {
   slug        String  @unique /// URL-friendly identifier
   description String?
   logoUrl     String? @map("logo_url")
+  imageUrls   String[] @default([]) @map("image_urls")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -254,6 +255,7 @@ model Service {
   name        String
   slug        String /// URL-friendly identifier, unique per provider
   description String
+  imageUrls   String[] @default([]) @map("image_urls")
 
   /// =======================================================
   /// MARKETPLACE FIELDS

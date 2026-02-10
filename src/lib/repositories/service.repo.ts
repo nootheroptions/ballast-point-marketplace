@@ -23,6 +23,7 @@ export type CreateServiceData = {
   name: string;
   slug: string;
   description: string;
+  imageUrls?: string[];
   providerProfileId: string;
   isPublished: boolean;
 
@@ -59,6 +60,7 @@ export interface UpdateServiceData {
   name?: string;
   slug?: string;
   description?: string;
+  imageUrls?: string[];
 
   // Marketplace fields
   templateKey?: TemplateKey;
@@ -229,6 +231,7 @@ export function createServiceRepository(): ServiceRepository {
           name: data.name,
           slug: data.slug,
           description: data.description,
+          imageUrls: data.imageUrls,
           providerProfile: {
             connect: {
               id: data.providerProfileId,
@@ -291,6 +294,7 @@ export function createServiceRepository(): ServiceRepository {
           ...(data.name !== undefined && { name: data.name }),
           ...(data.slug !== undefined && { slug: data.slug }),
           ...(data.description !== undefined && { description: data.description }),
+          ...(data.imageUrls !== undefined && { imageUrls: data.imageUrls }),
           // Marketplace fields
           ...(data.templateKey !== undefined && { templateKey: data.templateKey }),
           ...(data.templateData !== undefined && {

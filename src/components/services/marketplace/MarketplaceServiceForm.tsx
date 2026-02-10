@@ -1,19 +1,21 @@
 'use client';
 
 import { createService, updateService } from '@/actions/services';
+import { uploadServiceImages } from '@/actions/images';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Upload, X } from 'lucide-react';
 import { useRegisterPageHeaderSave } from '@/components/layout/provider-dashboard/PageHeaderContext';
 import { createServiceSchema, type CreateServiceData } from '@/lib/validations/service';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Service } from '@prisma/client';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { generateSlug } from '@/lib/utils/slug';
 import { BookingFields } from './BookingFields';
@@ -27,9 +29,13 @@ interface MarketplaceServiceFormProps {
   service?: Service;
 }
 
+const MAX_IMAGE_COUNT = 10;
+
 export function MarketplaceServiceForm({ service }: MarketplaceServiceFormProps) {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
   const isEditMode = !!service;
@@ -42,6 +48,7 @@ export function MarketplaceServiceForm({ service }: MarketplaceServiceFormProps)
           name: service.name,
           slug: service.slug,
           description: service.description,
+          imageUrls: service.imageUrls ?? [],
           templateKey: service.templateKey ?? undefined,
           templateData: (service.templateData as Record<string, unknown>) ?? {},
           coveragePackageKey: service.coveragePackageKey ?? undefined,
@@ -61,6 +68,7 @@ export function MarketplaceServiceForm({ service }: MarketplaceServiceFormProps)
           name: '',
           slug: '',
           description: '',
+          imageUrls: [],
           templateData: {},
           priceCents: 0,
           slotDuration: 60,
@@ -125,6 +133,64 @@ export function MarketplaceServiceForm({ service }: MarketplaceServiceFormProps)
 
   const onError = () => {
     setError('Please fix the validation errors before saving');
+  };
+
+  const handleImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    event.target.value = '';
+
+    if (files.length === 0) {
+      return;
+    }
+
+    const currentUrls = form.getValues('imageUrls') ?? [];
+    const remainingSlots = MAX_IMAGE_COUNT - currentUrls.length;
+    if (remainingSlots <= 0) {
+      setError(`You can upload up to ${MAX_IMAGE_COUNT} images`);
+      return;
+    }
+
+    if (files.length > remainingSlots) {
+      setError(`You can upload ${remainingSlots} more image${remainingSlots === 1 ? '' : 's'}`);
+      return;
+    }
+
+    setError(null);
+    setIsUploadingImages(true);
+
+    try {
+      const formData = new FormData();
+      for (const file of files) {
+        formData.append('files', file);
+      }
+
+      if (service?.id) {
+        formData.append('serviceId', service.id);
+      }
+
+      const result = await uploadServiceImages(formData);
+      if (!result.success || !result.data) {
+        setError(result.error ?? 'Failed to upload images');
+        return;
+      }
+
+      const nextUrls = Array.from(new Set([...currentUrls, ...result.data.imageUrls]));
+      form.setValue('imageUrls', nextUrls, { shouldDirty: true, shouldValidate: true });
+    } catch (uploadError) {
+      console.error('Image upload failed:', uploadError);
+      setError('Failed to upload images');
+    } finally {
+      setIsUploadingImages(false);
+    }
+  };
+
+  const handleRemoveImage = (imageUrl: string) => {
+    const currentUrls = form.getValues('imageUrls') ?? [];
+    form.setValue(
+      'imageUrls',
+      currentUrls.filter((url) => url !== imageUrl),
+      { shouldDirty: true, shouldValidate: true }
+    );
   };
 
   return (
@@ -192,6 +258,69 @@ export function MarketplaceServiceForm({ service }: MarketplaceServiceFormProps)
               {form.formState.errors.description && (
                 <p className="text-destructive text-sm">
                   {form.formState.errors.description.message}
+                </p>
+              )}
+            </div>
+
+            {/* Images */}
+            <div className="space-y-2">
+              <Label htmlFor="service-images">Service Images</Label>
+              <Input
+                ref={fileInputRef}
+                id="service-images"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageUpload}
+                disabled={isUploadingImages || isSaving}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploadingImages || isSaving}
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                {isUploadingImages ? 'Uploading...' : 'Choose Files'}
+              </Button>
+              <p className="text-muted-foreground text-sm">
+                Upload up to 10 images. These appear in marketplace cards and service pages.
+              </p>
+              {form.watch('imageUrls')?.length ? (
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                  {(form.watch('imageUrls') ?? []).map((imageUrl) => (
+                    <div
+                      key={imageUrl}
+                      className="bg-muted relative aspect-video overflow-hidden rounded-lg border"
+                    >
+                      <Image
+                        src={imageUrl}
+                        alt="Uploaded service image"
+                        fill
+                        className="object-cover"
+                      />
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="secondary"
+                        className="absolute top-2 right-2 h-7 w-7"
+                        onClick={() => handleRemoveImage(imageUrl)}
+                        aria-label="Remove image"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-muted-foreground rounded-lg border border-dashed p-4 text-sm">
+                  No images uploaded yet.
+                </div>
+              )}
+              {form.formState.errors.imageUrls && (
+                <p className="text-destructive text-sm">
+                  {form.formState.errors.imageUrls.message}
                 </p>
               )}
             </div>

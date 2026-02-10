@@ -17,6 +17,7 @@ import {
   ProviderServicesSection,
   ProviderServicesSectionSkeleton,
 } from '@/components/marketplace/provider/provider-services-section';
+import { ImageCarousel } from '@/components/shared/ImageCarousel';
 
 interface ProviderProfilePageProps {
   params: Promise<{
@@ -86,6 +87,7 @@ async function ProviderProfileContent({ providerSlug }: { providerSlug: string }
 
   return (
     <div className="space-y-8">
+      <ImageCarousel imageUrls={provider.imageUrls} alt={`${provider.name} images`} />
       <ProviderProfileHeader provider={provider} />
       <ProviderServicesSection provider={provider} services={services} bundles={bundles} />
     </div>

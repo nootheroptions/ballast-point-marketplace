@@ -1,10 +1,19 @@
 import type { NextConfig } from 'next';
 
 // Validate environment variables at build time
-import './src/lib/config/env';
+import { env } from './src/lib/config/env';
+
+const supabaseHostname = new URL(env.NEXT_PUBLIC_SUPABASE_URL).hostname;
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: supabaseHostname,
+      },
+    ],
+  },
 };
 
 export default nextConfig;

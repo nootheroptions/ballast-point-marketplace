@@ -15,6 +15,7 @@ import { ProviderInfo } from '@/components/marketplace/service/provider-info';
 import { BookingCard } from '@/components/marketplace/service/booking-card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ImageCarousel } from '@/components/shared/ImageCarousel';
 import { formatPrice } from '@/lib/utils/format-price';
 
 interface ServiceDetailPageProps {
@@ -94,27 +95,7 @@ async function ServiceDetailContent({
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Left column - Scrollable content */}
         <div className="space-y-8 lg:col-span-2">
-          {/* Placeholder Image */}
-          <div className="bg-muted relative h-64 w-full overflow-hidden rounded-lg md:h-96">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="64"
-                height="64"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-muted-foreground/40"
-              >
-                <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                <circle cx="9" cy="9" r="2" />
-                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-              </svg>
-            </div>
-          </div>
+          <ImageCarousel imageUrls={service.imageUrls} alt={`${service.name} images`} />
 
           {/* Header */}
           <ServiceDetailHeader

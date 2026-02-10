@@ -8,14 +8,16 @@ interface ProviderProfileHeaderProps {
 }
 
 export function ProviderProfileHeader({ provider }: ProviderProfileHeaderProps) {
+  const primaryImageUrl = provider.imageUrls[0];
+
   return (
     <div className="space-y-6">
       {/* Provider Logo and Name */}
       <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
-        {provider.logoUrl ? (
+        {primaryImageUrl ? (
           <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg border md:h-32 md:w-32">
             <Image
-              src={provider.logoUrl}
+              src={primaryImageUrl}
               alt={`${provider.name} logo`}
               fill
               className="object-cover"

@@ -102,10 +102,10 @@ export const updateProviderProfile = createAuthenticatedAction(
         }
       }
 
-      // Update provider profile (convert empty strings to null)
+      // Update provider profile
       const updatedProfile = await providerRepo.update(providerProfile.id, {
         ...data,
-        logoUrl: data.logoUrl === '' ? null : data.logoUrl,
+        imageUrls: data.imageUrls,
       });
 
       return {

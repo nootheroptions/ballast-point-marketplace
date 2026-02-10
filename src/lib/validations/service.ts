@@ -37,6 +37,10 @@ const baseServiceFields = {
     .string()
     .min(1, 'Service description is required')
     .max(2000, 'Description is too long'),
+  imageUrls: z
+    .array(z.string().url('Invalid image URL'))
+    .max(10, 'Maximum 10 images allowed')
+    .optional(),
 };
 
 /**
@@ -129,6 +133,10 @@ export const updateServiceSchema = z.object({
     .string()
     .min(1, 'Service description is required')
     .max(2000, 'Description is too long')
+    .optional(),
+  imageUrls: z
+    .array(z.string().url('Invalid image URL'))
+    .max(10, 'Maximum 10 images allowed')
     .optional(),
 
   // Marketplace fields

@@ -25,24 +25,7 @@ export const updateProviderProfileSchema = z.object({
     .max(600, 'Description must be less than 600 characters')
     .optional()
     .nullable(),
-  logoUrl: z
-    .string()
-    .refine(
-      (val) => {
-        // Allow empty string or null
-        if (!val || val === '') return true;
-        // Otherwise validate as URL
-        try {
-          new URL(val);
-          return true;
-        } catch {
-          return false;
-        }
-      },
-      { message: 'Invalid logo URL' }
-    )
-    .optional()
-    .nullable(),
+  imageUrls: z.array(z.string().url('Invalid image URL')).max(10, 'Maximum 10 images allowed'),
 });
 
 export type UpdateProviderProfileData = z.infer<typeof updateProviderProfileSchema>;

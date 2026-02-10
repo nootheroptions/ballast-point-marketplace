@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { ProviderProfile } from '@prisma/client';
@@ -22,15 +23,21 @@ import {
   type UpdateProviderProfileData,
 } from '@/lib/validations/provider-profile';
 import { updateProviderProfile } from '@/actions/providers';
+import { uploadProviderImages } from '@/actions/images';
+import { Upload, X } from 'lucide-react';
 import { useRegisterPageHeaderSave } from '../layout/provider-dashboard/PageHeaderContext';
 
 interface BasicInfoFormProps {
   profile: ProviderProfile;
 }
 
+const MAX_IMAGE_COUNT = 10;
+
 export function BasicInfoForm({ profile }: BasicInfoFormProps) {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -40,7 +47,7 @@ export function BasicInfoForm({ profile }: BasicInfoFormProps) {
       name: profile.name,
       slug: profile.slug,
       description: profile.description ?? '',
-      logoUrl: profile.logoUrl ?? '',
+      imageUrls: profile.imageUrls.length > 0 ? profile.imageUrls : [],
     },
   });
 
@@ -67,7 +74,7 @@ export function BasicInfoForm({ profile }: BasicInfoFormProps) {
             name: result.data.name,
             slug: result.data.slug,
             description: result.data.description ?? '',
-            logoUrl: result.data.logoUrl ?? '',
+            imageUrls: result.data.imageUrls ?? [],
           });
         }
         router.refresh();
@@ -88,6 +95,73 @@ export function BasicInfoForm({ profile }: BasicInfoFormProps) {
 
   // Register save handler with page header
   useRegisterPageHeaderSave(handleSave, isSubmitting, !isDirty);
+
+  const handleImageUpload = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(event.target.files ?? []);
+      event.target.value = '';
+
+      if (files.length === 0) {
+        return;
+      }
+
+      const existingUrls = form.getValues('imageUrls') ?? [];
+      const remainingSlots = MAX_IMAGE_COUNT - existingUrls.length;
+
+      if (remainingSlots <= 0) {
+        setErrorMessage(`You can upload up to ${MAX_IMAGE_COUNT} images`);
+        return;
+      }
+
+      if (files.length > remainingSlots) {
+        setErrorMessage(
+          `You can upload ${remainingSlots} more image${remainingSlots === 1 ? '' : 's'}`
+        );
+        return;
+      }
+
+      setErrorMessage(null);
+      setSuccessMessage(null);
+      setIsUploadingImages(true);
+
+      try {
+        const formData = new FormData();
+        for (const file of files) {
+          formData.append('files', file);
+        }
+
+        const result = await uploadProviderImages(formData);
+        if (!result.success || !result.data) {
+          setErrorMessage(result.error ?? 'Failed to upload images');
+          return;
+        }
+
+        const nextUrls = Array.from(new Set([...existingUrls, ...result.data.imageUrls]));
+        form.setValue('imageUrls', nextUrls, { shouldDirty: true, shouldValidate: true });
+      } catch (error) {
+        console.error(error);
+        setErrorMessage('Failed to upload images');
+      } finally {
+        setIsUploadingImages(false);
+      }
+    },
+    [form]
+  );
+
+  const handleRemoveImage = useCallback(
+    (imageUrl: string) => {
+      const imageUrls = form.getValues('imageUrls') ?? [];
+      form.setValue(
+        'imageUrls',
+        imageUrls.filter((url) => url !== imageUrl),
+        {
+          shouldDirty: true,
+          shouldValidate: true,
+        }
+      );
+    },
+    [form]
+  );
 
   return (
     <Form {...form}>
@@ -167,18 +241,68 @@ export function BasicInfoForm({ profile }: BasicInfoFormProps) {
 
         <FormField
           control={form.control}
-          name="logoUrl"
+          name="imageUrls"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Logo URL</FormLabel>
+              <FormLabel>Business Images</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="https://example.com/logo.png"
-                  {...field}
-                  value={field.value ?? ''}
-                />
+                <div className="space-y-3">
+                  <Input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageUpload}
+                    disabled={isUploadingImages || isSubmitting}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploadingImages || isSubmitting}
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    {isUploadingImages ? 'Uploading...' : 'Choose Files'}
+                  </Button>
+
+                  {field.value?.length ? (
+                    <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                      {field.value.map((imageUrl) => (
+                        <div
+                          key={imageUrl}
+                          className="bg-muted relative aspect-video overflow-hidden rounded-lg border"
+                        >
+                          <Image
+                            src={imageUrl}
+                            alt="Uploaded provider image"
+                            fill
+                            className="object-cover"
+                          />
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="secondary"
+                            className="absolute top-2 right-2 h-7 w-7"
+                            onClick={() => handleRemoveImage(imageUrl)}
+                            aria-label="Remove image"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-muted-foreground rounded-lg border border-dashed p-4 text-sm">
+                      No images uploaded yet.
+                    </div>
+                  )}
+                </div>
               </FormControl>
-              <FormDescription>URL to your business logo image.</FormDescription>
+              <FormDescription>
+                Upload up to 10 images for your profile. These appear publicly on your provider
+                page.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
