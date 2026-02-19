@@ -28,6 +28,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'insights-assets.kyzon.com',
       }, // TO DO: remove this once we set up with mat's actual one
+      {
+        protocol: 'https',
+        hostname: 'static.wixstatic.com',
+      },
     ],
   },
 };
