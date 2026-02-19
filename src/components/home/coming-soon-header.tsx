@@ -10,7 +10,7 @@ import { useState } from 'react';
 const navLinks = [
   { href: '/home', label: 'Home' },
   { href: '/podcast', label: 'Podcast' },
-  { href: '/blogs', label: 'Blogs' },
+  { href: '/blog', label: 'Blog' },
 ];
 
 export function ComingSoonHeader() {

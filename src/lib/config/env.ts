@@ -49,6 +49,10 @@ export const env = createEnv({
       .string()
       .url()
       .default('https://podcasts.apple.com/au/podcast/buildipedia/id1638450157'),
+
+    // Hyvor Blogs
+    HYVOR_BLOGS_SUBDOMAIN: z.string().min(1),
+    HYVOR_BLOGS_WEBHOOK_KEY: z.string().min(1).optional(),
   },
 
   /**
@@ -63,6 +67,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ROOT_APP_DOMAIN: z.string().default('localhost.com'),
     NEXT_PUBLIC_PROVIDER_DASHBOARD_URL: z.string().url(),
     NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: z.string().min(1, 'Mapbox access token is required'),
+    NEXT_PUBLIC_HYVOR_TALK_WEBSITE_ID: z.string().min(1).optional(),
   },
 
   /**
@@ -80,6 +85,8 @@ export const env = createEnv({
     BASIC_AUTH_USER: process.env.BASIC_AUTH_USER,
     BASIC_AUTH_PASSWORD: process.env.BASIC_AUTH_PASSWORD,
     SUPABASE_STORAGE_BUCKET: process.env.SUPABASE_STORAGE_BUCKET,
+    HYVOR_BLOGS_SUBDOMAIN: process.env.HYVOR_BLOGS_SUBDOMAIN,
+    HYVOR_BLOGS_WEBHOOK_KEY: process.env.HYVOR_BLOGS_WEBHOOK_KEY,
     PODCASTS_RSS_FEED_URL: process.env.PODCASTS_RSS_FEED_URL,
     PODCASTS_SPOTIFY_SHOW_URL: process.env.PODCASTS_SPOTIFY_SHOW_URL,
     PODCASTS_APPLE_PODCASTS_SHOW_URL: process.env.PODCASTS_APPLE_PODCASTS_SHOW_URL,
@@ -91,6 +98,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ROOT_APP_DOMAIN: process.env.NEXT_PUBLIC_ROOT_APP_DOMAIN,
     NEXT_PUBLIC_PROVIDER_DASHBOARD_URL: process.env.NEXT_PUBLIC_PROVIDER_DASHBOARD_URL,
     NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
+    NEXT_PUBLIC_HYVOR_TALK_WEBSITE_ID: process.env.NEXT_PUBLIC_HYVOR_TALK_WEBSITE_ID,
   },
 
   /**

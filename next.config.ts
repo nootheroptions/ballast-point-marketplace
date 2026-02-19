@@ -16,6 +16,18 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'hyvor.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.hyvor.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'insights-assets.kyzon.com',
+      }, // TO DO: remove this once we set up with mat's actual one
     ],
   },
 };
