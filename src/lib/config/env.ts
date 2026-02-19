@@ -59,6 +59,10 @@ export const env = createEnv({
     // Hyvor Blogs
     HYVOR_BLOGS_SUBDOMAIN: z.string().min(1),
     HYVOR_BLOGS_WEBHOOK_KEY: z.string().min(1).optional(),
+
+    // Resend (Email)
+    RESEND_API_KEY: z.string().min(1),
+    RESEND_FROM_EMAIL: z.string().email().default('noreply@buildipedia.com.au'),
   },
 
   /**
@@ -97,6 +101,8 @@ export const env = createEnv({
     PODCASTS_RSS_FEED_URL: process.env.PODCASTS_RSS_FEED_URL,
     PODCASTS_SPOTIFY_SHOW_URL: process.env.PODCASTS_SPOTIFY_SHOW_URL,
     PODCASTS_APPLE_PODCASTS_SHOW_URL: process.env.PODCASTS_APPLE_PODCASTS_SHOW_URL,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
 
     // Client variables (NEXT_PUBLIC_*)
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
