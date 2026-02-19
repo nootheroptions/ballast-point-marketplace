@@ -1,14 +1,14 @@
-import { Suspense } from 'react';
-import { cookies } from 'next/headers';
-import Link from 'next/link';
+import { getProviderBookings } from '@/actions/bookings';
+import { getOnboardingProgress } from '@/actions/onboarding';
+import { getServices } from '@/actions/services';
+import { BookingsPageContent, type BookingWithDetails } from '@/components/bookings';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CURRENT_TEAM_COOKIE } from '@/lib/constants';
-import { getOnboardingProgress } from '@/actions/onboarding';
-import { getServices } from '@/actions/services';
-import { getProviderBookings } from '@/actions/bookings';
-import { BookingsPageContent, type BookingWithDetails } from '@/components/bookings';
+import { cookies } from 'next/headers';
+import Link from 'next/link';
+import { Suspense } from 'react';
 
 export default async function ProviderDashboard() {
   const cookieStore = await cookies();
@@ -102,7 +102,7 @@ async function OnboardingPrompt() {
     <div className="flex min-h-[80vh] items-center justify-center">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome to Colabri</CardTitle>
+          <CardTitle className="text-2xl">Welcome to Buildipedia</CardTitle>
           <CardDescription>
             Set up your business profile to start connecting with clients.
           </CardDescription>

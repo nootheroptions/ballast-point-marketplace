@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import { MapPin, Target, Home, Hammer, Search, Menu } from 'lucide-react';
+import { DesiredOutcomeDropdown } from '@/components/home/desired-outcome-dropdown';
+import { LocationDropdown } from '@/components/home/location-dropdown';
+import { ProjectTypeDropdown } from '@/components/home/project-type-dropdown';
+import { PropertyTypeDropdown } from '@/components/home/property-type-dropdown';
+import { UserDropdown } from '@/components/home/user-dropdown';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,14 +12,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { UserDropdown } from '@/components/home/user-dropdown';
-import { LocationDropdown } from '@/components/home/location-dropdown';
-import { DesiredOutcomeDropdown } from '@/components/home/desired-outcome-dropdown';
-import { PropertyTypeDropdown } from '@/components/home/property-type-dropdown';
-import { ProjectTypeDropdown } from '@/components/home/project-type-dropdown';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { LocationData } from '@/lib/types/location';
 import { env } from '@/lib/config/env';
+import type { LocationData } from '@/lib/types/location';
+import { Hammer, Home, MapPin, Menu, Search, Target } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 
 interface MarketplaceHeaderProps {
   showSearchBar?: boolean;
@@ -87,7 +87,7 @@ export function MarketplaceHeader({
         <div className="hidden items-center justify-between gap-8 py-4 lg:flex">
           {/* Logo */}
           <Link href="/" className="flex flex-shrink-0 items-center">
-            <div className="text-2xl font-bold text-gray-900">Colabri</div>
+            <div className="text-2xl font-bold text-gray-900">Buildipedia</div>
           </Link>
 
           {/* Search Bar (optional) */}
@@ -242,7 +242,7 @@ export function MarketplaceHeader({
           {/* Mobile Logo and User */}
           <div className="flex items-center justify-between border-b py-4">
             <Link href="/" className="flex items-center">
-              <div className="text-xl font-bold text-gray-900">Colabri</div>
+              <div className="text-xl font-bold text-gray-900">Buildipedia</div>
             </Link>
             {user ? (
               <UserDropdown
