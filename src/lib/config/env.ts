@@ -40,6 +40,15 @@ export const env = createEnv({
     BASIC_AUTH_USER: z.string().optional(),
     BASIC_AUTH_PASSWORD: z.string().optional(),
     SUPABASE_STORAGE_BUCKET: z.string().min(1).default('public-marketplace-images'),
+    PODCASTS_RSS_FEED_URL: z.string().url().default('https://anchor.fm/s/ad6962a4/podcast/rss'),
+    PODCASTS_SPOTIFY_SHOW_URL: z
+      .string()
+      .url()
+      .default('https://open.spotify.com/show/3JqwaNnUZKyrHZMYsr1iiz'),
+    PODCASTS_APPLE_PODCASTS_SHOW_URL: z
+      .string()
+      .url()
+      .default('https://podcasts.apple.com/au/podcast/buildipedia/id1638450157'),
   },
 
   /**
@@ -71,6 +80,9 @@ export const env = createEnv({
     BASIC_AUTH_USER: process.env.BASIC_AUTH_USER,
     BASIC_AUTH_PASSWORD: process.env.BASIC_AUTH_PASSWORD,
     SUPABASE_STORAGE_BUCKET: process.env.SUPABASE_STORAGE_BUCKET,
+    PODCASTS_RSS_FEED_URL: process.env.PODCASTS_RSS_FEED_URL,
+    PODCASTS_SPOTIFY_SHOW_URL: process.env.PODCASTS_SPOTIFY_SHOW_URL,
+    PODCASTS_APPLE_PODCASTS_SHOW_URL: process.env.PODCASTS_APPLE_PODCASTS_SHOW_URL,
 
     // Client variables (NEXT_PUBLIC_*)
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,

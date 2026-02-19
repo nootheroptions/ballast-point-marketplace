@@ -9,7 +9,7 @@ import { useState } from 'react';
 
 const navLinks = [
   { href: '/home', label: 'Home' },
-  { href: '/podcasts', label: 'Podcasts' },
+  { href: '/podcast', label: 'Podcast' },
   { href: '/blogs', label: 'Blogs' },
 ];
 
