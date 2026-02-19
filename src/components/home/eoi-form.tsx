@@ -9,16 +9,17 @@ import { Label } from '@/components/ui/label';
 import { eoiSchema, type EoiFormData } from '@/lib/validations/eoi';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle2 } from 'lucide-react';
-import { useActionState } from 'react';
+import { useActionState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 
 export function EoiForm() {
-  const [state, formAction, isPending] = useActionState<
-    ActionResult<{ message: string }> | null,
-    EoiFormData
-  >(async (_, data) => {
-    return submitExpressionOfInterest(data);
-  }, null);
+  const [isPending, startTransition] = useTransition();
+  const [state, formAction] = useActionState<ActionResult<{ message: string }> | null, EoiFormData>(
+    async (_, data) => {
+      return submitExpressionOfInterest(data);
+    },
+    null
+  );
 
   const {
     register,
@@ -51,7 +52,7 @@ export function EoiForm() {
       <CardContent>
         <form
           onSubmit={handleSubmit((data) => {
-            formAction(data);
+            startTransition(() => formAction(data));
           })}
           className="space-y-4 text-left"
         >
