@@ -62,7 +62,8 @@ export const env = createEnv({
 
     // Resend (Email)
     RESEND_API_KEY: z.string().min(1),
-    RESEND_FROM_EMAIL: z.string().email().default('noreply@buildipedia.com.au'),
+    RESEND_FROM_EMAIL: z.string().email(),
+    SUPPORT_EMAIL: z.string().email(),
   },
 
   /**
@@ -103,6 +104,7 @@ export const env = createEnv({
     PODCASTS_APPLE_PODCASTS_SHOW_URL: process.env.PODCASTS_APPLE_PODCASTS_SHOW_URL,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
+    SUPPORT_EMAIL: process.env.SUPPORT_EMAIL,
 
     // Client variables (NEXT_PUBLIC_*)
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,

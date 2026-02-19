@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/home', request.url));
     }
 
-    const allowedRoutes = ['/home', '/blog', '/podcast'];
+    const allowedRoutes = ['/home', '/blog', '/podcast', '/join-us'];
 
     // Check if current path is allowed (exact match or starts with allowed path)
     const isAllowed = allowedRoutes.some(

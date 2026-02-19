@@ -11,6 +11,7 @@ const navLinks = [
   { href: '/home', label: 'Home' },
   { href: '/podcast', label: 'Podcast' },
   { href: '/blog', label: 'Blog' },
+  { href: '/join-us', label: 'Join Us' },
 ];
 
 export function ComingSoonHeader() {
