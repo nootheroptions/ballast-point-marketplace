@@ -39,6 +39,12 @@ export const env = createEnv({
       .transform((val) => val === 'true'),
     BASIC_AUTH_USER: z.string().optional(),
     BASIC_AUTH_PASSWORD: z.string().optional(),
+
+    // Route Restrictions
+    ONLY_SHOW_PUBLIC_PAGES: z
+      .string()
+      .default('false')
+      .transform((val) => val === 'true'),
     SUPABASE_STORAGE_BUCKET: z.string().min(1).default('public-marketplace-images'),
     PODCASTS_RSS_FEED_URL: z.string().url().default('https://anchor.fm/s/ad6962a4/podcast/rss'),
     PODCASTS_SPOTIFY_SHOW_URL: z
@@ -84,6 +90,7 @@ export const env = createEnv({
     BASIC_AUTH_ENABLED: process.env.BASIC_AUTH_ENABLED,
     BASIC_AUTH_USER: process.env.BASIC_AUTH_USER,
     BASIC_AUTH_PASSWORD: process.env.BASIC_AUTH_PASSWORD,
+    ONLY_SHOW_PUBLIC_PAGES: process.env.ONLY_SHOW_PUBLIC_PAGES,
     SUPABASE_STORAGE_BUCKET: process.env.SUPABASE_STORAGE_BUCKET,
     HYVOR_BLOGS_SUBDOMAIN: process.env.HYVOR_BLOGS_SUBDOMAIN,
     HYVOR_BLOGS_WEBHOOK_KEY: process.env.HYVOR_BLOGS_WEBHOOK_KEY,

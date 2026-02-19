@@ -15,6 +15,25 @@ export async function middleware(request: NextRequest) {
 
   const url = request.nextUrl.clone();
 
+  if (env.ONLY_SHOW_PUBLIC_PAGES) {
+    // Redirect root path to /home
+    if (url.pathname === '/') {
+      return NextResponse.redirect(new URL('/home', request.url));
+    }
+
+    const allowedRoutes = ['/home', '/blog', '/podcast'];
+
+    // Check if current path is allowed (exact match or starts with allowed path)
+    const isAllowed = allowedRoutes.some(
+      (route) => url.pathname === route || url.pathname.startsWith(`${route}/`)
+    );
+
+    if (!isAllowed) {
+      // Return 404 for blocked routes
+      return NextResponse.rewrite(new URL('/404', request.url), { status: 404 });
+    }
+  }
+
   // Auth paths that should not trigger protected subdomain redirect
   const authPaths = ['/login', '/signup'];
   const isAuthPath = authPaths.some((path) => url.pathname.startsWith(path));
