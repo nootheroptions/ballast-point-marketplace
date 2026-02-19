@@ -500,6 +500,16 @@ enum ParticipantStatus {
 /// MARKETPLACE MODELS
 /// =======================================================
 
+/// Captures expressions of interest for the coming soon landing page
+model ExpressionOfInterest {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("expressions_of_interest")
+}
+
 /// Bundle pricing type
 enum BundlePricingType {
   SUM_OF_PARTS /// Total price = sum of individual service prices
