@@ -49,7 +49,7 @@ export function UserDropdown({ user, hasProvider, providerSlug }: UserDropdownPr
       <DropdownMenuTrigger className="focus-visible:ring-ring rounded-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2">
         <Avatar size="lg">
           {user.avatarUrl && <AvatarImage src={user.avatarUrl} alt={displayName} />}
-          <AvatarFallback className="bg-primary text-primary-foreground font-medium">
+          <AvatarFallback className="bg-white font-medium text-gray-900">
             {avatarFallback}
           </AvatarFallback>
         </Avatar>
