@@ -17,6 +17,7 @@ import { DesiredOutcomeDropdown } from '@/components/home/desired-outcome-dropdo
 import { PropertyTypeDropdown } from '@/components/home/property-type-dropdown';
 import { ProjectTypeDropdown } from '@/components/home/project-type-dropdown';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Logo } from '@/components/shared/Logo';
 import type { LocationData } from '@/lib/types/location';
 import { env } from '@/lib/config/env';
 
@@ -86,9 +87,7 @@ export function MarketplaceHeader({
         {/* Desktop Layout */}
         <div className="hidden items-center justify-between gap-8 py-4 lg:flex">
           {/* Logo */}
-          <Link href="/" className="flex flex-shrink-0 items-center">
-            <div className="text-2xl font-bold text-gray-900">Colabri</div>
-          </Link>
+          <Logo href="/" size="xl" className="flex-shrink-0" />
 
           {/* Search Bar (optional) */}
           {showSearchBar && (
@@ -241,9 +240,7 @@ export function MarketplaceHeader({
         <div className="lg:hidden">
           {/* Mobile Logo and User */}
           <div className="flex items-center justify-between border-b py-4">
-            <Link href="/" className="flex items-center">
-              <div className="text-xl font-bold text-gray-900">Colabri</div>
-            </Link>
+            <Logo href="/" size="lg" />
             {user ? (
               <UserDropdown
                 user={user}

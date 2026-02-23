@@ -6,6 +6,7 @@ import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Logo } from '@/components/shared/Logo';
 import { cn } from '@/lib/utils/shadcn';
 import { useNavigation, NavItem, navItems } from './navigation.config';
 
@@ -28,7 +29,7 @@ export function MobileNav({ children, hasProvider = true }: MobileNavProps) {
       <SheetContent side="left" className="bg-sidebar w-72 p-0">
         <SheetHeader className="border-sidebar-border border-b p-4">
           <SheetTitle className="text-sidebar-foreground text-left">
-            <span className="text-lg font-bold">Colabri</span>
+            <Logo href="/" size="md" />
           </SheetTitle>
         </SheetHeader>
         <TooltipProvider delayDuration={0}>

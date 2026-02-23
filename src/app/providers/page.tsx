@@ -102,7 +102,7 @@ async function OnboardingPrompt() {
     <div className="flex min-h-[80vh] items-center justify-center">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome to Colabri</CardTitle>
+          <CardTitle className="text-2xl">Welcome to Buildipedia</CardTitle>
           <CardDescription>
             Set up your business profile to start connecting with clients.
           </CardDescription>

@@ -1,6 +1,7 @@
 'use client';
 
 import { Menu } from 'lucide-react';
+import { Logo } from '@/components/shared/Logo';
 import { MobileNav, MobileNavTrigger } from './MobileNav';
 
 interface MobileHeaderProps {
@@ -16,7 +17,7 @@ export function MobileHeader({ hasProvider = true }: MobileHeaderProps) {
           <span className="sr-only">Open menu</span>
         </MobileNavTrigger>
       </MobileNav>
-      <span className="text-sidebar-foreground ml-3 text-lg font-bold">Colabri</span>
+      <Logo href="/" size="md" className="ml-3" />
     </header>
   );
 }
