@@ -140,9 +140,7 @@ export function LicensingForm({ onLicensesChange }: LicensingFormProps) {
       )}
 
       {successMessage && (
-        <div className="rounded-lg bg-green-500/15 p-3 text-sm text-green-700 dark:text-green-400">
-          {successMessage}
-        </div>
+        <div className="bg-success/15 text-success rounded-lg p-3 text-sm">{successMessage}</div>
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

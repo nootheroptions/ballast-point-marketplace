@@ -119,8 +119,8 @@ export default function BookingSuccessPage() {
       >
         <div className="mx-auto flex min-h-full w-full max-w-lg flex-col items-center justify-center px-6 py-10 text-center">
           <div className="mb-6 flex justify-center">
-            <div className="rounded-full bg-green-100 p-3 dark:bg-green-900/20">
-              <CheckCircle className="h-12 w-12 text-green-600 dark:text-green-500" />
+            <div className="bg-success/10 rounded-full p-3">
+              <CheckCircle className="text-success h-12 w-12" />
             </div>
           </div>
 
@@ -191,10 +191,10 @@ export default function BookingSuccessPage() {
             </Button>
           </div>
 
-          <div className="mt-6 w-full rounded-md bg-blue-50 p-4 text-left dark:bg-blue-950/20">
-            <p className="text-sm text-blue-900 dark:text-blue-100">
-              <strong>What’s next?</strong> You’ll receive a confirmation email with all the details
-              and any instructions from {bookingData.providerName}.
+          <div className="bg-info/10 mt-6 w-full rounded-md p-4 text-left">
+            <p className="text-foreground text-sm">
+              <strong>What&apos;s next?</strong> You&apos;ll receive a confirmation email with all
+              the details and any instructions from {bookingData.providerName}.
             </p>
           </div>
         </div>

@@ -29,7 +29,7 @@ export function ClientRequirements({
         <div className="space-y-2">
           {requirements.map((requirement, index) => (
             <div key={index} className="flex items-start gap-3">
-              <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" />
+              <AlertCircle className="text-info mt-0.5 h-5 w-5 flex-shrink-0" />
               <span>{requirement}</span>
             </div>
           ))}
@@ -42,7 +42,7 @@ export function ClientRequirements({
               <div className="space-y-2">
                 {clientResponsibilities.map((responsibility, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-orange-600" />
+                    <AlertCircle className="text-warning mt-0.5 h-5 w-5 flex-shrink-0" />
                     <span className="text-sm">{responsibility}</span>
                   </div>
                 ))}

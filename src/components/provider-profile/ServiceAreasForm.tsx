@@ -264,9 +264,7 @@ export function ServiceAreasForm({ onTabChange }: ServiceAreasFormProps) {
       )}
 
       {successMessage && (
-        <div className="rounded-lg bg-green-500/15 p-3 text-sm text-green-700 dark:text-green-400">
-          {successMessage}
-        </div>
+        <div className="bg-success/15 text-success rounded-lg p-3 text-sm">{successMessage}</div>
       )}
 
       {/* Licensed Jurisdictions - Service Areas */}

@@ -82,7 +82,7 @@ export function MarketplaceHeader({
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-800 bg-gray-900 shadow-sm">
+    <header className="border-primary/80 bg-primary sticky top-0 z-50 border-b shadow-sm">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Desktop Layout */}
         <div className="hidden items-center justify-between gap-8 py-4 lg:flex">
@@ -92,11 +92,11 @@ export function MarketplaceHeader({
           {/* Search Bar (optional) */}
           {showSearchBar && (
             <div className="flex flex-1 items-center justify-center">
-              <div className="flex items-center rounded-full border border-gray-300 bg-white shadow-md transition-shadow hover:shadow-lg">
+              <div className="border-border bg-background flex items-center rounded-full border shadow-md transition-shadow hover:shadow-lg">
                 {/* Location Section */}
-                <div className="search-bar-container relative flex items-center gap-2 rounded-l-full px-6 py-3 transition-colors hover:bg-gray-50">
+                <div className="search-bar-container hover:bg-muted relative flex items-center gap-2 rounded-l-full px-6 py-3 transition-colors">
                   <div className="flex-1">
-                    <div className="text-xs font-semibold text-white">Where</div>
+                    <div className="text-foreground text-xs font-semibold">Where</div>
                     <div className="w-48">
                       <LocationDropdown
                         value={selectedLocation}
@@ -108,12 +108,12 @@ export function MarketplaceHeader({
                   </div>
                 </div>
 
-                <div className="h-8 w-px bg-gray-300" />
+                <div className="bg-border h-8 w-px" />
 
                 {/* Desired Outcome Section */}
-                <div className="search-bar-container relative flex items-center gap-2 px-6 py-3 transition-colors hover:bg-gray-50">
+                <div className="search-bar-container hover:bg-muted relative flex items-center gap-2 px-6 py-3 transition-colors">
                   <div className="flex-1">
-                    <div className="text-xs font-semibold text-white">What</div>
+                    <div className="text-foreground text-xs font-semibold">What</div>
                     <div className="w-48">
                       <DesiredOutcomeDropdown
                         value={desiredOutcome}
@@ -125,12 +125,12 @@ export function MarketplaceHeader({
                   </div>
                 </div>
 
-                <div className="h-8 w-px bg-gray-300" />
+                <div className="bg-border h-8 w-px" />
 
                 {/* Property Type Section */}
-                <div className="search-bar-container relative flex items-center gap-2 px-6 py-3 transition-colors hover:bg-gray-50">
+                <div className="search-bar-container hover:bg-muted relative flex items-center gap-2 px-6 py-3 transition-colors">
                   <div className="flex-1">
-                    <div className="text-xs font-semibold text-white">Property</div>
+                    <div className="text-foreground text-xs font-semibold">Property</div>
                     <div className="w-40">
                       <PropertyTypeDropdown
                         value={propertyType}
@@ -142,12 +142,12 @@ export function MarketplaceHeader({
                   </div>
                 </div>
 
-                <div className="h-8 w-px bg-gray-300" />
+                <div className="bg-border h-8 w-px" />
 
                 {/* Project Type Section */}
-                <div className="search-bar-container relative flex items-center gap-2 px-6 py-3 transition-colors hover:bg-gray-50">
+                <div className="search-bar-container hover:bg-muted relative flex items-center gap-2 px-6 py-3 transition-colors">
                   <div className="flex-1">
-                    <div className="text-xs font-semibold text-white">Project</div>
+                    <div className="text-foreground text-xs font-semibold">Project</div>
                     <div className="w-40">
                       <ProjectTypeDropdown
                         value={projectType}
@@ -215,18 +215,18 @@ export function MarketplaceHeader({
               <div className="flex items-center gap-6">
                 <Link
                   href="/login"
-                  className="text-sm font-medium text-white transition-colors hover:text-gray-300"
+                  className="text-primary-foreground hover:text-primary-foreground/80 text-sm font-medium transition-colors"
                 >
                   Log in
                 </Link>
                 <Button
                   asChild
                   variant="outline"
-                  className="rounded-full border-gray-600 bg-transparent text-white hover:border-gray-500 hover:bg-gray-800 hover:text-white"
+                  className="border-primary-foreground/50 text-primary-foreground hover:border-primary-foreground/70 hover:bg-primary/80 hover:text-primary-foreground rounded-full bg-transparent"
                 >
                   <Link href="/signup">Sign up</Link>
                 </Button>
-                <Button asChild variant="default" className="rounded-full">
+                <Button asChild variant="secondary" className="rounded-full">
                   <Link href={`${env.NEXT_PUBLIC_SITE_URL}/signup?tab=provider`}>
                     List your business
                   </Link>
@@ -282,7 +282,7 @@ export function MarketplaceHeader({
               <div className="flex items-center gap-3">
                 <Link
                   href="/login"
-                  className="text-sm font-medium text-white transition-colors hover:text-gray-300"
+                  className="text-primary-foreground hover:text-primary-foreground/80 text-sm font-medium transition-colors"
                 >
                   Log in
                 </Link>
@@ -290,7 +290,7 @@ export function MarketplaceHeader({
                   asChild
                   variant="outline"
                   size="sm"
-                  className="rounded-full border-gray-600 bg-transparent text-white hover:border-gray-500 hover:bg-gray-800 hover:text-white"
+                  className="border-primary-foreground/50 text-primary-foreground hover:border-primary-foreground/70 hover:bg-primary/80 hover:text-primary-foreground rounded-full bg-transparent"
                 >
                   <Link href="/signup">Sign up</Link>
                 </Button>
@@ -302,10 +302,10 @@ export function MarketplaceHeader({
           {showSearchBar && (
             <div className="py-4">
               <div className="flex flex-col gap-3">
-                <div className="flex flex-col gap-2 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                <div className="border-border bg-background flex flex-col gap-2 rounded-2xl border p-4 shadow-sm">
                   {/* Location */}
-                  <div className="flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2">
-                    <MapPin className="h-4 w-4 flex-shrink-0 text-gray-500" />
+                  <div className="border-border flex items-center gap-3 rounded-lg border px-3 py-2">
+                    <MapPin className="text-muted-foreground h-4 w-4 flex-shrink-0" />
                     <LocationDropdown
                       value={selectedLocation}
                       onChange={setSelectedLocation}
@@ -315,8 +315,8 @@ export function MarketplaceHeader({
                   </div>
 
                   {/* Desired Outcome */}
-                  <div className="flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2">
-                    <Target className="h-4 w-4 flex-shrink-0 text-gray-500" />
+                  <div className="border-border flex items-center gap-3 rounded-lg border px-3 py-2">
+                    <Target className="text-muted-foreground h-4 w-4 flex-shrink-0" />
                     <DesiredOutcomeDropdown
                       value={desiredOutcome}
                       onChange={setDesiredOutcome}
@@ -326,8 +326,8 @@ export function MarketplaceHeader({
                   </div>
 
                   {/* Property Type */}
-                  <div className="flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2">
-                    <Home className="h-4 w-4 flex-shrink-0 text-gray-500" />
+                  <div className="border-border flex items-center gap-3 rounded-lg border px-3 py-2">
+                    <Home className="text-muted-foreground h-4 w-4 flex-shrink-0" />
                     <PropertyTypeDropdown
                       value={propertyType}
                       onChange={setPropertyType}
@@ -337,8 +337,8 @@ export function MarketplaceHeader({
                   </div>
 
                   {/* Project Type */}
-                  <div className="flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2">
-                    <Hammer className="h-4 w-4 flex-shrink-0 text-gray-500" />
+                  <div className="border-border flex items-center gap-3 rounded-lg border px-3 py-2">
+                    <Hammer className="text-muted-foreground h-4 w-4 flex-shrink-0" />
                     <ProjectTypeDropdown
                       value={projectType}
                       onChange={setProjectType}
@@ -368,7 +368,7 @@ export function MarketplaceHeader({
 
 export function MarketplaceHeaderSkeleton() {
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-800 bg-gray-900 shadow-sm">
+    <header className="border-primary/80 bg-primary sticky top-0 z-50 border-b shadow-sm">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Desktop Layout */}
         <div className="hidden items-center justify-between gap-8 py-4 lg:flex">

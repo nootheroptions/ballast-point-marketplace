@@ -128,7 +128,7 @@ export function Step1Form({ name, slug, onChange, onValidChange }: Step1FormProp
             </p>
           )}
           {!errors.slug && !checkingSlug && slugAvailable === true && (
-            <p className="text-sm text-green-600">This URL is available!</p>
+            <p className="text-success text-sm">This URL is available!</p>
           )}
           <p className="text-muted-foreground text-xs">
             Only lowercase letters, numbers, and hyphens are allowed.

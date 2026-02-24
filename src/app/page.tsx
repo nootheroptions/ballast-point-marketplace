@@ -17,10 +17,10 @@ export default function Home() {
         <div className="container mx-auto max-w-7xl">
           {/* Hero Section */}
           <div className="mb-12 text-center">
-            <h1 className="mb-6 text-5xl leading-tight font-bold text-gray-900 md:text-6xl lg:text-7xl">
+            <h1 className="text-foreground mb-6 text-5xl leading-tight font-bold md:text-6xl lg:text-7xl">
               Find the right architecture service for your project
             </h1>
-            <p className="mx-auto max-w-4xl text-lg text-gray-700 md:text-xl">
+            <p className="text-muted-foreground mx-auto max-w-4xl text-lg md:text-xl">
               Compare productized services from experienced architects. Fixed pricing, clear scope,
               fast turnaround.
             </p>

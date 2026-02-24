@@ -31,8 +31,8 @@ export default async function NewBundlePage() {
           title="New Bundle"
           subtitle="Combine multiple services into a discounted package"
         />
-        <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-6">
-          <p className="text-sm text-amber-700 dark:text-amber-400">
+        <div className="border-warning/50 bg-warning/10 rounded-lg border p-6">
+          <p className="text-warning text-sm">
             You need at least 2 services to create a bundle. Please create more services first.
           </p>
         </div>

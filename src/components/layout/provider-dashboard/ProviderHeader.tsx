@@ -17,7 +17,7 @@ interface ProviderHeaderProps {
 
 export function ProviderHeader({ user, hasProvider, providerSlug }: ProviderHeaderProps) {
   return (
-    <header className="fixed top-0 right-0 left-0 z-50 border-b border-gray-800 bg-gray-900/95 backdrop-blur-sm">
+    <header className="border-primary/80 bg-primary/95 fixed top-0 right-0 left-0 z-50 border-b backdrop-blur-sm">
       <div className="flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Logo href={env.NEXT_PUBLIC_SITE_URL} size="xl" />

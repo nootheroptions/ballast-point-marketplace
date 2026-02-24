@@ -41,7 +41,7 @@ export function ServiceDetailHeader({
           <>
             <span className="text-muted-foreground">•</span>
             <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+              <Star className="fill-star text-star h-4 w-4" />
               <span className="font-semibold">{rating.toFixed(1)}</span>
               {reviewCount !== undefined && (
                 <span className="text-muted-foreground">({reviewCount} reviews)</span>
