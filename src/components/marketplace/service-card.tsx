@@ -26,15 +26,15 @@ export function ServiceCard({ service, variant = 'default', className }: Service
 
   return (
     <Card
-      className={`flex h-full flex-col overflow-hidden transition-shadow hover:shadow-lg ${className ?? ''}`}
+      className={`group flex h-full flex-col overflow-hidden rounded-xl pt-0 transition-shadow hover:shadow-lg ${className ?? ''}`}
     >
-      <div className="bg-muted relative h-48 w-full">
+      <div className="bg-muted relative h-48 w-full overflow-hidden rounded-t-xl">
         {previewImageUrl ? (
           <Image
             src={previewImageUrl}
             alt={`${service.name} preview`}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
