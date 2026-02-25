@@ -12,7 +12,11 @@ import { CheckCircle2 } from 'lucide-react';
 import { useActionState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 
-export function EoiForm() {
+interface EoiFormProps {
+  variant?: 'default' | 'inline';
+}
+
+export function EoiForm({ variant = 'default' }: EoiFormProps) {
   const [isPending, startTransition] = useTransition();
   const [state, formAction] = useActionState<ActionResult<{ message: string }> | null, EoiFormData>(
     async (_, data) => {
@@ -31,6 +35,17 @@ export function EoiForm() {
   });
 
   if (state?.success) {
+    if (variant === 'inline') {
+      return (
+        <div className="border-background/30 bg-background flex items-center justify-center gap-2 rounded-full border px-6 py-3">
+          <CheckCircle2 className="text-success h-5 w-5" />
+          <span className="text-foreground text-sm font-medium">
+            You&apos;re on the waitlist! We&apos;ll be in touch.
+          </span>
+        </div>
+      );
+    }
+
     return (
       <Card className="border-primary/20 bg-white/90 shadow-sm backdrop-blur-sm">
         <CardContent className="flex min-h-[164px] flex-col items-center justify-center gap-3 text-center">
@@ -44,6 +59,40 @@ export function EoiForm() {
           </div>
         </CardContent>
       </Card>
+    );
+  }
+
+  if (variant === 'inline') {
+    return (
+      <form
+        onSubmit={handleSubmit((data) => {
+          startTransition(() => formAction(data));
+        })}
+        className="w-full"
+      >
+        <div className="border-border bg-background flex items-center gap-2 rounded-full border p-1.5 shadow-sm transition-shadow focus-within:shadow-md">
+          <Input
+            type="email"
+            placeholder="Your fancy e-mail"
+            autoComplete="email"
+            disabled={isPending}
+            className="flex-1 border-0 bg-transparent px-4 shadow-none focus-visible:ring-0"
+            {...register('email')}
+          />
+          <Button
+            type="submit"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6 font-semibold"
+            disabled={isPending}
+          >
+            {isPending ? 'Joining...' : 'Get Started'}
+          </Button>
+        </div>
+        {(errors.email || state?.error) && (
+          <p className="mt-2 text-center text-sm font-medium text-red-300">
+            {errors.email?.message || state?.error}
+          </p>
+        )}
+      </form>
     );
   }
 

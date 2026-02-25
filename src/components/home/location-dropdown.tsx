@@ -172,7 +172,7 @@ export function LocationDropdown({
         }}
         className="flex w-full items-center justify-between text-left"
       >
-        <span className={`text-base ${value ? 'text-gray-900' : 'text-primary font-medium'}`}>
+        <span className={`text-base ${value ? 'text-foreground' : 'text-muted-foreground'}`}>
           {displayText}
         </span>
       </button>
@@ -187,7 +187,7 @@ export function LocationDropdown({
                   ...dropdownPosition,
                   pointerEvents: 'auto',
                 }}
-                className={`max-h-[500px] overflow-y-auto rounded-2xl border border-gray-100 bg-white py-3 shadow-2xl ${positionBelow ? '' : '-translate-y-full'}`}
+                className={`border-border bg-background max-h-[500px] overflow-y-auto rounded-2xl border py-3 shadow-2xl ${positionBelow ? '' : '-translate-y-full'}`}
               >
                 {/* Search Input */}
                 <div className="px-4 pb-3">
@@ -197,14 +197,14 @@ export function LocationDropdown({
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                     placeholder="Search for a location..."
-                    className="focus:ring-primary w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:outline-none"
+                    className="focus:ring-primary border-border w-full rounded-lg border px-4 py-2 focus:ring-2 focus:outline-none"
                     autoFocus
                   />
                 </div>
 
                 {/* Error Message */}
                 {error && (
-                  <div className="mx-4 mb-2 rounded-lg bg-red-50 px-4 py-2 text-sm text-red-600">
+                  <div className="bg-destructive/10 text-destructive mx-4 mb-2 rounded-lg px-4 py-2 text-sm">
                     {error}
                   </div>
                 )}
@@ -212,8 +212,8 @@ export function LocationDropdown({
                 {/* Loading Suggestions */}
                 {isLoadingSuggestions && (
                   <div className="flex items-center gap-3 px-4 py-3">
-                    <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
-                    <span className="text-base text-gray-500">Loading suggestions...</span>
+                    <Loader2 className="text-muted-foreground h-5 w-5 animate-spin" />
+                    <span className="text-muted-foreground text-base">Loading suggestions...</span>
                   </div>
                 )}
 
@@ -224,12 +224,12 @@ export function LocationDropdown({
                       key={suggestion.id}
                       type="button"
                       onClick={() => handleSelectSuggestion(suggestion)}
-                      className="flex w-full items-center gap-3 px-4 py-2 transition-colors hover:bg-gray-50"
+                      className="hover:bg-muted flex w-full items-center gap-3 px-4 py-2 transition-colors"
                     >
-                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-gray-200">
+                      <div className="border-border flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border">
                         <MapPin className="text-primary h-5 w-5" />
                       </div>
-                      <span className="text-left text-base text-gray-900">
+                      <span className="text-foreground text-left text-base">
                         {suggestion.place_name}
                       </span>
                     </button>
@@ -237,7 +237,9 @@ export function LocationDropdown({
 
                 {/* No Results */}
                 {!isLoadingSuggestions && searchInput && suggestions.length === 0 && !error && (
-                  <div className="px-4 py-3 text-base text-gray-500">No locations found</div>
+                  <div className="text-muted-foreground px-4 py-3 text-base">
+                    No locations found
+                  </div>
                 )}
               </div>
             </div>,

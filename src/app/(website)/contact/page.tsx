@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 
 export const metadata = {
-  title: 'Join Us | Buildipedia Podcast',
+  title: 'Contact | Buildipedia Podcast',
   description:
     'Apply to be a guest or co-host on the Buildipedia podcast. Share your expertise and insights with our audience.',
 };
@@ -20,7 +20,7 @@ export default function JoinUsPage() {
             <CardContent className="p-6 sm:p-8 lg:p-10">
               <div className="mb-8 space-y-5">
                 <h1 className="text-3xl leading-tight font-semibold md:text-4xl">
-                  Application to join us on Buildipedia
+                  Contact us to join us on Buildipedia
                 </h1>
                 <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_240px] lg:gap-8">
                   <div className="space-y-4">

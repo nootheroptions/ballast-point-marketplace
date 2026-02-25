@@ -128,13 +128,13 @@ export function HeroSearchCustomDropdown({
           if (!isOpen) updateDropdownPosition();
           setIsOpen(!isOpen);
         }}
-        className={`flex w-full items-center justify-between text-left ${
+        className={`flex w-full items-center justify-between text-left leading-none ${
           disabled ? 'cursor-not-allowed opacity-50' : ''
         }`}
         disabled={disabled}
       >
-        <span className="text-base text-gray-900">{displayText}</span>
-        <ChevronDown className="ml-2 h-5 w-5 flex-shrink-0 text-gray-400" />
+        <span className="text-foreground text-base leading-none">{displayText}</span>
+        <ChevronDown className="text-muted-foreground ml-2 h-5 w-5 flex-shrink-0" />
       </button>
 
       {isOpen && !disabled && dropdownPosition && typeof document !== 'undefined'
@@ -147,14 +147,14 @@ export function HeroSearchCustomDropdown({
                   ...dropdownPosition,
                   pointerEvents: 'auto',
                 }}
-                className={`max-h-[500px] overflow-y-auto rounded-2xl border border-gray-100 bg-white py-3 shadow-2xl ${positionBelow ? '' : '-translate-y-full'}`}
+                className={`border-border bg-background max-h-[500px] overflow-y-auto rounded-2xl border py-3 shadow-2xl ${positionBelow ? '' : '-translate-y-full'}`}
               >
                 {sections.map((section, sectionIndex) => (
                   <div key={sectionIndex}>
                     {/* Section Header */}
                     {section.title && (
                       <div className="px-4 pt-3 pb-1">
-                        <h3 className="text-base font-bold text-gray-900">{section.title}</h3>
+                        <h3 className="text-foreground text-base font-bold">{section.title}</h3>
                       </div>
                     )}
 
@@ -166,14 +166,14 @@ export function HeroSearchCustomDropdown({
                           key={item.id}
                           type="button"
                           onClick={() => handleSelect(item.id)}
-                          className="flex w-full items-center gap-3 px-4 py-2 transition-colors hover:bg-gray-50"
+                          className="hover:bg-muted flex w-full items-center gap-3 px-4 py-2 transition-colors"
                         >
                           {Icon && (
-                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-gray-200">
+                            <div className="border-border flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border">
                               <Icon className="text-primary h-5 w-5" />
                             </div>
                           )}
-                          <span className="text-base text-gray-900">{item.label}</span>
+                          <span className="text-foreground text-base">{item.label}</span>
                         </button>
                       );
                     })}

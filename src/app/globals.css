@@ -14,6 +14,7 @@
   --palette-text-secondary: #071b1d; /* Secondary/muted text colour */
   --palette-brand: #3a646a; /* Brand/primary/accent colour */
   --palette-fill: #b8e4eb; /* Secondary/fill colour */
+  --palette-background: #e6f3f5; /* App background colour */
   --palette-text-on-dark: #c8dbde; /* Text colour on dark backgrounds */
 
   /* Derived colours - these are auto-generated from the palette */
@@ -88,7 +89,7 @@
   --radius: 0.625rem;
 
   /* Backgrounds */
-  --background: var(--palette-white);
+  --background: var(--palette-background);
   --card: var(--palette-white);
   --popover: var(--palette-white);
 

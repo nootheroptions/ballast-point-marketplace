@@ -1,5 +1,6 @@
 'use client';
 
+import { Logo } from '@/components/shared/Logo';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
@@ -11,7 +12,7 @@ const navLinks = [
   { href: '/home', label: 'Home' },
   { href: '/podcast', label: 'Podcast' },
   { href: '/blog', label: 'Blog' },
-  { href: '/join-us', label: 'Join Us' },
+  { href: '/contact', label: 'Contact' },
 ];
 
 export function ComingSoonHeader() {
@@ -19,45 +20,47 @@ export function ComingSoonHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-white/90 backdrop-blur-sm">
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="hidden items-center justify-between py-4 lg:flex">
-          <Link href="/home" className="flex items-center">
-            <span className="text-2xl font-bold text-gray-900">Buildipedia</span>
-          </Link>
-          <nav className="flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-medium transition-colors ${
-                  pathname === link.href ? 'text-primary' : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+    <header className="sticky top-0 z-50">
+      <div className="mx-auto w-full max-w-[74rem] px-8 md:px-10 lg:px-12">
+        {/* Desktop Layout */}
+        <div className="hidden py-6 lg:block">
+          <div className="flex items-center justify-between gap-8">
+            <Logo href="/home" size="lg" />
+            <nav className="flex min-w-[22rem] items-center justify-between gap-8">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`text-sm font-medium transition-colors ${
+                    pathname === link.href
+                      ? 'text-background'
+                      : 'text-background hover:text-secondary'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
         </div>
 
-        <div className="flex items-center justify-between py-3 lg:hidden">
-          <Link href="/home" className="flex flex-col leading-none">
-            <span className="text-xl font-bold tracking-tight text-gray-900">Buildipedia</span>
-          </Link>
+        {/* Mobile Layout */}
+        <div className="flex items-center justify-between py-4 lg:hidden">
+          <Logo href="/home" size="md" />
 
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="icon"
-                className="h-10 w-10 rounded-full border-gray-300 shadow-sm"
+                className="text-background hover:bg-background/10 h-10 w-10 rounded-full"
               >
-                <Menu className="h-4 w-4" />
+                <Menu className="h-5 w-5" />
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-72 p-0">
-              <SheetHeader className="border-b bg-gray-50 px-6 py-4">
+              <SheetHeader className="bg-muted border-b px-6 py-4">
                 <SheetTitle className="text-left text-xl font-bold">Buildipedia</SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col gap-1 p-4">
@@ -70,7 +73,7 @@ export function ComingSoonHeader() {
                       href={link.href}
                       onClick={() => setMobileMenuOpen(false)}
                       className={`rounded-lg px-4 py-3 text-base font-medium transition-colors ${
-                        isActive ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-100'
+                        isActive ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
                       }`}
                     >
                       {link.label}
