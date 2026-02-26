@@ -64,6 +64,9 @@ model TeamMember {
   availabilities Availability[]
   participants   BookingParticipant[]
 
+  /// External calendar integration (one per team member)
+  calendarIntegration CalendarIntegration?
+
   @@unique([userId, teamId]) /// A user can only be a member of a team once
   @@map("team_members")
 }
@@ -608,4 +611,60 @@ model BundleAddOn {
 
   @@unique([bundleId, addOnKey])
   @@map("bundle_add_ons")
+}
+
+/// =======================================================
+/// CALENDAR INTEGRATIONS
+/// =======================================================
+
+/// External calendar provider types
+enum CalendarProvider {
+  GOOGLE
+  OUTLOOK
+}
+
+/// =======================================================
+/// CALENDAR INTEGRATION
+/// =======================================================
+///
+/// Stores OAuth tokens and metadata for external calendar integrations.
+/// Enables two-way sync between the marketplace booking system and
+/// external calendars (Google Calendar, Outlook).
+///
+/// SYNC BEHAVIOR:
+/// - Inbound: External events are fetched at runtime to block availability slots
+/// - Outbound: Marketplace bookings are pushed to the external calendar
+///
+/// SECURITY:
+/// - OAuth tokens should be encrypted at rest
+/// - Tokens are refreshed automatically before expiry
+/// - Revoked on disconnect
+model CalendarIntegration {
+  id String @id @default(uuid()) @db.Uuid
+
+  provider CalendarProvider
+
+  /// OAuth tokens (encrypted at rest via Supabase)
+  accessToken  String   @map("access_token")
+  refreshToken String?  @map("refresh_token")
+  tokenExpiry  DateTime? @map("token_expiry")
+
+  /// Calendar metadata
+  /// For Google: typically "primary" or the calendar email
+  /// For Outlook: the calendar ID from Graph API
+  calendarId    String  @map("calendar_id")
+  calendarEmail String? @map("calendar_email")
+
+  /// Sync state tracking
+  lastSyncAt DateTime? @map("last_sync_at")
+  syncError  String?   @map("sync_error")
+
+  /// Link to team member (each team member can have one calendar integration)
+  teamMemberId String     @unique @map("team_member_id") @db.Uuid
+  teamMember   TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("calendar_integrations")
 }

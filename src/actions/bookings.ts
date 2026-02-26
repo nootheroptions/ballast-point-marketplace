@@ -18,6 +18,7 @@ import {
   isSlotAvailable,
   normalizeAvailabilitiesForService,
 } from '@/lib/utils/availability-slots-calculator';
+import { fetchExternalEventsForTeamMembers } from '@/lib/utils/external-calendar-events';
 import {
   cancelBookingSchema,
   createBookingSchema,
@@ -72,8 +73,20 @@ export const getAvailableSlots = createAction(
         endDate
       );
 
+      // Fetch external calendar events for team members with calendar integrations
+      // These are treated as "virtual bookings" that block availability slots
+      const teamMemberIds = [...new Set(availabilities.map((a) => a.teamMemberId))];
+      const externalEvents = await fetchExternalEventsForTeamMembers(
+        teamMemberIds,
+        startDate,
+        endDate
+      );
+
+      // Combine internal bookings with external calendar events
+      const allBlockingEvents = [...existingBookings, ...externalEvents];
+
       // Calculate available slots
-      const slotsRaw = calculateAvailableSlots(availabilities, existingBookings, {
+      const slotsRaw = calculateAvailableSlots(availabilities, allBlockingEvents, {
         startDate,
         endDate,
         slotDuration: service.slotDuration,
@@ -164,6 +177,27 @@ export const createBooking = createAction(createBookingSchema, async (data: Crea
       };
     }
 
+    // Fetch external calendar conflicts for all team members that can host this service.
+    // This mirrors getAvailableSlots() so stale UI submissions can't bypass external blocks.
+    const preflightAvailabilities = normalizeAvailabilitiesForService(
+      await availabilityRepo.findByService(serviceId),
+      serviceId
+    );
+
+    if (preflightAvailabilities.length === 0) {
+      return {
+        success: false,
+        error: 'No availability configured for this service',
+      };
+    }
+
+    const teamMemberIds = [...new Set(preflightAvailabilities.map((a) => a.teamMemberId))];
+    const externalBlockingEvents = await fetchExternalEventsForTeamMembers(
+      teamMemberIds,
+      startTime,
+      expectedEndTime
+    );
+
     // Create booking with race-condition prevention (transaction + DB constraint).
     const booking = await prisma.$transaction(
       async (tx) => {
@@ -183,10 +217,11 @@ export const createBooking = createAction(createBookingSchema, async (data: Crea
           expectedEndTime,
           tx
         );
+        const allBlockingEvents = [...existingBookings, ...externalBlockingEvents];
 
         const available = isSlotAvailable(
           normalizedAvailabilities,
-          existingBookings,
+          allBlockingEvents,
           startTime,
           expectedEndTime,
           {
