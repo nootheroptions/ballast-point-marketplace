@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { Home, User, Briefcase, Calendar, type LucideIcon } from 'lucide-react';
+import { Home, User, Briefcase, Calendar, CreditCard, type LucideIcon } from 'lucide-react';
 
 export interface NavItem {
   id: string;
@@ -34,6 +34,12 @@ export const navItems: NavItem[] = [
     label: 'Availability',
     icon: Calendar,
     href: '/availability',
+  },
+  {
+    id: 'payments',
+    label: 'Payments',
+    icon: CreditCard,
+    href: '/payments',
   },
 ];
 

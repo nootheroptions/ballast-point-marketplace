@@ -40,6 +40,10 @@ export const env = createEnv({
     BASIC_AUTH_USER: z.string().optional(),
     BASIC_AUTH_PASSWORD: z.string().optional(),
     SUPABASE_STORAGE_BUCKET: z.string().min(1).default('public-marketplace-images'),
+
+    // Stripe (server-only - NEVER expose to client!)
+    STRIPE_SECRET_KEY: z.string().min(1, 'Stripe secret key is required'),
+    STRIPE_WEBHOOK_SECRET: z.string().min(1, 'Stripe webhook secret is required'),
   },
 
   /**
@@ -54,6 +58,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ROOT_APP_DOMAIN: z.string().default('localhost.com'),
     NEXT_PUBLIC_PROVIDER_DASHBOARD_URL: z.string().url(),
     NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: z.string().min(1, 'Mapbox access token is required'),
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1, 'Stripe publishable key is required'),
   },
 
   /**
@@ -71,6 +76,8 @@ export const env = createEnv({
     BASIC_AUTH_USER: process.env.BASIC_AUTH_USER,
     BASIC_AUTH_PASSWORD: process.env.BASIC_AUTH_PASSWORD,
     SUPABASE_STORAGE_BUCKET: process.env.SUPABASE_STORAGE_BUCKET,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
 
     // Client variables (NEXT_PUBLIC_*)
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -79,6 +86,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ROOT_APP_DOMAIN: process.env.NEXT_PUBLIC_ROOT_APP_DOMAIN,
     NEXT_PUBLIC_PROVIDER_DASHBOARD_URL: process.env.NEXT_PUBLIC_PROVIDER_DASHBOARD_URL,
     NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },
 
   /**

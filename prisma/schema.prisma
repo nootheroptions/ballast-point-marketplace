@@ -68,6 +68,13 @@ model TeamMember {
   @@map("team_members")
 }
 
+/// Stripe Connect account status
+enum StripeAccountStatus {
+  PENDING /// Account created but not fully onboarded
+  ACTIVE /// Can receive payments
+  RESTRICTED /// Needs attention (e.g., missing info)
+}
+
 /// Provider profile for service providers (architecture firms, etc.)
 model ProviderProfile {
   id          String  @id @default(uuid()) @db.Uuid
@@ -76,6 +83,10 @@ model ProviderProfile {
   description String?
   profileUrl  String? @map("profile_url")
   imageUrls   String[] @default([]) @map("image_urls")
+
+  /// Stripe Connect account ID for receiving payments
+  stripeAccountId     String?              @map("stripe_account_id")
+  stripeAccountStatus StripeAccountStatus? @map("stripe_account_status")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -402,6 +413,9 @@ model Booking {
   /// Hosts, co-hosts, invitees
   participants BookingParticipant[]
 
+  /// Payment record for this booking
+  payment Payment?
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -415,6 +429,59 @@ enum BookingStatus {
   CANCELLED
   COMPLETED
   NO_SHOW
+}
+
+/// Payment status for tracking Stripe payment state
+enum PaymentStatus {
+  PENDING /// Payment intent created, awaiting confirmation
+  SUCCEEDED /// Payment completed successfully
+  FAILED /// Payment failed
+  REFUNDED /// Payment was refunded
+}
+
+/// =======================================================
+/// PAYMENT
+/// =======================================================
+///
+/// Tracks payment transactions for bookings via Stripe.
+/// Each booking should have exactly one payment record.
+///
+/// IMPORTANT:
+/// - amountCents is the total amount charged to the client
+/// - platformFeeCents is the marketplace commission (10%)
+/// - Provider receives: amountCents - platformFeeCents
+model Payment {
+  id String @id @default(uuid()) @db.Uuid
+
+  /// Stripe Payment Intent ID for tracking and reconciliation
+  stripePaymentIntentId String @unique @map("stripe_payment_intent_id")
+
+  /// Amount charged to client (in cents)
+  amountCents Int @map("amount_cents")
+
+  /// Platform fee taken by marketplace (in cents, 10% of amount)
+  platformFeeCents Int @map("platform_fee_cents")
+
+  /// ISO 4217 currency code (e.g., "aud", "usd")
+  /// Starting with AUD only for Australia launch
+  currency String @default("aud") @db.VarChar(3)
+
+  /// Payment status
+  status PaymentStatus @default(PENDING)
+
+  /// Timestamp when payment succeeded (if applicable)
+  paidAt DateTime? @map("paid_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  /// The booking this payment is for
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId String  @unique @map("booking_id") @db.Uuid
+
+  @@index([stripePaymentIntentId])
+  @@index([status])
+  @@map("payments")
 }
 
 /// =======================================================

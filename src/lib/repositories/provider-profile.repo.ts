@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/db/prisma';
-import { Prisma, ProviderProfile } from '@prisma/client';
+import { Prisma, ProviderProfile, StripeAccountStatus } from '@prisma/client';
 
 /**
  * Data required to create a provider profile
@@ -20,6 +20,8 @@ export interface UpdateProviderProfileData {
   description?: string | null;
   profileUrl?: string | null;
   imageUrls?: string[];
+  stripeAccountId?: string | null;
+  stripeAccountStatus?: StripeAccountStatus | null;
 }
 
 /**
