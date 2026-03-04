@@ -45,29 +45,25 @@ export async function middleware(request: NextRequest) {
 
   // Create Supabase client for middleware
   const cookieOptions = createCookieOptions();
-  const supabase = createServerClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll: (newCookies) => {
-          for (const { name, value } of newCookies) {
-            request.cookies.set(name, value);
-          }
-          response = NextResponse.next({ request });
-          for (const { name, value, options } of newCookies) {
-            response.cookies.set(name, value, {
-              ...options,
-              ...cookieOptions,
-            });
-          }
-        },
+  const supabase = createServerClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
       },
-    }
-  );
+      setAll: (newCookies) => {
+        for (const { name, value } of newCookies) {
+          request.cookies.set(name, value);
+        }
+        response = NextResponse.next({ request });
+        for (const { name, value, options } of newCookies) {
+          response.cookies.set(name, value, {
+            ...options,
+            ...cookieOptions,
+          });
+        }
+      },
+    },
+  });
 
   // Refresh session if expired
   const {
