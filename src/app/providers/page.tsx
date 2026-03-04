@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
@@ -9,6 +10,11 @@ import { getOnboardingProgress } from '@/actions/onboarding';
 import { getServices } from '@/actions/services';
 import { getProviderBookings } from '@/actions/bookings';
 import { BookingsPageContent, type BookingWithDetails } from '@/components/bookings';
+
+export const metadata = {
+  title: 'Dashboard',
+  description: 'View your bookings and manage your architecture services.',
+} satisfies Metadata;
 
 export default async function ProviderDashboard() {
   const cookieStore = await cookies();

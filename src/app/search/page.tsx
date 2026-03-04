@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { searchServices } from '@/actions/services';
 import { getUserWithProvider } from '@/actions/users';
@@ -8,6 +9,17 @@ import {
 import { ServiceCard } from '@/components/marketplace/service-card';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
+
+export const metadata = {
+  title: 'Browse Architecture Services',
+  description:
+    'Explore architecture services from verified professionals. Find feasibility studies, concept designs, planning consultations, and more.',
+  openGraph: {
+    title: 'Browse Architecture Services | Buildipedia',
+    description:
+      'Explore architecture services from verified professionals. Find feasibility studies, concept designs, planning consultations, and more.',
+  },
+} satisfies Metadata;
 
 export default function SearchPage() {
   return (

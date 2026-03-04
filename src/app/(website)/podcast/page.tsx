@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { ComingSoonHeader } from '@/components/home/coming-soon-header';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +9,17 @@ import { createPodcastService, type PodcastEpisode } from '@/lib/services/podcas
 import { formatDuration, formatPublishedDate } from '@/lib/utils/podcast';
 import { ArrowUpRight, Calendar, Clock3, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
+
+export const metadata = {
+  title: 'Podcast',
+  description:
+    'Listen to the Buildipedia podcast. Conversations with architects, designers, and industry experts about design, business, and the future of architecture.',
+  openGraph: {
+    title: 'Podcast | Buildipedia',
+    description:
+      'Listen to the Buildipedia podcast. Conversations with architects, designers, and industry experts about design, business, and the future of architecture.',
+  },
+} satisfies Metadata;
 
 function getEpisodeSummary(description: string): string {
   const trimmed = description.trim();

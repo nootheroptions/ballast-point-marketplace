@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { getUserWithProvider } from '@/actions/users';
 import {
@@ -5,6 +6,17 @@ import {
   MarketplaceHeaderSkeleton,
 } from '@/components/shared/marketplace-header';
 import { HeroSearch } from '@/components/home/hero-search';
+
+export const metadata = {
+  title: 'Find Architecture Services for Your Project',
+  description:
+    'Compare productized services from experienced architects. Fixed pricing, clear scope, and fast turnaround for your residential or commercial project.',
+  openGraph: {
+    title: 'Find Architecture Services for Your Project | Buildipedia',
+    description:
+      'Compare productized services from experienced architects. Fixed pricing, clear scope, and fast turnaround for your residential or commercial project.',
+  },
+} satisfies Metadata;
 
 export default function Home() {
   return (

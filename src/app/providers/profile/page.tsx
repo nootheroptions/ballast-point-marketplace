@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { getProviderProfile } from '@/actions/providers';
 import {
@@ -6,6 +7,11 @@ import {
 } from '@/components/provider-profile/ProviderfilePageContent';
 import { ProviderProfile } from '@prisma/client';
 import { redirect } from 'next/navigation';
+
+export const metadata = {
+  title: 'Profile',
+  description: 'Edit your business profile, contact details, and public information.',
+} satisfies Metadata;
 
 export default function ProfilePage() {
   return (

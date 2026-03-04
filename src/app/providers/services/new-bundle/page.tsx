@@ -1,8 +1,14 @@
+import type { Metadata } from 'next';
 import { Service } from '@prisma/client';
 import { getServices } from '@/actions/services';
 import { PageHeader } from '@/components/layout/provider-dashboard/PageHeader';
 import { PageHeaderProvider } from '@/components/layout/provider-dashboard/PageHeaderContext';
 import { BundleForm } from '@/components/services/bundles/BundleForm';
+
+export const metadata = {
+  title: 'New Bundle',
+  description: 'Create a service bundle by combining multiple services into a discounted package.',
+} satisfies Metadata;
 
 export default async function NewBundlePage() {
   const result = await getServices();

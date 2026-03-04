@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { getMyAvailability } from '@/actions/availabilities';
 import {
@@ -7,6 +8,11 @@ import {
 import { PageHeader } from '@/components/layout/provider-dashboard/PageHeader';
 import { PageHeaderProvider } from '@/components/layout/provider-dashboard/PageHeaderContext';
 import type { Availability } from '@prisma/client';
+
+export const metadata = {
+  title: 'Availability',
+  description: 'Set your weekly availability schedule for client bookings.',
+} satisfies Metadata;
 
 export default function AvailabilityPage() {
   return (

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Service } from '@prisma/client';
 import { getBundleById } from '@/actions/bundles';
@@ -6,6 +7,11 @@ import { PageHeader } from '@/components/layout/provider-dashboard/PageHeader';
 import { PageHeaderProvider } from '@/components/layout/provider-dashboard/PageHeaderContext';
 import { BundleForm } from '@/components/services/bundles/BundleForm';
 import { BundleWithServices } from '@/lib/repositories/bundle.repo';
+
+export const metadata = {
+  title: 'Edit Bundle',
+  description: 'Update your bundle details and included services.',
+} satisfies Metadata;
 
 interface EditBundlePageProps {
   params: Promise<{ id: string }>;

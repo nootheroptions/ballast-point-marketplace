@@ -1,5 +1,18 @@
+import type { Metadata } from 'next';
 import { getUserWithProvider } from '@/actions/users';
 import { AppShell } from '@/components/layout/provider-dashboard';
+
+export const metadata = {
+  title: {
+    default: 'Provider Dashboard',
+    template: '%s | Provider Dashboard | Buildipedia',
+  },
+  description: 'Manage your architecture services, bookings, and business profile on Buildipedia.',
+  robots: {
+    index: false,
+    follow: false,
+  },
+} satisfies Metadata;
 
 export default async function ProvidersLayout({ children }: { children: React.ReactNode }) {
   const { user, hasProvider, providerSlug } = await getUserWithProvider();

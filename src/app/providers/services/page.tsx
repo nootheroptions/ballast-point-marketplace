@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Service } from '@prisma/client';
 import { getServices } from '@/actions/services';
@@ -8,6 +9,11 @@ import {
   ServicesPageContentSkeleton,
 } from '@/components/services/ServicesPageContent';
 import { BundleWithServices } from '@/lib/repositories/bundle.repo';
+
+export const metadata = {
+  title: 'Services',
+  description: 'Manage your architecture services and service bundles.',
+} satisfies Metadata;
 
 export default function ServicesPage() {
   return (

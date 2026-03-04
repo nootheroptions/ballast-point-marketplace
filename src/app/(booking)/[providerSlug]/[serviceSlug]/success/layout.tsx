@@ -1,3 +1,10 @@
+import type { Metadata } from 'next';
+
+export const metadata = {
+  title: 'Booking Confirmed',
+  description: 'Your architecture consultation has been successfully booked.',
+} satisfies Metadata;
+
 export default function BookingSuccessLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen w-screen items-center justify-center p-4 md:p-6 lg:p-8">

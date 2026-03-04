@@ -1,3 +1,10 @@
+import type { Metadata } from 'next';
+
+export const metadata = {
+  title: 'Confirm Booking',
+  description: 'Enter your details to confirm your architecture consultation booking.',
+} satisfies Metadata;
+
 export default async function BookingLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen w-screen items-center justify-center p-4 md:p-6 lg:p-8">

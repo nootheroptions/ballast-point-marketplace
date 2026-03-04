@@ -10,7 +10,12 @@ import { Suspense } from 'react';
 
 export const metadata = {
   title: 'Sign Up',
-  description: 'Create a new account',
+  description:
+    'Create a Buildipedia account to list your architecture services or find an architect for your project.',
+  robots: {
+    index: false,
+    follow: true,
+  },
 } satisfies Metadata;
 
 function SignUpFormSkeleton() {

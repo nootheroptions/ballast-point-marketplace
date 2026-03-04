@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { Service } from '@prisma/client';
@@ -8,6 +9,11 @@ import {
   MarketplaceServiceForm,
   MarketplaceServiceFormSkeleton,
 } from '@/components/services/marketplace/MarketplaceServiceForm';
+
+export const metadata = {
+  title: 'Edit Service',
+  description: 'Update your service details, pricing, and availability settings.',
+} satisfies Metadata;
 
 interface EditServicePageProps {
   params: Promise<{ id: string }>;

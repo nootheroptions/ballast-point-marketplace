@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { ComingSoonHeader } from '@/components/home/coming-soon-header';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +12,17 @@ import {
 import { ArrowUpRight, Calendar, Clock3 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+
+export const metadata = {
+  title: 'Blog',
+  description:
+    'Articles, insights, and guides for architects and homeowners. Learn about architecture trends, design tips, and how to grow your practice.',
+  openGraph: {
+    title: 'Blog | Buildipedia',
+    description:
+      'Articles, insights, and guides for architects and homeowners. Learn about architecture trends, design tips, and how to grow your practice.',
+  },
+} satisfies Metadata;
 
 function getPostSummary(description: string | null): string {
   if (!description) {

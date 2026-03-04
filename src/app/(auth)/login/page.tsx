@@ -6,8 +6,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Login',
-  description: 'Sign in to your account',
+  title: 'Log In',
+  description:
+    'Sign in to your Buildipedia account to manage your architecture services or book consultations.',
+  robots: {
+    index: false,
+    follow: true,
+  },
 } satisfies Metadata;
 
 export default function LoginPage() {

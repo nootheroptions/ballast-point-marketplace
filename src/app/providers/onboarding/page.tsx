@@ -1,9 +1,15 @@
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { OnboardingFlow } from '@/components/onboarding';
 import { getOnboardingProgress } from '@/actions/onboarding';
 import { env } from '@/lib/config/env';
 import { CURRENT_TEAM_COOKIE } from '@/lib/constants';
+
+export const metadata = {
+  title: 'Get Started',
+  description: 'Set up your business profile to start offering services on Buildipedia.',
+} satisfies Metadata;
 
 export default async function OnboardingPage() {
   const cookieStore = await cookies();
