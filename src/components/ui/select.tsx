@@ -16,7 +16,10 @@ const SelectValue = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Value
     ref={ref}
-    className={cn('min-w-0 flex-1 text-left', className)}
+    className={cn(
+      'data-[placeholder]:text-muted-foreground/40 min-w-0 flex-1 text-left',
+      className
+    )}
     {...props}
   />
 ));

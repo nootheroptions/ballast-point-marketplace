@@ -1,7 +1,6 @@
 import { ComingSoonHeader } from '@/components/home/coming-soon-header';
 import { JoinUsForm } from '@/components/podcast/join-us-form';
 import { Card, CardContent } from '@/components/ui/card';
-import Image from 'next/image';
 
 export const metadata = {
   title: 'Contact | Buildipedia Podcast',
@@ -19,15 +18,15 @@ export default function JoinUsPage() {
           </div>
         </div>
 
-        <main className="px-4 pt-12 pb-10 md:px-10 md:pt-16 lg:px-12 lg:pb-14">
+        <main className="px-4 pt-9 pb-10 md:px-10 md:pt-12 lg:px-12 lg:pb-14">
           <section className="mx-auto max-w-[74rem]">
             <Card className="border-primary/20 bg-card/90 overflow-hidden shadow-sm">
               <CardContent className="p-6 sm:p-8 lg:p-10">
-                <div className="mb-8 space-y-5">
-                  <h1 className="text-3xl leading-tight font-semibold md:text-4xl">
-                    Contact us to join us on Buildipedia
-                  </h1>
-                  <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_240px] lg:gap-8">
+                <div className="mx-auto max-w-xl">
+                  <div className="mb-8 space-y-5">
+                    <h1 className="mb-8 text-3xl leading-tight font-semibold md:text-4xl">
+                      Contact us to join us on Buildipedia
+                    </h1>
                     <div className="space-y-4">
                       <p className="text-muted-foreground text-base leading-relaxed sm:text-lg">
                         We are keen to speak to developers, planners, architects, designers,
@@ -44,20 +43,9 @@ export default function JoinUsPage() {
                         leader and a trusted voice within the industry.
                       </p>
                     </div>
-                    <div className="mx-auto w-full max-w-xs lg:mx-0 lg:max-w-none">
-                      <Image
-                        src="https://static.wixstatic.com/media/e4cd38_55019b2c109b4599ae2d21625b347c55~mv2.webp/v1/fill/w_700,h_700,al_c,q_85,enc_avif,quality_auto/kimmy010101_2_hosts_and_1_guest_talking_in_a_podcast_4a6c96f8-0829-4ce4-8deb-5e21adb5db07_.webp"
-                        alt="Podcast hosts and guest talking"
-                        width={700}
-                        height={700}
-                        sizes="(min-width: 1024px) 240px, (min-width: 640px) 320px, 100vw"
-                        className="aspect-square w-full rounded-2xl object-cover shadow-md"
-                        priority
-                      />
-                    </div>
                   </div>
+                  <JoinUsForm />
                 </div>
-                <JoinUsForm />
               </CardContent>
             </Card>
           </section>

@@ -73,7 +73,7 @@ export default async function PodcastEpisodePage({ params }: PodcastEpisodePageP
   const { episodeSlug } = await params;
 
   return (
-    <div className="from-primary/10 via-background to-background min-h-screen bg-gradient-to-b px-1 md:px-3 lg:px-4">
+    <div className="bg-background min-h-screen px-1 md:px-3 lg:px-4">
       <div className="mx-auto w-full max-w-[78rem]">
         <div className="bg-background px-4 py-3 md:px-10 md:py-4 lg:px-12">
           <div className="bg-primary rounded-2xl">
@@ -105,16 +105,17 @@ async function PodcastEpisodeContent({ episodeSlug }: { episodeSlug: string }) {
   const applePodcastsShowUrl = env.PODCASTS_APPLE_PODCASTS_SHOW_URL;
 
   return (
-    <section className="mx-auto max-w-5xl space-y-6">
-      <Button asChild variant="ghost" className="h-auto p-0 text-sm">
-        <Link href="/podcast">
-          <ArrowLeft className="h-4 w-4" />
-          Back to podcasts
-        </Link>
-      </Button>
+    <section className="max-w-[74rem] space-y-6">
+      <Link
+        href="/podcast"
+        className="hover:border-foreground -ml-1 inline-flex items-center gap-2 border-b-2 border-transparent pb-1 text-sm font-medium transition-colors md:ml-[2.25rem] lg:ml-[2.75rem]"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        <span>Back to podcasts</span>
+      </Link>
 
       <Card className="border-border/70 overflow-hidden rounded-2xl shadow-sm">
-        <CardContent className="space-y-6 p-4 md:space-y-8 md:p-8 lg:p-10">
+        <CardContent className="space-y-6 px-4 py-6 md:space-y-8 md:px-10 md:py-8 lg:px-12 lg:py-10">
           <div className="grid items-start gap-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-8">
             <div className="mx-auto w-full max-w-[320px] space-y-4 lg:mx-0">
               <div className="bg-muted border-border/70 aspect-square w-full overflow-hidden rounded-2xl border">
@@ -210,10 +211,10 @@ async function PodcastEpisodeContent({ episodeSlug }: { episodeSlug: string }) {
 
 function EpisodeSkeleton() {
   return (
-    <section className="mx-auto max-w-5xl space-y-6">
+    <section className="max-w-[74rem] space-y-6">
       <div className="bg-muted h-5 w-32 animate-pulse rounded" />
       <Card>
-        <CardContent className="p-6 md:p-8">
+        <CardContent className="px-4 py-6 md:px-10 md:py-8 lg:px-12 lg:py-10">
           <div className="grid items-start gap-8 lg:grid-cols-[320px_minmax(0,1fr)]">
             <div className="bg-muted aspect-square w-full max-w-[320px] animate-pulse rounded-2xl" />
             <div className="space-y-4">

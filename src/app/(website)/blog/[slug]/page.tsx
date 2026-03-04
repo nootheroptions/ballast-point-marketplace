@@ -51,7 +51,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
 
   return (
-    <div className="from-primary/20 via-primary/10 to-primary/5 min-h-screen bg-gradient-to-b px-1 md:px-3 lg:px-4">
+    <div className="bg-background min-h-screen px-1 md:px-3 lg:px-4">
       <div className="mx-auto w-full max-w-[78rem]">
         <div className="bg-background px-4 py-3 md:px-10 md:py-4 lg:px-12">
           <div className="bg-primary rounded-2xl">
@@ -98,16 +98,17 @@ async function BlogPostContent({ slug }: { slug: string }) {
   const hasInlineComments = /<hyvor-talk-comments/i.test(post.content);
 
   return (
-    <article className="mx-auto max-w-4xl space-y-6">
-      <Button asChild variant="ghost" className="h-auto p-0 text-sm">
-        <Link href="/blog">
-          <ArrowLeft className="h-4 w-4" />
-          Back to blogs
-        </Link>
-      </Button>
+    <article className="max-w-[74rem] space-y-6">
+      <Link
+        href="/blog"
+        className="hover:border-foreground -ml-1 inline-flex items-center gap-2 border-b-2 border-transparent pb-1 text-sm font-medium transition-colors md:ml-[2.25rem] lg:ml-[2.75rem]"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        <span>Back to blogs</span>
+      </Link>
 
       <Card className="border-primary/20 overflow-hidden rounded-2xl bg-white/80 shadow-sm backdrop-blur-sm">
-        <CardContent className="space-y-8 p-6 md:p-8 lg:p-10">
+        <CardContent className="space-y-8 px-4 py-6 md:px-10 md:py-8 lg:px-12 lg:py-10">
           <header className="space-y-4">
             <h1 className="text-2xl leading-tight font-bold tracking-tight text-balance sm:text-3xl md:text-4xl">
               {post.title}
@@ -197,12 +198,13 @@ function RecentPostsSection({ posts, baseUrl }: { posts: BlogPost[]; baseUrl: st
     <section className="border-border/50 space-y-4 border-t pt-8">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-xl font-semibold md:text-2xl">Recent posts</h2>
-        <Button asChild variant="ghost" size="sm" className="h-auto p-0 text-sm">
-          <Link href="/blog">
-            View all posts
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </Button>
+        <Link
+          href="/blog"
+          className="hover:border-foreground inline-flex items-center gap-2 border-b-2 border-transparent pb-1 text-sm font-medium transition-colors"
+        >
+          <span>View all posts</span>
+          <ArrowRight className="h-4 w-4" />
+        </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -334,10 +336,10 @@ function resolveImageUrl(
 
 function PostSkeleton() {
   return (
-    <article className="mx-auto max-w-4xl space-y-6">
+    <article className="max-w-[74rem] space-y-6">
       <div className="bg-muted h-5 w-32 animate-pulse rounded" />
       <Card>
-        <CardContent className="space-y-8 p-6 md:p-8">
+        <CardContent className="space-y-8 px-4 py-6 md:px-10 md:py-8 lg:px-12 lg:py-10">
           <div className="space-y-4">
             <div className="bg-muted h-6 w-20 animate-pulse rounded" />
             <div className="bg-muted h-10 w-3/4 animate-pulse rounded" />

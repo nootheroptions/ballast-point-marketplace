@@ -77,8 +77,11 @@ export function JoinUsForm() {
           control={control}
           render={({ field }) => (
             <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <SelectTrigger id="applicationType" className="h-11">
-                <SelectValue placeholder="Select application type" />
+              <SelectTrigger id="applicationType" className="border-input/60 h-11">
+                <SelectValue
+                  placeholder="Select application type"
+                  className="data-[placeholder]:text-muted-foreground/30"
+                />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="guest">Guest</SelectItem>
@@ -92,106 +95,98 @@ export function JoinUsForm() {
         )}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="firstName" className="text-sm font-medium">
-            First name <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="firstName"
-            placeholder="John"
-            autoComplete="given-name"
-            className="h-11"
-            disabled={isPending}
-            {...register('firstName')}
-          />
-          {errors.firstName && (
-            <p className="text-destructive text-sm">{errors.firstName.message}</p>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="lastName" className="text-sm font-medium">
-            Last name <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="lastName"
-            placeholder="Doe"
-            autoComplete="family-name"
-            className="h-11"
-            disabled={isPending}
-            {...register('lastName')}
-          />
-          {errors.lastName && <p className="text-destructive text-sm">{errors.lastName.message}</p>}
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="firstName" className="text-sm font-medium">
+          First name <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          id="firstName"
+          placeholder="John"
+          autoComplete="given-name"
+          className="border-input/60 placeholder:text-muted-foreground/40 h-11"
+          disabled={isPending}
+          {...register('firstName')}
+        />
+        {errors.firstName && <p className="text-destructive text-sm">{errors.firstName.message}</p>}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-medium">
-            Email <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="john@example.com"
-            autoComplete="email"
-            className="h-11"
-            disabled={isPending}
-            {...register('email')}
-          />
-          {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="phone" className="text-sm font-medium">
-            Phone <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="phone"
-            type="tel"
-            placeholder="+61 400 000 000"
-            autoComplete="tel"
-            className="h-11"
-            disabled={isPending}
-            {...register('phone')}
-          />
-          {errors.phone && <p className="text-destructive text-sm">{errors.phone.message}</p>}
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="lastName" className="text-sm font-medium">
+          Last name <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          id="lastName"
+          placeholder="Doe"
+          autoComplete="family-name"
+          className="border-input/60 placeholder:text-muted-foreground/40 h-11"
+          disabled={isPending}
+          {...register('lastName')}
+        />
+        {errors.lastName && <p className="text-destructive text-sm">{errors.lastName.message}</p>}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="city" className="text-sm font-medium">
-            City you live in <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="city"
-            placeholder="Sydney"
-            autoComplete="address-level2"
-            className="h-11"
-            disabled={isPending}
-            {...register('city')}
-          />
-          {errors.city && <p className="text-destructive text-sm">{errors.city.message}</p>}
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="email" className="text-sm font-medium">
+          Email <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder="john@example.com"
+          autoComplete="email"
+          className="border-input/60 placeholder:text-muted-foreground/40 h-11"
+          disabled={isPending}
+          {...register('email')}
+        />
+        {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
+      </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="linkedinUrl" className="text-sm font-medium">
-            LinkedIn profile URL <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="linkedinUrl"
-            type="url"
-            placeholder="https://linkedin.com/in/johndoe"
-            className="h-11"
-            disabled={isPending}
-            {...register('linkedinUrl')}
-          />
-          {errors.linkedinUrl && (
-            <p className="text-destructive text-sm">{errors.linkedinUrl.message}</p>
-          )}
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="phone" className="text-sm font-medium">
+          Phone <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          id="phone"
+          type="tel"
+          placeholder="+61 400 000 000"
+          autoComplete="tel"
+          className="border-input/60 placeholder:text-muted-foreground/40 h-11"
+          disabled={isPending}
+          {...register('phone')}
+        />
+        {errors.phone && <p className="text-destructive text-sm">{errors.phone.message}</p>}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="city" className="text-sm font-medium">
+          City you live in <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          id="city"
+          placeholder="Sydney"
+          autoComplete="address-level2"
+          className="border-input/60 placeholder:text-muted-foreground/40 h-11"
+          disabled={isPending}
+          {...register('city')}
+        />
+        {errors.city && <p className="text-destructive text-sm">{errors.city.message}</p>}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="linkedinUrl" className="text-sm font-medium">
+          LinkedIn profile URL <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          id="linkedinUrl"
+          type="url"
+          placeholder="https://linkedin.com/in/johndoe"
+          className="border-input/60 placeholder:text-muted-foreground/40 h-11"
+          disabled={isPending}
+          {...register('linkedinUrl')}
+        />
+        {errors.linkedinUrl && (
+          <p className="text-destructive text-sm">{errors.linkedinUrl.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -203,7 +198,7 @@ export function JoinUsForm() {
           id="industryExpertise"
           placeholder="Describe your background and expertise in the building and construction industry..."
           rows={5}
-          className="min-h-32"
+          className="border-input/60 placeholder:text-muted-foreground/40 min-h-32"
           disabled={isPending}
           {...register('industryExpertise')}
         />
@@ -216,7 +211,7 @@ export function JoinUsForm() {
         <Label htmlFor="uniqueInsight" className="text-sm font-medium">
           What makes you uniquely qualified? <span className="text-destructive">*</span>
         </Label>
-        <p className="text-muted-foreground text-sm leading-relaxed">
+        <p className="text-muted-foreground/80 text-sm leading-relaxed">
           Share your unique insight that challenges the status quo, insider knowledge, ability to
           debunk common misconceptions, discuss pressing issues in the field, or anything that makes
           you uniquely qualified to be on Buildipedia.
@@ -225,7 +220,7 @@ export function JoinUsForm() {
           id="uniqueInsight"
           placeholder="Share what makes you stand out..."
           rows={6}
-          className="min-h-40"
+          className="border-input/60 placeholder:text-muted-foreground/40 min-h-40"
           disabled={isPending}
           {...register('uniqueInsight')}
         />
@@ -242,7 +237,7 @@ export function JoinUsForm() {
           id="workSampleUrl"
           type="url"
           placeholder="https://example.com/my-work"
-          className="h-11"
+          className="border-input/60 placeholder:text-muted-foreground/40 h-11"
           disabled={isPending}
           {...register('workSampleUrl')}
         />

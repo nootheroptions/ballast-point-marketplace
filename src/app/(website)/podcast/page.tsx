@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { ComingSoonHeader } from '@/components/home/coming-soon-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { env } from '@/lib/config/env';
 import { createPodcastService, type PodcastEpisode } from '@/lib/services/podcasts';
 import { formatDuration, formatPublishedDate } from '@/lib/utils/podcast';
@@ -32,7 +32,7 @@ export default function PodcastsPage() {
           </div>
         </div>
 
-        <main className="px-4 pt-12 pb-16 md:px-10 md:pt-16 lg:px-12">
+        <main className="px-4 pt-7 pb-16 md:px-10 md:pt-8 lg:px-12">
           <Suspense fallback={<PodcastListSkeleton />}>
             <PodcastList />
           </Suspense>
@@ -67,65 +67,44 @@ async function PodcastList() {
   const applePodcastsShowUrl = env.PODCASTS_APPLE_PODCASTS_SHOW_URL;
 
   return (
-    <section className="mx-auto max-w-[74rem] space-y-6">
-      <Card className="border-primary/20 bg-card/80 overflow-hidden backdrop-blur-sm">
-        <CardContent className="p-6 md:p-8">
-          <div className="grid items-start gap-6 md:grid-cols-[144px_minmax(0,1fr)] md:gap-8">
-            <div className="bg-muted border-border h-36 w-36 overflow-hidden rounded-xl border">
-              {feed.imageUrl ? (
-                <div
-                  className="h-full w-full bg-cover bg-center"
-                  style={{ backgroundImage: `url('${feed.imageUrl}')` }}
-                  role="img"
-                  aria-label={`${feed.title} artwork`}
-                />
-              ) : (
-                <div className="text-muted-foreground flex h-full w-full items-center justify-center text-xs">
-                  No artwork
-                </div>
-              )}
-            </div>
+    <section className="space-y-6">
+      <div className="mx-auto max-w-[74rem] space-y-4 px-4 pb-6 md:px-10 lg:px-12">
+        <h1 className="text-3xl leading-tight font-semibold md:text-4xl">{feed.title}</h1>
 
-            <div className="space-y-4">
-              <CardTitle className="text-3xl leading-tight font-semibold md:text-4xl">
-                {feed.title}
-              </CardTitle>
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="outline">{feed.episodes.length} episodes</Badge>
+        </div>
 
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="outline">{feed.episodes.length} episodes</Badge>
-              </div>
+        {feed.description && (
+          <p className="text-muted-foreground max-w-3xl text-base">{feed.description}</p>
+        )}
 
-              {feed.description && (
-                <p className="text-muted-foreground max-w-3xl text-base">{feed.description}</p>
-              )}
+        <div className="flex flex-wrap items-center gap-3">
+          <Button asChild variant="outline" className="rounded-full">
+            <Link href={spotifyShowUrl} target="_blank" rel="noreferrer">
+              Spotify
+              <ExternalLink className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="rounded-full">
+            <Link href={applePodcastsShowUrl} target="_blank" rel="noreferrer">
+              Apple Podcasts
+              <ExternalLink className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      </div>
 
-              <div className="flex flex-wrap items-center gap-3">
-                <Button asChild variant="outline" className="rounded-full">
-                  <Link href={spotifyShowUrl} target="_blank" rel="noreferrer">
-                    Spotify
-                    <ExternalLink className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" className="rounded-full">
-                  <Link href={applePodcastsShowUrl} target="_blank" rel="noreferrer">
-                    Apple Podcasts
-                    <ExternalLink className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <hr className="border-border mx-auto max-w-[74rem]" />
 
-      <div className="space-y-5">
+      <div className="mx-auto max-w-[74rem] space-y-5">
         {feed.episodes.map((episode: PodcastEpisode) => {
           const duration = formatDuration(episode.durationSeconds);
           const episodeArtworkUrl = episode.imageUrl ?? feed.imageUrl;
 
           return (
             <Link key={episode.id} href={`/podcast/${episode.slug}`} className="group block">
-              <Card className="overflow-hidden transition-shadow group-hover:shadow-md">
+              <Card className="border-border/60 overflow-hidden transition-shadow group-hover:shadow-md">
                 <CardContent className="space-y-5 p-5 md:p-6">
                   <div className="flex flex-col gap-4 md:flex-row md:items-start md:gap-5">
                     <div className="bg-muted border-border h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg border md:h-28 md:w-28">

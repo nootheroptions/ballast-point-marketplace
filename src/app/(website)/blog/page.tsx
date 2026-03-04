@@ -35,7 +35,7 @@ export default function BlogsPage() {
           </div>
         </div>
 
-        <main className="px-4 pt-12 pb-16 md:px-10 md:pt-16 lg:px-12">
+        <main className="px-4 pt-9 pb-16 md:px-10 md:pt-12 lg:px-12">
           <Suspense fallback={<BlogListSkeleton />}>
             <BlogList />
           </Suspense>
