@@ -51,14 +51,20 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
 
   return (
-    <div className="from-primary/20 via-primary/10 to-primary/5 min-h-screen bg-gradient-to-b">
-      <ComingSoonHeader />
+    <div className="from-primary/20 via-primary/10 to-primary/5 min-h-screen bg-gradient-to-b px-1 md:px-3 lg:px-4">
+      <div className="mx-auto w-full max-w-[78rem]">
+        <div className="bg-background px-4 py-3 md:px-10 md:py-4 lg:px-12">
+          <div className="bg-primary rounded-2xl">
+            <ComingSoonHeader />
+          </div>
+        </div>
 
-      <main className="container mx-auto px-4 pt-6 pb-16 md:pt-10 lg:px-8">
-        <Suspense fallback={<PostSkeleton />}>
-          <BlogPostContent slug={slug} />
-        </Suspense>
-      </main>
+        <main className="px-4 pt-6 pb-16 md:px-10 md:pt-10 lg:px-12">
+          <Suspense fallback={<PostSkeleton />}>
+            <BlogPostContent slug={slug} />
+          </Suspense>
+        </main>
+      </div>
     </div>
   );
 }

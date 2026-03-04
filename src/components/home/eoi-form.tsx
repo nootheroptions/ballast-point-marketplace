@@ -31,7 +31,7 @@ export function EoiForm({ variant = 'default' }: EoiFormProps) {
     formState: { errors },
   } = useForm<EoiFormData>({
     resolver: zodResolver(eoiSchema),
-    mode: 'onBlur',
+    mode: 'onSubmit',
   });
 
   if (state?.success) {
@@ -73,10 +73,10 @@ export function EoiForm({ variant = 'default' }: EoiFormProps) {
         <div className="border-border bg-background flex items-center gap-2 rounded-full border p-1.5 shadow-sm transition-shadow focus-within:shadow-md">
           <Input
             type="email"
-            placeholder="Your fancy e-mail"
+            placeholder="Add your email"
             autoComplete="email"
             disabled={isPending}
-            className="flex-1 border-0 bg-transparent px-4 shadow-none focus-visible:ring-0"
+            className="text-foreground placeholder:text-primary/50 flex-1 border-0 bg-transparent px-4 shadow-none focus-visible:ring-0"
             {...register('email')}
           />
           <Button
@@ -84,7 +84,7 @@ export function EoiForm({ variant = 'default' }: EoiFormProps) {
             className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6 font-semibold"
             disabled={isPending}
           >
-            {isPending ? 'Joining...' : 'Get Started'}
+            {isPending ? 'Joining...' : 'Join Waitlist'}
           </Button>
         </div>
         {(errors.email || state?.error) && (

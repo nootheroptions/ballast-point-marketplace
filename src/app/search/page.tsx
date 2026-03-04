@@ -16,7 +16,7 @@ export default function SearchPage() {
         <MarketplaceHeaderAsync />
       </Suspense>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 lg:px-8">
         <Suspense fallback={<ServicesListSkeleton />}>
           <ServicesList />
         </Suspense>

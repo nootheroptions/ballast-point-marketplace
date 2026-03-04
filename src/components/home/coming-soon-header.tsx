@@ -9,7 +9,6 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
 const navLinks = [
-  { href: '/home', label: 'Home' },
   { href: '/podcast', label: 'Podcast' },
   { href: '/blog', label: 'Blog' },
   { href: '/contact', label: 'Contact' },
@@ -21,12 +20,12 @@ export function ComingSoonHeader() {
 
   return (
     <header className="sticky top-0 z-50">
-      <div className="mx-auto w-full max-w-[74rem] px-8 md:px-10 lg:px-12">
+      <div className="mx-auto w-full max-w-[74rem] px-4 md:px-10 lg:px-12">
         {/* Desktop Layout */}
         <div className="hidden py-6 lg:block">
           <div className="flex items-center justify-between gap-8">
-            <Logo href="/home" size="lg" />
-            <nav className="flex min-w-[22rem] items-center justify-between gap-8">
+            <Logo href="/home" size="lg" className="-ml-1" />
+            <nav className="flex min-w-[12rem] items-center justify-between">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -34,7 +33,7 @@ export function ComingSoonHeader() {
                   className={`text-sm font-medium transition-colors ${
                     pathname === link.href
                       ? 'text-background'
-                      : 'text-background hover:text-secondary'
+                      : 'text-background hover:decoration-background decoration-2 underline-offset-4 hover:underline'
                   }`}
                 >
                   {link.label}
@@ -60,8 +59,9 @@ export function ComingSoonHeader() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-72 p-0">
-              <SheetHeader className="bg-muted border-b px-6 py-4">
-                <SheetTitle className="text-left text-xl font-bold">Buildipedia</SheetTitle>
+              <SheetHeader className="bg-primary border-b px-6 py-4">
+                <SheetTitle className="sr-only">Buildipedia menu</SheetTitle>
+                <Logo href="/home" size="md" />
               </SheetHeader>
               <nav className="flex flex-col gap-1 p-4">
                 {navLinks.map((link) => {

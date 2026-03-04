@@ -24,14 +24,20 @@ function getEpisodeSummary(description: string): string {
 
 export default function PodcastsPage() {
   return (
-    <div className="from-primary/10 via-background to-background min-h-screen bg-gradient-to-b">
-      <ComingSoonHeader />
+    <div className="bg-background min-h-screen px-1 md:px-3 lg:px-4">
+      <div className="mx-auto w-full max-w-[78rem]">
+        <div className="bg-background px-4 py-3 md:px-10 md:py-4 lg:px-12">
+          <div className="bg-primary rounded-2xl">
+            <ComingSoonHeader />
+          </div>
+        </div>
 
-      <main className="container mx-auto px-4 pt-10 pb-16 lg:px-8">
-        <Suspense fallback={<PodcastListSkeleton />}>
-          <PodcastList />
-        </Suspense>
-      </main>
+        <main className="px-4 pt-12 pb-16 md:px-10 md:pt-16 lg:px-12">
+          <Suspense fallback={<PodcastListSkeleton />}>
+            <PodcastList />
+          </Suspense>
+        </main>
+      </div>
     </div>
   );
 }
@@ -44,7 +50,7 @@ async function PodcastList() {
     feed = await podcastService.getFeed();
   } catch {
     return (
-      <section className="mx-auto max-w-5xl">
+      <section className="mx-auto max-w-[74rem]">
         <Card>
           <CardContent className="space-y-2 p-6">
             <h2 className="text-xl font-semibold">Podcast feed unavailable</h2>
@@ -61,7 +67,7 @@ async function PodcastList() {
   const applePodcastsShowUrl = env.PODCASTS_APPLE_PODCASTS_SHOW_URL;
 
   return (
-    <section className="mx-auto max-w-5xl space-y-6">
+    <section className="mx-auto max-w-[74rem] space-y-6">
       <Card className="border-primary/20 bg-card/80 overflow-hidden backdrop-blur-sm">
         <CardContent className="p-6 md:p-8">
           <div className="grid items-start gap-6 md:grid-cols-[144px_minmax(0,1fr)] md:gap-8">
@@ -174,7 +180,7 @@ async function PodcastList() {
 
 function PodcastListSkeleton() {
   return (
-    <section className="mx-auto max-w-5xl space-y-5">
+    <section className="mx-auto max-w-[74rem] space-y-5">
       {[...Array(3)].map((_, index) => (
         <Card key={index}>
           <CardContent className="space-y-4 p-5 md:p-6">
