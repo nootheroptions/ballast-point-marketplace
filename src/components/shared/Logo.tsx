@@ -21,7 +21,7 @@ export function Logo({ href, size = 'xl', className }: LogoProps) {
   return (
     <Link href={href} className={cn('flex items-center', className)}>
       <Image
-        src="https://static.wixstatic.com/media/e4cd38_0aa292d7ad164a598915265d13a45066~mv2.png/v1/fill/w_257,h_53,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Buildipedia%20Rebrand.png"
+        src="/logo.svg"
         alt="Buildipedia"
         width={width}
         height={height}
