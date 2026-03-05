@@ -9,8 +9,8 @@ import {
   formatBlogDate,
   type BlogPost,
 } from '@/lib/services/blogs';
+import { BlogCardImage } from '@/components/blogs/BlogCardImage';
 import { ArrowUpRight, Calendar, Clock3 } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata = {
@@ -95,11 +95,10 @@ async function BlogList() {
             >
               <div className="bg-muted relative aspect-[16/9] w-full overflow-hidden">
                 {post.featured_image_url ? (
-                  <Image
+                  <BlogCardImage
                     src={post.featured_image_url}
                     alt={post.title}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="group-hover:scale-105"
                   />
                 ) : (
                   <div className="text-muted-foreground flex h-full w-full items-center justify-center text-xs">
