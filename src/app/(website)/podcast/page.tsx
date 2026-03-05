@@ -84,7 +84,7 @@ async function PodcastList() {
         <h1 className="text-3xl leading-tight font-semibold md:text-4xl">{feed.title}</h1>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="outline">{feed.episodes.length} episodes</Badge>
+          <Badge variant="secondary">{feed.episodes.length} episodes</Badge>
         </div>
 
         {feed.description && (

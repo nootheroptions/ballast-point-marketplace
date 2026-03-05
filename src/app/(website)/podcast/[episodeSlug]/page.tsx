@@ -31,7 +31,7 @@ function PodcastPlatformButtons({
       <Button
         asChild
         variant="outline"
-        className="border-border/70 bg-background hover:bg-muted/60 h-11 w-full justify-between rounded-lg px-4 text-sm font-medium"
+        className="border-border/70 bg-background text-muted-foreground hover:bg-muted/60 hover:text-foreground h-11 w-full justify-between rounded-lg px-4 text-sm font-medium"
       >
         <Link href={spotifyShowUrl} target="_blank" rel="noreferrer">
           Listen on Spotify
@@ -41,7 +41,7 @@ function PodcastPlatformButtons({
       <Button
         asChild
         variant="outline"
-        className="border-border/70 bg-background hover:bg-muted/60 h-11 w-full justify-between rounded-lg px-4 text-sm font-medium"
+        className="border-border/70 bg-background text-muted-foreground hover:bg-muted/60 hover:text-foreground h-11 w-full justify-between rounded-lg px-4 text-sm font-medium"
       >
         <Link href={applePodcastsShowUrl} target="_blank" rel="noreferrer">
           Listen on Apple Podcasts
@@ -146,18 +146,12 @@ async function PodcastEpisodeContent({ episodeSlug }: { episodeSlug: string }) {
                 {episode.title}
               </h1>
               <div className="flex flex-wrap items-center gap-2">
-                <Badge
-                  variant="outline"
-                  className="border-border/60 bg-muted/40 text-muted-foreground gap-1 px-3 py-1 text-xs font-medium"
-                >
+                <Badge variant="outline" className="gap-1">
                   <Calendar className="h-3.5 w-3.5" />
                   {formatPublishedDate(episode.publishedAt)}
                 </Badge>
                 {duration && (
-                  <Badge
-                    variant="outline"
-                    className="border-border/60 bg-muted/40 text-muted-foreground gap-1 px-3 py-1 text-xs font-medium"
-                  >
+                  <Badge variant="secondary" className="gap-1">
                     <Clock3 className="h-3.5 w-3.5" />
                     {duration}
                   </Badge>
