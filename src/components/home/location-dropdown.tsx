@@ -172,7 +172,9 @@ export function LocationDropdown({
         }}
         className="flex w-full items-center justify-between text-left"
       >
-        <span className={`text-base ${value ? 'text-foreground' : 'text-muted-foreground'}`}>
+        <span
+          className={`min-w-0 flex-1 truncate text-left text-base ${value ? 'text-foreground' : 'text-muted-foreground'}`}
+        >
           {displayText}
         </span>
       </button>
@@ -229,7 +231,7 @@ export function LocationDropdown({
                       <div className="border-border flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border">
                         <MapPin className="text-primary h-5 w-5" />
                       </div>
-                      <span className="text-foreground text-left text-base">
+                      <span className="text-foreground min-w-0 flex-1 text-left text-base">
                         {suggestion.place_name}
                       </span>
                     </button>

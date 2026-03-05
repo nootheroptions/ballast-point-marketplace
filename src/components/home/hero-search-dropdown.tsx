@@ -133,7 +133,9 @@ export function HeroSearchCustomDropdown({
         }`}
         disabled={disabled}
       >
-        <span className="text-foreground text-base leading-none">{displayText}</span>
+        <span className="text-foreground min-w-0 flex-1 truncate text-left text-base leading-none">
+          {displayText}
+        </span>
         <ChevronDown className="text-muted-foreground ml-2 h-5 w-5 flex-shrink-0" />
       </button>
 
@@ -173,7 +175,9 @@ export function HeroSearchCustomDropdown({
                               <Icon className="text-primary h-5 w-5" />
                             </div>
                           )}
-                          <span className="text-foreground text-base">{item.label}</span>
+                          <span className="text-foreground min-w-0 flex-1 text-left text-base">
+                            {item.label}
+                          </span>
                         </button>
                       );
                     })}
