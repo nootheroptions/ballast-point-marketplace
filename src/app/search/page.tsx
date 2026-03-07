@@ -19,6 +19,9 @@ export const metadata = {
     description:
       'Explore architecture services from verified professionals. Find feasibility studies, concept designs, planning consultations, and more.',
   },
+  alternates: {
+    canonical: '/search',
+  },
 } satisfies Metadata;
 
 export default function SearchPage() {

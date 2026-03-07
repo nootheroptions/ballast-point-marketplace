@@ -21,6 +21,7 @@ export async function POST(request: Request) {
 
     revalidateTag(CACHE_TAG, 'default');
     revalidatePath('/blog', 'page');
+    revalidatePath('/sitemap.xml');
 
     return NextResponse.json({
       revalidated: true,

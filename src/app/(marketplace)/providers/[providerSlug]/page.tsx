@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import { env } from '@/lib/config/env';
 import { getProviderBySlug } from '@/actions/providers';
 import { getPublishedServicesByProviderSlug } from '@/actions/services';
 import { getPublishedBundlesByProviderSlug } from '@/actions/bundles';
@@ -18,6 +19,7 @@ import {
   ProviderServicesSectionSkeleton,
 } from '@/components/marketplace/provider/provider-services-section';
 import { ImageCarousel } from '@/components/shared/ImageCarousel';
+import { serializeJsonLd } from '@/lib/utils/json-ld';
 
 interface ProviderProfilePageProps {
   params: Promise<{
@@ -35,9 +37,37 @@ export async function generateMetadata({ params }: ProviderProfilePageProps): Pr
     };
   }
 
+  const title = `${provider.name} | Architecture Services`;
+  const description =
+    provider.description ||
+    `Browse architecture services from ${provider.name}. View their portfolio and book consultations on Buildipedia.`;
+  const imageUrl = provider.imageUrls?.[0];
+
   return {
-    title: `${provider.name} - Provider Profile`,
-    description: provider.description || `View services and bundles from ${provider.name}`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'profile',
+      images: imageUrl
+        ? [
+            {
+              url: imageUrl,
+              alt: provider.name,
+            },
+          ]
+        : undefined,
+    },
+    twitter: {
+      card: imageUrl ? 'summary_large_image' : 'summary',
+      title,
+      description,
+      images: imageUrl ? [imageUrl] : undefined,
+    },
+    alternates: {
+      canonical: `/providers/${providerSlug}`,
+    },
   };
 }
 
@@ -85,12 +115,46 @@ async function ProviderProfileContent({ providerSlug }: { providerSlug: string }
     notFound();
   }
 
+  const baseUrl = env.NEXT_PUBLIC_SITE_URL;
+  const providerJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    '@id': `${baseUrl}/providers/${providerSlug}`,
+    name: provider.name,
+    description: provider.description || undefined,
+    image: provider.imageUrls?.[0],
+    url: `${baseUrl}/providers/${providerSlug}`,
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'AU',
+    },
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Architecture Services',
+      itemListElement: services.map((service) => ({
+        '@type': 'Offer',
+        itemOffered: {
+          '@type': 'Service',
+          name: service.name,
+          description: service.description,
+          url: `${baseUrl}/${providerSlug}/${service.slug}`,
+        },
+      })),
+    },
+  };
+
   return (
-    <div className="space-y-8">
-      <ImageCarousel imageUrls={provider.imageUrls} alt={`${provider.name} images`} />
-      <ProviderProfileHeader provider={provider} />
-      <ProviderServicesSection provider={provider} services={services} bundles={bundles} />
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(providerJsonLd) }}
+      />
+      <div className="space-y-8">
+        <ImageCarousel imageUrls={provider.imageUrls} alt={`${provider.name} images`} />
+        <ProviderProfileHeader provider={provider} />
+        <ProviderServicesSection provider={provider} services={services} bundles={bundles} />
+      </div>
+    </>
   );
 }
 

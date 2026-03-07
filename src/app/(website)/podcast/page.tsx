@@ -19,6 +19,9 @@ export const metadata = {
     description:
       'Listen to the Buildipedia podcast. Conversations with architects, designers, and industry experts about design, business, and the future of architecture.',
   },
+  alternates: {
+    canonical: '/podcast',
+  },
 } satisfies Metadata;
 
 function getEpisodeSummary(description: string): string {

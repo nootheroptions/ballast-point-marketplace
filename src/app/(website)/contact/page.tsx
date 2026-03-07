@@ -6,6 +6,9 @@ export const metadata = {
   title: 'Contact | Buildipedia Podcast',
   description:
     'Apply to be a guest or co-host on the Buildipedia podcast. Share your expertise and insights with our audience.',
+  alternates: {
+    canonical: '/contact',
+  },
 };
 
 export default function JoinUsPage() {

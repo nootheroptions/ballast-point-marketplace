@@ -22,6 +22,9 @@ export const metadata = {
     description:
       'Articles, insights, and guides for architects and homeowners. Learn about architecture trends, design tips, and how to grow your practice.',
   },
+  alternates: {
+    canonical: '/blog',
+  },
 } satisfies Metadata;
 
 function getPostSummary(description: string | null): string {
@@ -90,7 +93,7 @@ async function BlogList() {
           return (
             <Link
               key={post.id}
-              href={`/blog/${post.slug}`}
+              href={`/post/${post.slug}`}
               className="group border-border/60 bg-background/90 hover:border-primary/40 flex h-full flex-col overflow-hidden rounded-xl border transition-all hover:shadow-md"
             >
               <div className="bg-muted relative aspect-[16/9] w-full overflow-hidden">

@@ -3,6 +3,10 @@ import type { Metadata } from 'next';
 export const metadata = {
   title: 'Book Appointment',
   description: 'Select a date and time to book your architecture consultation.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 } satisfies Metadata;
 
 export default async function BookingLayout({ children }: { children: React.ReactNode }) {

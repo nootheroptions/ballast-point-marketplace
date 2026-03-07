@@ -4,6 +4,10 @@ import type { Metadata } from 'next';
 export const metadata = {
   title: 'Authentication Error',
   description: 'An error occurred during authentication',
+  robots: {
+    index: false,
+    follow: false,
+  },
 } satisfies Metadata;
 
 export default function AuthCodeErrorPage() {

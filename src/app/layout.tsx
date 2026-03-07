@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { env } from '@/lib/config/env';
+import { serializeJsonLd } from '@/lib/utils/json-ld';
 import './globals.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -14,6 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
+  metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: {
     default: 'Buildipedia | Architecture Services Marketplace',
     template: '%s | Buildipedia',
@@ -33,6 +36,11 @@ export const metadata = {
   authors: [{ name: 'Buildipedia' }],
   creator: 'Buildipedia',
   publisher: 'Buildipedia',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
     type: 'website',
     locale: 'en_AU',
@@ -67,7 +75,48 @@ export const metadata = {
       'max-snippet': -1,
     },
   },
+  verification: {
+    google: 'add-your-google-verification-code',
+  },
+  alternates: {
+    canonical: '/',
+  },
 } satisfies Metadata;
+
+const baseUrl = env.NEXT_PUBLIC_SITE_URL;
+
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Buildipedia',
+  description:
+    'Architecture services marketplace connecting homeowners with experienced architects.',
+  url: baseUrl,
+  logo: `${baseUrl}/logo.png`,
+  sameAs: [],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'customer service',
+    email: 'hello@buildipedia.com.au',
+  },
+};
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Buildipedia',
+  url: baseUrl,
+  description:
+    'Find and book productized architecture services. Compare services from experienced architects with fixed pricing, clear scope, and fast turnaround.',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${baseUrl}/search?q={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
+  },
+};
 
 export default function RootLayout({
   children,
@@ -76,6 +125,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(websiteJsonLd) }}
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
     </html>
   );

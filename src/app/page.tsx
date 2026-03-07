@@ -16,6 +16,9 @@ export const metadata = {
     description:
       'Compare productized services from experienced architects. Fixed pricing, clear scope, and fast turnaround for your residential or commercial project.',
   },
+  alternates: {
+    canonical: '/',
+  },
 } satisfies Metadata;
 
 export default function Home() {

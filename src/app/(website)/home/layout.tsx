@@ -9,6 +9,9 @@ export const metadata = {
     description:
       'Grow your architecture practice with qualified homeowner leads. Showcase services, get discovered, and book consultations on Buildipedia.',
   },
+  alternates: {
+    canonical: '/home',
+  },
 } satisfies Metadata;
 
 export default function HomeLayout({ children }: { children: React.ReactNode }) {
