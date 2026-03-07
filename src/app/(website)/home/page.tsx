@@ -148,7 +148,7 @@ export default function HomePage() {
               <section className="relative w-full max-w-6xl">
                 <div
                   aria-hidden="true"
-                  className={`from-primary/90 via-secondary/80 to-primary/90 absolute inset-0 scale-[1.02] rounded-[2rem] bg-gradient-to-r blur-2xl motion-safe:[animation:pulse_4s_ease-in-out_infinite] ${desktopOuterPulseClass}`}
+                  className={`from-primary/90 via-secondary/80 to-primary/90 absolute inset-0 scale-[1.02] rounded-[2rem] bg-gradient-to-r blur-2xl will-change-transform motion-safe:[animation:pulse_4s_ease-in-out_infinite] ${desktopOuterPulseClass}`}
                 />
                 <div
                   className={`from-primary via-secondary to-primary relative rounded-3xl bg-gradient-to-r p-[3px] shadow-[0_0_28px_hsl(var(--primary)/0.9),0_0_72px_hsl(var(--secondary)/0.75),0_0_120px_hsl(var(--primary)/0.7)] motion-safe:[animation:pulse_5s_ease-in-out_250ms_infinite] ${desktopInnerPulseClass}`}
